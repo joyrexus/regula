@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    // This is not a complete template; it only
+    // shows relevant module-related settings.
+    // Be sure to set other important options
+    // like `target`, `lib`, and `strict`.
+    // Required
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    // Consult your bundler’s documentation
+    "customConditions": ["module"],
+    // Recommended
+    "noEmit": true, // or `emitDeclarationOnly`
+    "allowImportingTsExtensions": true,
+    "allowArbitraryExtensions": true,
+    "verbatimModuleSyntax": false, // or `isolatedModules`
+  }
+}

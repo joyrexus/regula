@@ -1,0 +1,192 @@
+import { Regula } from "../src";
+import { Ruleset, EvaluationInput } from "../src/types";
+
+const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
+
+// Define a sample ruleset for a premium membership eligibility check.
+const ruleset: Ruleset = {
+  name: "Premium Membership Eligibility",
+  description:
+    "User qualifies for premium membership if they are older than 18 and have an active subscription.",
+  rules: [
+    {
+      // Parent rule: an AND boolean expression that aggregates two conditions.
+      name: "Eligibility Check",
+      and: [
+        {
+          // Subrule 1: Check that the user has an active subscription.
+          name: "Check Subscription",
+          path: "user.subscription.active",
+          equals: true,
+          result: "Subscription OK",
+          dataSource: { type: "async", name: "SubscriptionService" },
+        },
+        {
+          // Subrule 2: Check that the user's age is greater than 18.
+          name: "Check Age",
+          path: "user.age",
+          greaterThan: 18,
+          result: "Age OK",
+          dataSource: { type: "sync", name: "UserDB" },
+        },
+      ],
+      // Overall result returned if both subrules are satisfied.
+      result: "User is eligible for premium membership",
+    },
+  ],
+  default: "User is not eligible",
+};
+
+// Initialize a new Evaluator instance with the ruleset.
+// const evaluation = new Evaluator(ruleset);
+const evaluation = Regula.evaluator(ruleset);
+
+// ...... EVALUATION 1 ......
+
+// Define an input object for the first evaluation.
+const input1: EvaluationInput = {
+  context: {
+    dataSource: { type: "sync", name: "UserDB" },
+    entityId: "transaction-123",
+    timestamp: new Date().toISOString(),
+    userId: "user-1",
+  },
+  data: {
+    user: {
+      age: 20,
+      // No subscription info provided.
+    },
+  },
+};
+
+// Evaluate the input object and get the overall result.
+let result = evaluation.evaluate(input1);
+
+console.log(`\nEvaluation ${evaluation.getCount()}: ${result}\n`);
+// Evaluation 1: User is not eligible
+
+pprint(evaluation.getLastEvaluation());
+// {
+//   input: "<input1>",
+//   result: "User is not eligible",   // because the AND expression is not fully satisfied
+//   evaluatedAt: "<timestamp>",
+//   evaluatedBy: "user-1"
+// }
+
+pprint(evaluation.getResults());
+// {
+//   "Eligibility Check": false,
+//   "Check Age": "Age OK",
+//   "Premium Membership Eligibility": "User is not eligible"
+// }
+
+// ...... EVALUATION 2 ......
+
+// Define a new input object for the second evaluation.
+const input2: EvaluationInput = {
+  context: {
+    dataSource: {
+      type: "async",
+      name: "SubscriptionService",
+      description: "Subscription Service",
+    },
+    entityId: "transaction-123",
+    timestamp: new Date().toISOString(),
+    userId: "user-2",
+  },
+  data: {
+    user: {
+      subscription: { active: true },
+      // No age info provided in this evaluation.
+    },
+  },
+};
+
+result = evaluation.evaluate(input2);
+
+console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
+// Evaluation 2: User is eligible for premium membership
+
+pprint(evaluation.getLastEvaluation());
+// {
+//   input: "<input2>",
+//   result: "User is eligible for premium membership",  // now both subrules are satisfied:
+//                                                        // "Check Age" uses its stored result (true),
+//                                                        // "Check Subscription" now returns true.
+//   evaluatedAt: "<timestamp>",
+//   evaluatedBy: "user-2"
+// }
+
+pprint(evaluation.getResults());
+// {
+//   "Eligibility Check": "User is eligible for premium membership",
+//   "Check Subscription": "Subscription OK",
+//   "Check Age": "Age OK",
+//   "Premium Membership Eligibility": "User is eligible for premium membership"
+// }
+
+// ...... EVALUATION 3 ......
+
+// Define a new input object for the third evaluation.
+const input3: EvaluationInput = {
+  context: {
+    dataSource: {
+      type: "async",
+      name: "SubscriptionService",
+      description: "Subscription Service",
+    },
+    entityId: "transaction-123",
+    timestamp: new Date().toISOString(),
+    userId: "user-3",
+  },
+  data: {
+    user: {
+      subscription: { active: false },
+      // No age info provided in this evaluation.
+    },
+  },
+};
+
+result = evaluation.evaluate(input3);
+
+console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
+// Evaluation 3: User is not eligible
+
+pprint(evaluation.getLastEvaluation());
+// {
+//   input: input3,
+//   result: "User is not eligible",   // because the AND expression is not fully satisfied
+//                                     // "Check Age" uses its stored result (true),
+//                                     // "Check Subscription" now returns false.
+//   evaluatedAt: "<timestamp>",
+//   evaluatedBy: "user-3"
+// }
+
+pprint(evaluation.getResults());
+// {
+//   "Eligibility Check": false,
+//   "Check Subscription": false,
+//   "Check Age": "Age OK",
+//   "Premium Membership Eligibility": "User is not eligible"
+// }
+
+/*
+See also the following utility methods:
+- evaluation.getCount() // get the number of evaluations performed
+- evaluation.getDataSources() // get the data sources used in the ruleset
+- evaluation.getRuleNames() // get an array of all rule names in the ruleset
+- evaluation.getRule("Check Age") // get a rule by name
+- evaluation.getResult("Check Age") // get the result of a specific rule
+- evaluation.getResult() // get the overall result
+- evaluation.getResults() // get the results of all rules
+- evaluation.getLastEvaluation() // get the last top-level evaluation of the ruleset
+- evaluation.getLastEvaluation("Check Age") // get the last evaluation of a specific rule
+- evaluation.deactivate() // deactivate the ruleset
+- evaluation.deactivate({ reason: "Testing", updatedBy: "user-1" })
+- evaluation.deactivateRule("Check Age") // deactivate a specific rule
+- evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })
+- evaluation.activateRule("Check Age") // activate a specific rule
+- evaluation.activate() // activate the ruleset (if deactivated)
+- evaluation.toString() // convert the ruleset to string
+- evaluation.ruleset // get the ruleset object
+*/
