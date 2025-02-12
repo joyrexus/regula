@@ -214,7 +214,9 @@ export class Regula {
     }
 
     // Pass 2: Evaluate top-level rules and pick the first rule with a truthy evaluation.
-    let overallResult: RuleResult = null;
+    let result: RuleResult = null; // The result of the first rule that evaluates truthy.
+    let resultFrom: string = null; // The name of the rule that produced the result.
+
     for (const rule of ruleset.rules) {
       if (rule.deactivated) continue;
       // If the top-level rule has a dataSource, it must match the input.
@@ -226,19 +228,21 @@ export class Regula {
         continue;
       }
       if (rule.lastEvaluation && rule.lastEvaluation.result) {
-        overallResult = rule.lastEvaluation.result;
+        result = rule.lastEvaluation.result;
+        resultFrom = rule.name;
         break;
       }
     }
     // Fallback to the ruleset default if no rule evaluated truthy.
-    if (overallResult === null && ruleset.default) {
-      overallResult = ruleset.default;
+    if (result === null && ruleset.default) {
+      result = ruleset.default;
     }
     return {
       ...ruleset,
       lastEvaluation: {
         input,
-        result: overallResult ?? false,
+        result: result ?? false,
+        resultFrom,
         evaluatedAt: now,
         evaluatedBy: userId,
       },

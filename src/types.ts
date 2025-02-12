@@ -86,6 +86,7 @@ export interface EvaluationInput {
 export interface Evaluation {
   input: EvaluationInput;
   result: RuleResult;
+  resultFrom?: string;
   evaluatedAt: string;
   evaluatedBy?: string;
 }

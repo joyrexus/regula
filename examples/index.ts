@@ -67,7 +67,8 @@ console.log(`\nEvaluation ${evaluation.getCount()}: ${result}\n`);
 pprint(evaluation.getLastEvaluation());
 // {
 //   input: "<input1>",
-//   result: "User is not eligible",   // because the AND expression is not fully satisfied
+//   result: "User is not eligible",   // default result since the AND expression is not fully satisfied
+//   resultFrom: null,                 // no top-level rule produced the result
 //   evaluatedAt: "<timestamp>",
 //   evaluatedBy: "user-1"
 // }
@@ -110,8 +111,9 @@ pprint(evaluation.getLastEvaluation());
 // {
 //   input: "<input2>",
 //   result: "User is eligible for premium membership",  // now both subrules are satisfied:
-//                                                        // "Check Age" uses its stored result (true),
-//                                                        // "Check Subscription" now returns true.
+//                                                       // "Check Age" uses its stored result (true),
+//                                                       // "Check Subscription" now returns true.
+//   resultFrom: "Eligibility Check",                    // name of the rule that produced the result
 //   evaluatedAt: "<timestamp>",
 //   evaluatedBy: "user-2"
 // }
@@ -154,9 +156,11 @@ console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
 pprint(evaluation.getLastEvaluation());
 // {
 //   input: <input3>,
-//   result: "User is not eligible",   // because the AND expression is not fully satisfied
+//   result: "User is not eligible",   // default result is returned
+//                                     // because the AND expression is no longer fully satisfied
 //                                     // "Check Age" uses its stored result (true),
 //                                     // "Check Subscription" now returns false.
+//   resultFrom: null,
 //   evaluatedAt: "<timestamp>",
 //   evaluatedBy: "user-3"
 // }
@@ -177,7 +181,8 @@ pprint(evaluation.getSnapshot());
 //   "default": "User is not eligible",
 //   "lastEvaluation": {
 //     "input": <input3>,
-//     "result": "User is not eligible",
+//     "result": "User is not eligible",  // default result
+//     "resultFrom": null,
 //     "evaluatedAt": "<timestamp>",
 //     "evaluatedBy": "user-3"
 //   }
