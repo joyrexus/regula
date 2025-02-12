@@ -68,7 +68,7 @@ Data test expressions evaluate incoming data from a specified `path` in the inpu
 
 ## Example Usage
 
-> See [`./examples/index.ts`](https://github.com/joyrexus/regula/blob/main/examples/index.ts), which can be run with `npm start` for a quick demonstration.
+The following example demonstrates how to define a simple ruleset for checking premium membership eligibility based on a user's age and subscription status. The ruleset contains a parent rule with two subrules that evaluate the user's subscription status and age. The overall result is returned based on the satisfaction of both subrules.
 
 ```ts
 import { Regula, Ruleset, EvaluationInput } from "../src";
@@ -130,6 +130,10 @@ const input: EvaluationInput = {
 // Evaluate the input object and get the overall result.
 let result = evaluation.evaluate(input); // User is not eligible
 ```
+
+For a quick demonstration of how Regula handles _successive_ ruleset evaluations, see [`./examples/index.ts`](https://github.com/joyrexus/regula/blob/main/examples/index.ts).
+
+> This example can be run with `npm start`.
 
 ## Utility Methods
 
