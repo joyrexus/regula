@@ -61,15 +61,6 @@ export class Evaluator {
   }
 
   /**
-   * Get a snapshot of the current state of the ruleset's evaluation.
-   * @return The evaluated ruleset.
-   * @see {@link EvaluatedRuleset}
-   */
-  getSnapshot(): EvaluatedRuleset {
-    return structuredClone(this.ruleset);
-  }
-
-  /**
    * Get the data sources used in the ruleset.
    * @returns An array of data sources.
    * @see {@link Regula.getDataSources}
@@ -111,6 +102,20 @@ export class Evaluator {
    */
   getRuleNames(): string[] {
     return Object.keys(this.rulePaths);
+  }
+
+  /**
+   * Get an array of all deactivated rules in the ruleset.
+   */
+  getDeactivatedRules(): Rule[] {
+    let deactivatedRules: Rule[] = [];
+    for (const ruleName of this.getRuleNames()) {
+      const rule = this.getRule(ruleName);
+      if (rule.deactivated) {
+        deactivatedRules.push(rule);
+      }
+    }
+    return deactivatedRules;
   }
 
   /**

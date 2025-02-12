@@ -143,11 +143,12 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.getSnapshot()`: get a snapshot of the current evaluation state
 - `evaluation.getCount()`: get the number of evaluations performed
 - `evaluation.getDataSources()`: get the data sources used in the ruleset
+- `evaluation.getDeactivatedRules()`: get an array of all deactivated rules
 - `evaluation.getRuleNames()`: get an array of all rule names in the ruleset
 - `evaluation.getRule("Check Age")`: get a rule by name
 - `evaluation.getResult("Check Age")`: get the result of a specific rule
 - `evaluation.getResult()`: get the overall result
-- `evaluation.getResults()`: get the results of all rules
+- `evaluation.getResults()`: get the results of all rules (mapping of rule name to result)
 - `evaluation.getLastEvaluation()`: get the last top-level evaluation of the ruleset
 - `evaluation.getLastEvaluation("Check Age")`: get the last evaluation of a specific rule
 - `evaluation.deactivate()`: deactivate the ruleset
