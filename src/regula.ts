@@ -154,6 +154,11 @@ export class Regula {
       names.add(rule.name);
     }
     if ("path" in rule) {
+      if (rule.includesAny && !Array.isArray(rule.includesAny)) {
+        throw new ValidationError(
+          `Invalid type for 'includesAny' in rule at ${path}: ${rule.includesAny}`
+        );
+      }
       if (rule.afterDate && !Regula.isISO8601(rule.afterDate)) {
         throw new ValidationError(
           `Invalid date format for 'afterDate' in rule at ${path}: ${rule.afterDate}`
@@ -347,6 +352,11 @@ export class Regula {
           value <= rule.between[1];
       } else if (rule.includes !== undefined) {
         result = Array.isArray(value) && value.includes(rule.includes);
+      } else if (rule.includesAny !== undefined) {
+        result =
+          Array.isArray(value) &&
+          Array.isArray(rule.includesAny) &&
+          rule.includesAny.some((x) => value.includes(x));
       } else if (rule.matches !== undefined) {
         result =
           typeof value === "string" && new RegExp(rule.matches).test(value);

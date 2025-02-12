@@ -12,14 +12,15 @@ export interface BooleanExpression {
 }
 
 export interface DataTestExpression {
-  path: string;
+  path: string; // a JMESPath to a value in the input data
   dataSource?: DataSource;
   equals?: string | number | boolean;
   equalsOneOf?: (string | number)[];
   greaterThan?: number | string;
   lessThan?: number | string;
   between?: [number, number];
-  includes?: string | number; // Check if value is included in a list (where the path is an array)
+  includes?: string | number; // Check if specified value is included in a list (if input `path` references an array)
+  includesAny?: (string | number)[]; // Check if any of the specifed values are included in a list (if input `path` references an array)
   matches?: string; // Regular expression
   isNull?: boolean;
   isPresent?: boolean;

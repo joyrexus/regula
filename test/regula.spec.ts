@@ -330,6 +330,44 @@ describe("Regula.evaluate", () => {
     );
   });
 
+  it("evaluates a data test expression with an includesAny condition correctly", () => {
+    const ruleset: Ruleset = {
+      name: "IncludesAny Expression Test",
+      rules: [
+        {
+          name: "Check roles",
+          path: "user.roles",
+          includesAny: ["admin", "moderator"],
+          result: "User has admin or moderator role",
+        },
+      ],
+      default: "User does not have required roles",
+    };
+
+    const eval1Input: EvaluationInput = {
+      context: {
+        dataSource: {
+          type: "sync",
+          name: "UserDB",
+          description: "User Database",
+        },
+        entityId: "entity-005",
+        timestamp: now,
+        userId: "user123",
+      },
+      data: {
+        user: {
+          roles: ["admin", "user"],
+        },
+      },
+    };
+
+    let evaluated = Regula.evaluate(ruleset, eval1Input);
+    expect(evaluated.lastEvaluation?.result).toBe(
+      "User has admin or moderator role"
+    );
+  });
+
   it("evaluates a NOT boolean expression correctly", () => {
     const ruleset: Ruleset = {
       name: "NOT Expression Test",

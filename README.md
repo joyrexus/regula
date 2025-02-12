@@ -56,6 +56,7 @@ Data test expressions evaluate incoming data from a specified `path` and, option
 | `lessThan`     | Checks if the value is less than a specified number or string.    | `"lessThan": 20`                                                   |
 | `between`      | Checks if the value is within an inclusive numeric range.         | `"between": [10, 50]`                                              |
 | `includes`     | Checks if a list contains a specified value.                      | `"includes": "admin"`                                              |
+| `includesAny`  | Checks if a list contains any of the specified values.            | `"includesAny": ["admin", "owner"]`                                |
 | `matches`      | Validates a string against a regular expression.                  | `"matches": "^[A-Z]{3}-\\d{4}$"`                                   |
 | `isNull`       | Checks if the value is `null`.                                    | `"isNull": true`                                                   |
 | `isPresent`    | Checks if the value is present (not `null` or `undefined`).       | `"isPresent": true`                                                |
@@ -156,4 +157,4 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })`: deactivate a specific rule with a reason
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
-- `evaluation.toString()`: convert the ruleset to string
+- `evaluation.toString()`: convert the ruleset to JSON string

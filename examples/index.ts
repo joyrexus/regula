@@ -200,5 +200,5 @@ See also the following utility methods:
 - evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })
 - evaluation.activateRule("Check Age") // activate a specific rule
 - evaluation.activate() // activate the ruleset (if deactivated)
-- evaluation.toString() // convert the ruleset to string
+- evaluation.toString() // convert the ruleset to a JSON string
 */
