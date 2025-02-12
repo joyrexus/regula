@@ -153,7 +153,7 @@ console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
 
 pprint(evaluation.getLastEvaluation());
 // {
-//   input: input3,
+//   input: <input3>,
 //   result: "User is not eligible",   // because the AND expression is not fully satisfied
 //                                     // "Check Age" uses its stored result (true),
 //                                     // "Check Subscription" now returns false.
@@ -167,6 +167,20 @@ pprint(evaluation.getResults());
 //   "Check Subscription": false,
 //   "Check Age": "Age OK",
 //   "Premium Membership Eligibility": "User is not eligible"
+// }
+
+pprint(evaluation.getSnapshot());
+// {
+//   "name": "Premium Membership Eligibility",
+//   "description": "User qualifies for ...",
+//   "rules": [ ... ],
+//   "default": "User is not eligible",
+//   "lastEvaluation": {
+//     "input": <input3>,
+//     "result": "User is not eligible",
+//     "evaluatedAt": "<timestamp>",
+//     "evaluatedBy": "user-3"
+//   }
 // }
 
 /*
@@ -187,5 +201,4 @@ See also the following utility methods:
 - evaluation.activateRule("Check Age") // activate a specific rule
 - evaluation.activate() // activate the ruleset (if deactivated)
 - evaluation.toString() // convert the ruleset to string
-- evaluation.ruleset // get the ruleset object
 */
