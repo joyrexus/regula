@@ -10,10 +10,6 @@ At its core, Regula serves as both a ruleset manager and an evaluator, enabling 
 
 By maintaining evaluation state and supporting incremental updates, Regula provides a flexible and reliable framework for compliance monitoring, decision automation, and policy enforcement when dealing with long-running business processes operating in event-driven environments.
 
-## Example Usage
-
-See [`./examples/index.ts`](https://github.com/joyrexus/regula/blob/main/examples/index.ts), which can be run with `npm start` for a quick demonstration.
-
 ## Key Features
 
 - **JSON-Based Rulesets** – Define rules in a structured JSON format, allowing for clear and flexible rule definitions.
@@ -69,4 +65,95 @@ Data test expressions evaluate incoming data from a specified `path` and, option
 
 ---
 
-This structure allows Regula to dynamically evaluate compliance conditions in event-driven systems.
+## Example Usage
+
+> See [`./examples/index.ts`](https://github.com/joyrexus/regula/blob/main/examples/index.ts), which can be run with `npm start` for a quick demonstration.
+
+```ts
+import { Regula, Ruleset, EvaluationInput } from "../src";
+
+// Define a sample ruleset for a premium membership eligibility check.
+const ruleset: Ruleset = {
+  name: "Premium Membership Eligibility",
+  description:
+    "User qualifies for premium membership if they are older than 18 and have an active subscription.",
+  rules: [
+    {
+      // Parent rule: an AND boolean expression that aggregates two conditions.
+      name: "Eligibility Check",
+      and: [
+        {
+          // Subrule 1: Check that the user has an active subscription.
+          name: "Check Subscription",
+          path: "user.subscription.active",
+          equals: true,
+          result: "Subscription OK",
+          dataSource: { type: "async", name: "SubscriptionService" },
+        },
+        {
+          // Subrule 2: Check that the user's age is greater than 18.
+          name: "Check Age",
+          path: "user.age",
+          greaterThan: 18,
+          result: "Age OK",
+          dataSource: { type: "sync", name: "UserDB" },
+        },
+      ],
+      // Overall result returned if both subrules are satisfied.
+      result: "User is eligible for premium membership",
+    },
+  ],
+  // Default result returned if the AND expression is not fully satisfied.
+  default: "User is not eligible",
+};
+
+// Initialize a new Evaluator instance with the ruleset.
+const evaluation = Regula.evaluator(ruleset);
+
+// Define an input object for the first evaluation.
+const input: EvaluationInput = {
+  context: {
+    dataSource: { type: "sync", name: "UserDB" },
+    entityId: "transaction-123",
+    timestamp: new Date().toISOString(),
+    userId: "user-1",
+  },
+  data: {
+    user: {
+      age: 20,
+      // No subscription info provided.
+    },
+  },
+};
+
+// Evaluate the input object and get the overall result.
+let result = evaluation.evaluate(input); // User is not eligible
+```
+
+## Utility Methods
+
+The `Regula` class provides the following static methods:
+
+- `Regula.validate(ruleset)`: validate a ruleset
+- `Regula.evaluator(ruleset)`: create an evaluator for a ruleset (returns an `Evaluator` instance)
+- `Regula.evaluate(ruleset, input)`: evaluate an input object against a ruleset
+
+The `Evaluator` class provides the following utility methods:
+
+- `evaluation.getSnapshot()`: get a snapshot of the current evaluation state
+- `evaluation.getCount()`: get the number of evaluations performed
+- `evaluation.getDataSources()`: get the data sources used in the ruleset
+- `evaluation.getRuleNames()`: get an array of all rule names in the ruleset
+- `evaluation.getRule("Check Age")`: get a rule by name
+- `evaluation.getResult("Check Age")`: get the result of a specific rule
+- `evaluation.getResult()`: get the overall result
+- `evaluation.getResults()`: get the results of all rules
+- `evaluation.getLastEvaluation()`: get the last top-level evaluation of the ruleset
+- `evaluation.getLastEvaluation("Check Age")`: get the last evaluation of a specific rule
+- `evaluation.deactivate()`: deactivate the ruleset
+- `evaluation.deactivate({ reason: "Testing", updatedBy: "user-1" })`: deactivate the ruleset with a reason
+- `evaluation.deactivateRule("Check Age")`: deactivate a specific rule
+- `evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })`: deactivate a specific rule with a reason
+- `evaluation.activateRule("Check Age")`: activate a specific rule
+- `evaluation.activate()`: activate the ruleset (if deactivated)
+- `evaluation.toString()`: convert the ruleset to string
