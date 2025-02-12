@@ -1,5 +1,4 @@
-import { Regula } from "../src";
-import { Ruleset, EvaluationInput } from "../src/types";
+import { Regula, Ruleset, EvaluationInput } from "../src";
 
 const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
 
@@ -34,11 +33,11 @@ const ruleset: Ruleset = {
       result: "User is eligible for premium membership",
     },
   ],
+  // Default result returned if the AND expression is not fully satisfied.
   default: "User is not eligible",
 };
 
 // Initialize a new Evaluator instance with the ruleset.
-// const evaluation = new Evaluator(ruleset);
 const evaluation = Regula.evaluator(ruleset);
 
 // ...... EVALUATION 1 ......
