@@ -61,6 +61,15 @@ export class Evaluator {
   }
 
   /**
+   * Get a snapshot of the current state of the ruleset's evaluation.
+   * @return The evaluated ruleset.
+   * @see {@link EvaluatedRuleset}
+   */
+  getSnapshot(): EvaluatedRuleset {
+    return structuredClone(this.ruleset);
+  }
+
+  /**
    * Get the data sources used in the ruleset.
    * @returns An array of data sources.
    * @see {@link Regula.getDataSources}

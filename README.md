@@ -158,4 +158,4 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })`: deactivate a specific rule with a reason
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
-- `evaluation.toString()`: convert the ruleset to JSON string
+- `evaluation.toString()`: convert the ruleset to a JSON string
