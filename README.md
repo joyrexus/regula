@@ -12,6 +12,7 @@ By maintaining evaluation state, supporting incremental updates, and tracking da
 
 <details><summary><i>What makes Regula unique as a rules engine?</i></summary>
 <p>
+
 Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the <b>current state</b> of those rules. Instead of one-off evaluations returning a boolean result, Regula allows you to track the <b>evolution</b> of your ruleset evaluations over time, providing a comprehensive audit trail for compliance monitoring and decision automation.
 
 Regula is particularly useful in cases where you need to ...
