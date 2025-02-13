@@ -13,6 +13,15 @@ By maintaining evaluation state, supporting incremental updates, and tracking da
 <details><summary><i>What makes Regula unique as a rules engine?</i></summary>
 <p>
 Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the <b>current state</b> of those rules. Instead of one-off evaluations returning a boolean result, Regula allows you to track the <b>evolution</b> of your ruleset evaluations over time, providing a comprehensive audit trail for compliance monitoring and decision automation.
+
+Regula is particularly useful in cases where you need to ...
+
+<ul>
+  <li>Trigger evaluations based on asynchronous events (e.g., Kafka topics) or synchronous API calls.</li>
+  <li>Generate a snapshot of your ruleset's state on every evaluation to track compliance progress and data provenance.</li>
+  <li>Maintain a history of your ruleset's evaluations, enabling full auditability.</li>
+  <li>Utilize complex decision logic within your workflow platform.</li>
+</ul> 
 </p>
 </details>
 
@@ -27,13 +36,6 @@ Regula goes beyond simply defining the conditions and constraints of a ruleset�
 - **Successive Evaluations** – Support iterative evaluations where new data can update an existing ruleset evaluation instead of starting from scratch.
 - **Introspection** – Easily inspect the current state of a ruleset evaluation, including rule results, evaluation counts, and data sources.
 - **Scalability & Extensibility** – Designed to integrate into distributed, event-driven systems with minimal overhead.
-
-Regula is particularly useful in cases where you need to ...
-
-- Trigger evaluations based on asynchronous events (e.g., Kafka topics) or synchronous API calls.
-- Generate a snapshot of your ruleset's state on every evaluation to track compliance progress and data provenance.
-- Maintain a history of your ruleset's evaluations, enabling full auditability.
-- Utilize complex decision logic within your workflow platform.
 
 ## Supported Expressions
 
