@@ -169,4 +169,4 @@ The `Evaluator` class provides the following utility methods:
 
 ---
 
-Regula is unique in that it can provide not just a coherent representation of the conditions and constraints governing a user's workflows, but a representation of the current state of those rules.
+Regula goes beyond simply defining the conditions and constraints that govern workflows—it provides a dynamic representation of the **current state** of those rules.
