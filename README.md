@@ -126,8 +126,8 @@ const evaluation = Regula.evaluator(ruleset);
 const input: EvaluationInput = {
   context: {
     dataSource: { type: "sync", name: "UserDB" },
-    entityId: "transaction-123",
     timestamp: new Date().toISOString(),
+    entityId: "user-profile-123",
     userId: "user-1",
   },
   data: {
