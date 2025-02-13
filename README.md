@@ -1,7 +1,5 @@
 # Regula
 
-As organizations face increasing pressure to improve efficiency while maintaining control, the ability to combine sophisticated decision logic with modern workflow platforms is essential.
-
 Regula is a rules engine library specifically designed for compliance tracking within long-running business processes. It provides a structured specification for defining JSON-based rulesets whose evaluations evolve over time based on input from various data sources.
 
 At its core, Regula serves as both a ruleset manager and an evaluator, enabling users to:
@@ -33,8 +31,9 @@ Regula goes beyond simply defining the conditions and constraints of a rulesetâ€
 Regula is particularly useful in cases where you need to ...
 
 - Trigger evaluations based on asynchronous events (e.g., Kafka topics) or synchronous API calls.
-- Generate a snapshot of your rulesetâ€™s state on every evaluation to track compliance progress and data provenance.
+- Generate a snapshot of your ruleset's state on every evaluation to track compliance progress and data provenance.
 - Maintain a history of your ruleset's evaluations, enabling full auditability.
+- Utilize complex decision logic within your workflow platform.
 
 ## Supported Expressions
 
