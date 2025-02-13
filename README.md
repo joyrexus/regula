@@ -8,7 +8,7 @@ At its core, Regula serves as both a ruleset manager and an evaluator, enabling 
 - Perform successive evaluations that update the ruleset evaluation state dynamically.
 - Evaluate sub-rules independently and aggregate results into a comprehensive snapshot.
 
-By maintaining evaluation state and supporting incremental updates, Regula provides a flexible and reliable framework for compliance monitoring, decision automation, and policy enforcement when dealing with long-running business processes operating in event-driven environments.
+By maintaining evaluation state, supporting incremental updates, and tracking data provenance, Regula provides a flexible and reliable framework for compliance monitoring, decision automation, and policy enforcement.
 
 ## Key Features
 
@@ -22,8 +22,8 @@ By maintaining evaluation state and supporting incremental updates, Regula provi
 Regula is particularly useful in cases where you need to ...
 
 - Trigger evaluations based on asynchronous events (e.g., Kafka topics) or synchronous API calls.
-- Generate a snapshot of a ruleset’s state on every evaluation to track compliance progress.
-- Maintain a history of a ruleset's evaluations, enabling full auditability.
+- Generate a snapshot of your ruleset’s state on every evaluation to track compliance progress and data provenance.
+- Maintain a history of your ruleset's evaluations, enabling full auditability.
 
 ## Supported Expressions
 
@@ -153,13 +153,13 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.getRule("Check Age")`: get a rule by name
 - `evaluation.getResult("Check Age")`: get the result of a specific rule
 - `evaluation.getResult()`: get the overall result
-- `evaluation.getResults()`: get the results of all rules (mapping of rule name to result)
+- `evaluation.getResults()`: get the results of all rules (`[key: RuleName]: result`)
 - `evaluation.getLastEvaluation()`: get the last top-level evaluation of the ruleset
 - `evaluation.getLastEvaluation("Check Age")`: get the last evaluation of a specific rule
 - `evaluation.deactivate()`: deactivate the ruleset
-- `evaluation.deactivate({ reason: "Testing", updatedBy: "user-1" })`: deactivate the ruleset with a reason
+- `evaluation.deactivate({ reason: "Done", updatedBy: "user-1" })`: deactivate the ruleset with a reason
 - `evaluation.deactivateRule("Check Age")`: deactivate a specific rule
-- `evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" })`: deactivate a specific rule with a reason
+- `evaluation.deactivateRule("Check Age", { reason: "Parent approved", updatedBy: "user-1" })`: deactivate a specific rule with a reason
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
 - `evaluation.toString()`: convert the ruleset to a JSON string
