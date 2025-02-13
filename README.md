@@ -12,9 +12,9 @@ At its core, Regula serves as both a ruleset manager and an evaluator, enabling 
 
 By maintaining evaluation state, supporting incremental updates, and tracking data provenance, Regula provides a flexible and reliable framework for compliance monitoring, decision automation, and policy enforcement.
 
-<details><summary>*What makes Regula unique as a rules engine?*</summary>
+<details><summary>What makes Regula unique as a rules engine?</summary>
 <p>
-Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the **current state** of those rules. Instead of one-off evaluations returning a boolean result, Regula allows you to track the **evolution** of your ruleset evaluations over time, providing a comprehensive audit trail for compliance monitoring and decision automation.
+Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the <b>current state</b> of those rules. Instead of one-off evaluations returning a boolean result, Regula allows you to track the <b>evolution</b> of your ruleset evaluations over time, providing a comprehensive audit trail for compliance monitoring and decision automation.
 </p>
 </details>
 
