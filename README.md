@@ -1,5 +1,7 @@
 # Regula
 
+As organizations face increasing pressure to improve efficiency while maintaining control, the ability to combine sophisticated decision logic with modern workflow platforms is essential.
+
 Regula is a rules engine library specifically designed for compliance tracking within long-running business processes. It provides a structured specification for defining JSON-based rulesets whose evaluations evolve over time based on input from various data sources.
 
 At its core, Regula serves as both a ruleset manager and an evaluator, enabling users to:
@@ -9,6 +11,12 @@ At its core, Regula serves as both a ruleset manager and an evaluator, enabling 
 - Evaluate sub-rules independently and aggregate results into a comprehensive snapshot.
 
 By maintaining evaluation state, supporting incremental updates, and tracking data provenance, Regula provides a flexible and reliable framework for compliance monitoring, decision automation, and policy enforcement.
+
+<details><summary>*What makes Regula unique as a rules engine?*</summary>
+<p>
+Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the **current state** of those rules. Instead of one-off evaluations returning a boolean result, Regula allows you to track the **evolution** of your ruleset evaluations over time, providing a comprehensive audit trail for compliance monitoring and decision automation.
+</p>
+</details>
 
 ## Key Features
 
@@ -166,7 +174,3 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
 - `evaluation.toString()`: convert the ruleset to a JSON string
-
----
-
-Regula goes beyond simply defining the conditions and constraints of a ruleset—it provides a dynamic representation of the **current state** of those rules.
