@@ -15,8 +15,9 @@ By maintaining evaluation state, supporting incremental updates, and tracking da
 - **JSON-Based Rulesets** – Define rules in a structured JSON format, allowing for clear and flexible rule definitions.
 - **Mutable Evaluations** – Track rule compliance over time by updating evaluation states dynamically.
 - **Incremental Rule Processing** – Independently evaluate sub-rules based on incoming data and aggregate results into an overall compliance state.
-- **Data Source Matching** – Automatically determine relevant evaluation records by matching incoming data to a rule's `dataSource`.
+- **Data Source Matching** – Automatically determine relevant rules for evaluation by matching incoming data to a rule's `dataSource`.
 - **Successive Evaluations** – Support iterative evaluations where new data can update an existing ruleset evaluation instead of starting from scratch.
+- **Introspection** – Inspect the state of a ruleset's evaluation with powerful introspection utility methods.
 - **Scalability & Extensibility** – Designed to integrate into distributed, event-driven systems with minimal overhead.
 
 Regula is particularly useful in cases where you need to ...
