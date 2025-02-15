@@ -1,4 +1,4 @@
-import { Regula, Ruleset, EvaluationInput } from "../src";
+import { Regula, Ruleset, EvaluationInput, Evaluation } from "../src";
 
 const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
 
@@ -31,6 +31,7 @@ const ruleset: Ruleset = {
       ],
       // Overall result returned if both subrules are satisfied.
       result: "User is eligible for premium membership",
+      metaData: { priority: 1, category: "membership" },
     },
   ],
   // Default result returned if the AND expression is not fully satisfied.
@@ -106,6 +107,14 @@ result = evaluation.evaluate(input2);
 
 console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
 // Evaluation 2: User is eligible for premium membership
+
+// We can get metaData from the rule that produced the result.
+const resultRuleName = evaluation.ruleset.lastEvaluation.resultFrom;
+if (resultRuleName) {
+  const resultRule = evaluation.getRule(resultRuleName);
+  console.log(`MetaData from "${resultRuleName}" rule:`);
+  pprint(resultRule.metaData);
+}
 
 pprint(evaluation.getLastEvaluation());
 // {

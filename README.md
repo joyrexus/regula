@@ -18,10 +18,11 @@ Regula goes beyond simply defining the conditions and constraints of a rulesetâ€
 Regula is particularly useful in cases where you need to ...
 
 <ul>
+  <li>Utilize complex decision logic within your workflow platform.</li>
   <li>Trigger evaluations based on asynchronous events (e.g., Kafka topics) or synchronous API calls.</li>
+  <li>Return distinct results, depending on which part of your ruleset first evaluates successfully.</li>
   <li>Generate a snapshot of your ruleset's state on every evaluation to track compliance progress and data provenance.</li>
   <li>Maintain a history of your ruleset's evaluations, enabling full auditability.</li>
-  <li>Utilize complex decision logic within your workflow platform.</li>
 </ul> 
 </p>
 </details>
