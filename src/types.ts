@@ -8,7 +8,6 @@ export interface BooleanExpression {
   and?: Rule[];
   or?: Rule[];
   not?: Rule;
-  result?: string;
 }
 
 export interface DataTestExpression {
@@ -27,16 +26,9 @@ export interface DataTestExpression {
   afterDate?: string; // ISO 8601 Date Time stamp
   beforeDate?: string; // ISO 8601 Date Time stamp
   betweenDates?: [string, string]; // ISO 8601 Date Time stamps
-  result?: string;
 }
 
 type RuleExpression = BooleanExpression | DataTestExpression;
-
-export interface RuleEvaluation {
-  result: RuleResult;
-  updatedAt: string;
-  updatedBy?: string;
-}
 
 export type Rule = RuleExpression & {
   name: string;
@@ -48,11 +40,18 @@ export type Rule = RuleExpression & {
         updatedBy?: string;
         updatedAt: string;
       };
+  result?: string;
   lastEvaluation?: RuleEvaluation;
   metaData?: {
     [key: string]: any;
   };
 };
+
+export interface RuleEvaluation {
+  result: RuleResult;
+  updatedAt: string;
+  updatedBy?: string;
+}
 
 export type Ruleset = {
   name: string;
