@@ -14,6 +14,9 @@ import { ValidationError, EvaluationError } from "./errors";
  * The Regula class provides static methods for evaluating rulesets.
  */
 export class Regula {
+  private static readonly ISO8601_REGEX =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+
   /**
    * Create and return an instance of Evaluator.
    * @param ruleset The ruleset to evaluate.
@@ -100,8 +103,7 @@ export class Regula {
    * Regula.isISO8601("2021-09-01T12:34:56"); // false
    */
   static isISO8601(dateString: string): boolean {
-    const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
-    return iso8601Regex.test(dateString);
+    return Regula.ISO8601_REGEX.test(dateString);
   }
 
   /**
@@ -220,11 +222,7 @@ export class Regula {
     for (const rule of ruleset.rules) {
       if (rule.deactivated) continue;
       // If the top-level rule has a dataSource, it must match the input.
-      if (
-        "dataSource" in rule &&
-        (rule.dataSource.name !== dataSource.name ||
-          rule.dataSource.type !== dataSource.type)
-      ) {
+      if (this.isMatchingDataSource(rule, dataSource)) {
         continue;
       }
       if (rule.lastEvaluation && rule.lastEvaluation.result) {
@@ -247,6 +245,23 @@ export class Regula {
         evaluatedBy: userId,
       },
     };
+  }
+
+  /**
+   * Checks if a rule has a matching data source.
+   * @param rule The rule to check.
+   * @param dataSource The data source to check against.
+   * @returns True if the rule has a matching data source, false otherwise.
+   */
+  private static isMatchingDataSource(
+    rule: Rule,
+    dataSource: DataSource
+  ): boolean {
+    return (
+      "dataSource" in rule &&
+      (rule.dataSource.name !== dataSource.name ||
+        rule.dataSource.type !== dataSource.type)
+    );
   }
 
   /**
@@ -274,10 +289,7 @@ export class Regula {
 
     // Check rule's dataSource if specified.
     if ("dataSource" in rule) {
-      if (
-        rule.dataSource.name !== dataSource.name ||
-        rule.dataSource.type !== dataSource.type
-      ) {
+      if (this.isMatchingDataSource(rule, dataSource)) {
         return; // Skip evaluation if data source doesn't match.
       }
       if (
