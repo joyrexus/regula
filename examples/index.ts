@@ -31,7 +31,7 @@ const ruleset: Ruleset = {
       ],
       // Overall result returned if both subrules are satisfied.
       result: "User is eligible for premium membership",
-      metaData: { priority: 1, category: "membership" },
+      meta: { priority: 1, category: "membership" },
     },
   ],
   // Default result returned if the AND expression is not fully satisfied.

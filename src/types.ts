@@ -42,7 +42,7 @@ export type Rule = RuleExpression & {
       };
   result?: string;
   lastEvaluation?: RuleEvaluation;
-  metaData?: {
+  meta?: {
     [key: string]: any;
   };
 };
@@ -59,7 +59,7 @@ export type Ruleset = {
   rules: Rule[];
   default?: string;
   version?: string;
-  metaData?: {
+  meta?: {
     [key: string]: any;
   };
 };
