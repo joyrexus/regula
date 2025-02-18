@@ -69,16 +69,18 @@ pprint(evaluation.getLastEvaluation());
 // {
 //   input: "<input1>",
 //   result: "User is not eligible",   // default result since the AND expression is not fully satisfied
-//   resultFrom: null,                 // no top-level rule produced the result
+//   resultFrom: "default",            // no top-level rule produced the result
 //   evaluatedAt: "<timestamp>",
 //   evaluatedBy: "user-1"
 // }
 
 pprint(evaluation.getResults());
 // {
-//   "Eligibility Check": false,
-//   "Check Age": "Age OK",
-//   "Premium Membership Eligibility": "User is not eligible"
+//   "result": "User is not eligible",
+//   "resultFrom": "default",
+//   "rules": {
+//     "Eligibility Check": false
+//   }
 // }
 
 // ...... EVALUATION 2 ......
@@ -108,14 +110,6 @@ result = evaluation.evaluate(input2);
 console.log(`\n\nEvaluation ${evaluation.getCount()}: ${result}\n`);
 // Evaluation 2: User is eligible for premium membership
 
-// We can get metaData from the rule that produced the result.
-const resultRuleName = evaluation.ruleset.lastEvaluation.resultFrom;
-if (resultRuleName) {
-  const resultRule = evaluation.getRule(resultRuleName);
-  console.log(`MetaData from "${resultRuleName}" rule:`);
-  pprint(resultRule.metaData);
-}
-
 pprint(evaluation.getLastEvaluation());
 // {
 //   input: "<input2>",
@@ -129,10 +123,11 @@ pprint(evaluation.getLastEvaluation());
 
 pprint(evaluation.getResults());
 // {
-//   "Eligibility Check": "User is eligible for premium membership",
-//   "Check Subscription": "Subscription OK",
-//   "Check Age": "Age OK",
-//   "Premium Membership Eligibility": "User is eligible for premium membership"
+//   "result": "User is eligible for premium membership",
+//   "resultFrom": "Eligibility Check",
+//   "rules": {
+//     "Eligibility Check": "User is eligible for premium membership"
+//   }
 // }
 
 // ...... EVALUATION 3 ......
@@ -169,17 +164,18 @@ pprint(evaluation.getLastEvaluation());
 //                                     // because the AND expression is no longer fully satisfied
 //                                     // "Check Age" uses its stored result (true),
 //                                     // "Check Subscription" now returns false.
-//   resultFrom: null,
+//   resultFrom: "default",
 //   evaluatedAt: "<timestamp>",
 //   evaluatedBy: "user-3"
 // }
 
 pprint(evaluation.getResults());
 // {
-//   "Eligibility Check": false,
-//   "Check Subscription": false,
-//   "Check Age": "Age OK",
-//   "Premium Membership Eligibility": "User is not eligible"
+//   "result": "User is not eligible",
+//   "resultFrom": "default",
+//   "rules": {
+//     "Eligibility Check": false
+//   }
 // }
 
 pprint(evaluation.getSnapshot());
@@ -205,7 +201,7 @@ pprint(evaluation.getSnapshot());
 // evaluation.getRule("Check Age"); // get a rule by name
 // evaluation.getResult("Check Age"); // get the result of a specific rule
 // evaluation.getResult(); // get the overall result
-// evaluation.getResults(); // get the results of all rules
+// evaluation.getResults(); // get the overall result and results of all top-level rules
 // evaluation.getLastEvaluation(); // get the last top-level evaluation of the ruleset
 // evaluation.getLastEvaluation("Check Age"); // get the last evaluation of a specific rule
 // evaluation.deactivate(); // deactivate the ruleset

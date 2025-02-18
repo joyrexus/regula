@@ -67,7 +67,12 @@ export type Ruleset = {
 export type RuleResult = string | boolean;
 
 export interface RuleResults {
-  [ruleName: string]: RuleResult;
+  result: RuleResult; // overall result of the ruleset
+  resultFrom: string; // name of the rule that produced the result
+  rules: {
+    // map of top-level rule names to their results
+    [name: string]: RuleResult;
+  };
 }
 
 export interface EvaluationInput {

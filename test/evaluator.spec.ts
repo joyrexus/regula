@@ -75,4 +75,48 @@ describe("Evaluator", () => {
   });
 });
 
-describe("Evaluator activation and deactivation", () => {});
+describe("Evaluator.getLastResults", () => {
+  let ruleset: Ruleset;
+  let evaluator: Evaluator;
+
+  beforeEach(() => {
+    ruleset = {
+      name: "Test Ruleset",
+      default: "REJECTED",
+      rules: [
+        {
+          name: "Valid User Check",
+          and: [
+            { name: "SubRule1", path: "user.active", equals: true },
+            { name: "SubRule2", path: "user.verified", equals: true },
+          ],
+          result: "APPROVED",
+        },
+      ],
+    };
+    evaluator = new Evaluator(ruleset);
+  });
+
+  it("should return the last evaluation correctly", () => {
+    const input: EvaluationInput = {
+      context: {
+        dataSource: { type: "sync", name: "UserData" },
+        timestamp: new Date().toISOString(),
+        entityId: "xxx",
+        userId: "yyy",
+      },
+      data: { user: { age: 25, active: true, verified: false } },
+    };
+
+    evaluator.evaluate(input);
+    const lastEvaluation = evaluator.getLastEvaluation();
+    expect(lastEvaluation).toBeDefined();
+    expect(lastEvaluation).toEqual({
+      evaluatedAt: expect.any(String),
+      evaluatedBy: "yyy",
+      input: input,
+      result: "REJECTED",
+      resultFrom: "default",
+    });
+  });
+});

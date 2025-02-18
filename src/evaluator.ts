@@ -160,16 +160,18 @@ export class Evaluator {
   }
 
   /**
-   * Get the results of all rules in the ruleset.
-   * @returns A mapping of rule names to their evaluation results.
-   * @see {@link Evaluator.getResult}
+   * Get the evaluation results.
+   * @returns The overall result and results of all top-level rules.
    */
   getResults(): RuleResults {
-    let results = {};
-    for (const ruleName of this.getRuleNames()) {
-      results[ruleName] = this.getResult(ruleName);
-    }
-    results[this.ruleset.name] = this.getResult();
+    const results: RuleResults = {
+      result: this.ruleset.lastEvaluation?.result,
+      resultFrom: this.ruleset.lastEvaluation?.resultFrom,
+      rules: this.ruleset.rules.reduce((acc, rule) => {
+        acc[rule.name] = rule.lastEvaluation?.result;
+        return acc;
+      }, {}),
+    };
     return results;
   }
 
