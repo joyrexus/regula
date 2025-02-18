@@ -123,11 +123,7 @@ pprint(evaluation.getLastEvaluation());
 
 pprint(evaluation.getResults());
 // {
-//   "result": "User is eligible for premium membership",
-//   "resultFrom": "Eligibility Check",
-//   "rules": {
-//     "Eligibility Check": "User is eligible for premium membership"
-//   }
+//    "Eligibility Check": "User is eligible for premium membership"
 // }
 
 // ...... EVALUATION 3 ......
@@ -171,11 +167,7 @@ pprint(evaluation.getLastEvaluation());
 
 pprint(evaluation.getResults());
 // {
-//   "result": "User is not eligible",
-//   "resultFrom": "default",
-//   "rules": {
-//     "Eligibility Check": false
-//   }
+//   "Eligibility Check": false
 // }
 
 pprint(evaluation.getSnapshot());
@@ -201,7 +193,7 @@ pprint(evaluation.getSnapshot());
 // evaluation.getRule("Check Age"); // get a rule by name
 // evaluation.getResult("Check Age"); // get the result of a specific rule
 // evaluation.getResult(); // get the overall result
-// evaluation.getResults(); // get the overall result and results of all top-level rules
+// evaluation.getResults(); // get the results of all top-level rules
 // evaluation.getLastEvaluation(); // get the last top-level evaluation of the ruleset
 // evaluation.getLastEvaluation("Check Age"); // get the last evaluation of a specific rule
 // evaluation.deactivate(); // deactivate the ruleset
