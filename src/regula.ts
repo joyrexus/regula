@@ -142,18 +142,21 @@ export class Regula {
     path: string = "root",
     names: Set<string> = new Set()
   ): void {
-    if (!("path" in rule || rule.and || rule.or || rule.not)) {
+    if (names.has(rule.name)) {
       throw new ValidationError(
-        `Invalid rule at ${path}: A rule must have a path, and/or, or, or not condition.`
+        `Duplicate rule name found at ${path}: '${rule.name}' already exists.`
       );
     }
-    if (rule.name) {
-      if (names.has(rule.name)) {
-        throw new ValidationError(
-          `Duplicate rule name found at ${path}: '${rule.name}' already exists.`
-        );
-      }
-      names.add(rule.name);
+    names.add(rule.name);
+    if (rule.name == "default") {
+      throw new ValidationError(
+        `Invalid rule name at ${path}: 'default' is a reserved name.`
+      );
+    }
+    if (!("path" in rule || rule.and || rule.or || rule.not)) {
+      throw new ValidationError(
+        `Invalid rule at ${path}: A rule must have a path, and/or, or not condition.`
+      );
     }
     if ("path" in rule) {
       if (rule.includesAny && !Array.isArray(rule.includesAny)) {
@@ -234,6 +237,7 @@ export class Regula {
     // Fallback to the ruleset default if no rule evaluated truthy.
     if (result === null && ruleset.default) {
       result = ruleset.default;
+      resultFrom = "default";
     }
     return {
       ...ruleset,

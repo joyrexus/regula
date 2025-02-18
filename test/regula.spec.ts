@@ -970,6 +970,25 @@ describe("Regula.validate", () => {
 
     expect(() => Regula.validate(ruleset)).toThrow(/Duplicate rule name/);
   });
+
+  it("should throw error if name of rule is 'default'", () => {
+    const ruleset: Ruleset = {
+      name: "Ruleset with invalid rule name",
+      rules: [
+        {
+          name: "default", // Reserved name
+          path: "user.age",
+          greaterThan: 18,
+          result: "APPROVED",
+        },
+      ],
+      default: "REJECTED",
+    };
+
+    expect(() => Regula.validate(ruleset)).toThrow(
+      /'default' is a reserved name/
+    );
+  });
 });
 
 describe("Regula.validate/evaluate with date-based data test expressions", () => {
