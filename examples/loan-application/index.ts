@@ -1,5 +1,7 @@
-import { Evaluator, Regula, Ruleset } from "../../src";
+import { EvaluationInput, Evaluator, Regula, Ruleset } from "../../src";
+import ruleset from "./ruleset.json";
 
+// Set to true to print detailed evaluation snapshots.
 const VERBOSE = false;
 
 const pprint = (evaluation: Evaluator): void => {
@@ -11,86 +13,27 @@ const pprint = (evaluation: Evaluator): void => {
   console.log(evaluation.getResult());
 };
 
-// Define a sample ruleset for a loan approval workflow.
-const ruleset: Ruleset = {
-  name: "Submitted",
-  description:
-    "Evaluate loan application based on user's credit score, income, and employment status.",
-  rules: [
-    {
-      name: "Disqualifing Factors",
-      or: [
-        {
-          name: "Check Age Disqualifier",
-          path: "user.age",
-          lessThan: 18,
-          dataSource: { type: "sync", name: "user.profile" },
-        },
-        {
-          name: "Check Credit Score Disqualifier",
-          path: "user.creditScore",
-          lessThan: 250,
-          dataSource: { type: "async", name: "credit.check" },
-        },
-        {
-          name: "Check Income Disqualifier",
-          path: "user.income",
-          lessThan: 25000,
-          dataSource: { type: "async", name: "income.check" },
-        },
-        {
-          name: "Check Employment Status Disqualifier",
-          path: "user.isEmployed",
-          equals: false,
-          dataSource: { type: "async", name: "employment.check" },
-        },
-      ],
-      result: "Denied",
-    },
-    {
-      name: "Qualifying Factors",
-      and: [
-        {
-          name: "Check Credit Score Qualifier",
-          path: "user.creditScore",
-          greaterThanEquals: 500,
-        },
-        {
-          name: "Check Income Qualifier",
-          path: "user.income",
-          greaterThanEquals: 50000,
-        },
-        {
-          name: "Check Employment Status Qualifier",
-          path: "user.isEmployed",
-          equals: true,
-        },
-      ],
-      result: "Approved",
-    },
-  ],
-  default: "Pending",
-};
-
 // Initialize a new Evaluator instance with the ruleset.
 const evaluation = Regula.evaluator(ruleset);
 
 evaluation.evaluate({
   context: {
-    dataSource: { type: "sync", name: "user.profile" },
+    dataSource: { type: "sync", name: "applicant.profile" },
     entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
     userId: "XXX",
   },
   data: {
-    user: {
+    applicant: {
       age: 20,
       name: "John Doe",
+      loanAmount: 50000,
     },
   },
 });
 
 pprint(evaluation);
+// Should return "Pending" since the applicant's employment check and credit score results have not been received yet.
 
 evaluation.evaluate({
   context: {
@@ -100,7 +43,7 @@ evaluation.evaluate({
     userId: "YYY",
   },
   data: {
-    user: {
+    applicant: {
       income: 50000,
       isEmployed: true,
     },
@@ -108,22 +51,7 @@ evaluation.evaluate({
 });
 
 pprint(evaluation);
-
-evaluation.evaluate({
-  context: {
-    dataSource: { type: "async", name: "credit.check" },
-    entityId: "XXXXXX",
-    timestamp: new Date().toISOString(),
-    userId: "ZZZ",
-  },
-  data: {
-    user: {
-      creditScore: 475,
-    },
-  },
-});
-
-pprint(evaluation);
+// Should return "Pending" since the applicant's credit score has yet to be received.
 
 evaluation.evaluate({
   context: {
@@ -133,32 +61,65 @@ evaluation.evaluate({
     userId: "ZZZ",
   },
   data: {
-    user: {
+    applicant: {
+      creditScore: 475, // Applicant's credit score is below the threshold for automatic approval.
+    },
+  },
+});
+
+pprint(evaluation);
+// Should return "Pending" since the applicant's credit score is still below the threshold for automatic approval.
+
+evaluation.evaluate({
+  context: {
+    dataSource: { type: "async", name: "credit.update" },
+    entityId: "XXXXXX",
+    timestamp: new Date().toISOString(),
+    userId: "ZZZ",
+  },
+  data: {
+    applicant: {
       creditScore: 525,
     },
   },
 });
 
 pprint(evaluation);
+// Should return "Approved" as the applicant's credit score has been updated to 525.
 
+// Deactivate the evaluation instance.
 evaluation.deactivate({ reason: "Loan approval completed", user: "admin" });
 
+// Now imagine the applicant's credit score has dropped below the qualifying threshold.
+const updatedCreditScore: EvaluationInput = {
+  context: {
+    dataSource: { type: "async", name: "credit.update" },
+    entityId: "XXXXXX",
+    timestamp: new Date().toISOString(),
+    userId: "ZZZ",
+  },
+  data: {
+    applicant: {
+      creditScore: 225, // Applicant's credit score has dropped!
+    },
+  },
+}
+
+// If we try to evaluate the ruleset again, it will throw an error, as the evaluation instance has been deactivated.
 try {
-  evaluation.evaluate({
-    context: {
-      dataSource: { type: "async", name: "credit.update" },
-      entityId: "XXXXXX",
-      timestamp: new Date().toISOString(),
-      userId: "ZZZ",
-    },
-    data: {
-      user: {
-        creditScore: 345, // User's credit score has dropped!
-      },
-    },
-  });
+  evaluation.evaluate(updatedCreditScore);
 } catch (err) {
   console.log(`Ruleset could not be evaluated: ${err.message}`);
 }
 
 pprint(evaluation);
+// Should return "Approved" since the evaluation instance has been deactivated and the last result was "Approved".
+
+// Reactivate the evaluation instance.
+evaluation.activate();
+
+// Now we can evaluate the ruleset again.
+evaluation.evaluate(updatedCreditScore);
+
+pprint(evaluation);
+// Should return "Denied" as the applicant's credit score is now below the qualifying threshold.

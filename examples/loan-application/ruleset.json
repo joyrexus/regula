@@ -1,0 +1,93 @@
+{
+  "name": "Submitted",
+  "description": "Evaluate loan application based on applicant's credit score, income, and employment status.",
+  "rules": [
+    {
+      "name": "Qualifying Factors",
+      "description": "Check if the applicant is approved based on certain criteria.",
+      "and": [
+        {
+          "name": "Check Credit Score Qualifier",
+          "path": "applicant.creditScore",
+          "greaterThanEquals": 500,
+          "dataSource": {
+            "type": "async",
+            "name": "credit.update"
+          }
+        },
+        {
+          "name": "Check Income Qualifier",
+          "path": "applicant.income",
+          "greaterThanEquals": 50000,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        },
+        {
+          "name": "Check Employment Status Qualifier",
+          "path": "applicant.isEmployed",
+          "equals": true,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        },
+        {
+          "name": "Loan Amount Qualifier",
+          "path": "applicant.loanAmount",
+          "lessThanEquals": 100000,
+          "dataSource": {
+            "type": "sync",
+            "name": "applicant.profile"
+          }
+        }
+      ],
+      "result": "Approved"
+    },
+    {
+      "name": "Disqualifing Factors",
+      "description": "Check if the applicant should be denied based on certain criteria.",
+      "or": [
+        {
+          "name": "Check Age Disqualifier",
+          "path": "applicant.age",
+          "lessThan": 18,
+          "dataSource": {
+            "type": "sync",
+            "name": "applicant.profile"
+          }
+        },
+        {
+          "name": "Check Credit Score Disqualifier",
+          "path": "applicant.creditScore",
+          "lessThan": 250,
+          "dataSource": {
+            "type": "async",
+            "name": "credit.update"
+          }
+        },
+        {
+          "name": "Check Income Disqualifier",
+          "path": "applicant.income",
+          "lessThan": 25000,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        },
+        {
+          "name": "Check Employment Status Disqualifier",
+          "path": "applicant.isEmployed",
+          "equals": false,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        }
+      ],
+      "result": "Denied"
+    }
+  ],
+  "default": "Pending"
+}
