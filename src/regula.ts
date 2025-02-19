@@ -361,10 +361,18 @@ export class Regula {
         result =
           (typeof value === "number" || typeof value === "string") &&
           value > rule.greaterThan;
+      } else if (rule.greaterThanEquals !== undefined) {
+        result =
+          (typeof value === "number" || typeof value === "string") &&
+          value >= rule.greaterThanEquals;
       } else if (rule.lessThan !== undefined) {
         result =
           (typeof value === "number" || typeof value === "string") &&
           value < rule.lessThan;
+      } else if (rule.lessThanEquals !== undefined) {
+        result =
+          (typeof value === "number" || typeof value === "string") &&
+          value <= rule.lessThanEquals;
       } else if (rule.between !== undefined) {
         result =
           typeof value === "number" &&

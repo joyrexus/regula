@@ -62,21 +62,23 @@ Boolean expressions allow for logical combinations of rules using `and`, `or`, a
 
 Data test expressions evaluate incoming data from a specified `path` in the input.
 
-| Expression     | Description                                                       | Example Usage                                                      |
-| -------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `equals`       | Checks if the value equals a specific value.                      | `"equals": 100`                                                    |
-| `equalsOneOf`  | Checks if the value matches one of the provided values.           | `"equalsOneOf": [100, 200, 300]`                                   |
-| `greaterThan`  | Checks if the value is greater than a specified number or string. | `"greaterThan": 50`                                                |
-| `lessThan`     | Checks if the value is less than a specified number or string.    | `"lessThan": 20`                                                   |
-| `between`      | Checks if the value is within an inclusive numeric range.         | `"between": [10, 50]`                                              |
-| `includes`     | Checks if a list contains a specified value.                      | `"includes": "admin"`                                              |
-| `includesAny`  | Checks if a list contains any of the specified values.            | `"includesAny": ["admin", "owner"]`                                |
-| `matches`      | Validates a string against a regular expression.                  | `"matches": "^[A-Z]{3}-\\d{4}$"`                                   |
-| `isNull`       | Checks if the value is `null`.                                    | `"isNull": true`                                                   |
-| `isPresent`    | Checks if the value is present (not `null` or `undefined`).       | `"isPresent": true`                                                |
-| `afterDate`    | Checks if a date is after a specified ISO 8601 timestamp.         | `"afterDate": "2025-01-01T00:00:00Z"`                              |
-| `beforeDate`   | Checks if a date is before a specified ISO 8601 timestamp.        | `"beforeDate": "2024-12-31T23:59:59Z"`                             |
-| `betweenDates` | Checks if a date falls within a specified range.                  | `"betweenDates": ["2024-01-01T00:00:00Z", "2025-01-01T00:00:00Z"]` |
+| Expression          | Description                                                                   | Example Usage                                                      |
+| ------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `equals`            | Checks if the value equals a specific value.                                  | `"equals": 100`                                                    |
+| `equalsOneOf`       | Checks if the value matches one of the provided values.                       | `"equalsOneOf": [100, 200, 300]`                                   |
+| `greaterThan`       | Checks if the value is greater than a specified number or string.             | `"greaterThan": 50`                                                |
+| `greaterThanEquals` | Checks if the value is greater than or equal to a specified number or string. | `"greaterThanEquals": 50`                                          |
+| `lessThan`          | Checks if the value is less than a specified number or string.                | `"lessThan": 20`                                                   |
+| `lessThanEquals`    | Checks if the value is less than or equal to a specified number or string.    | `"lessThanEquals": 20`                                             |
+| `between`           | Checks if the value is within an inclusive numeric range.                     | `"between": [10, 50]`                                              |
+| `includes`          | Checks if a list contains a specified value.                                  | `"includes": "admin"`                                              |
+| `includesAny`       | Checks if a list contains any of the specified values.                        | `"includesAny": ["admin", "owner"]`                                |
+| `matches`           | Validates a string against a regular expression.                              | `"matches": "^[A-Z]{3}-\\d{4}$"`                                   |
+| `isNull`            | Checks if the value is `null`.                                                | `"isNull": true`                                                   |
+| `isPresent`         | Checks if the value is present (not `null` or `undefined`).                   | `"isPresent": true`                                                |
+| `afterDate`         | Checks if a date is after a specified ISO 8601 timestamp.                     | `"afterDate": "2025-01-01T00:00:00Z"`                              |
+| `beforeDate`        | Checks if a date is before a specified ISO 8601 timestamp.                    | `"beforeDate": "2024-12-31T23:59:59Z"`                             |
+| `betweenDates`      | Checks if a date falls within a specified range.                              | `"betweenDates": ["2024-01-01T00:00:00Z", "2025-01-01T00:00:00Z"]` |
 
 ---
 

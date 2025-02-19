@@ -16,7 +16,9 @@ export interface DataTestExpression {
   equals?: string | number | boolean;
   equalsOneOf?: (string | number)[];
   greaterThan?: number | string;
+  greaterThanEquals?: number | string;
   lessThan?: number | string;
+  lessThanEquals?: number | string;
   between?: [number, number];
   includes?: string | number; // Check if specified value is included in a list (if input `path` references an array)
   includesAny?: (string | number)[]; // Check if any of the specifed values are included in a list (if input `path` references an array)
