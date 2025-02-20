@@ -161,6 +161,7 @@ The `Regula` class provides the following static methods:
 
 The `Evaluator` class provides the following utility methods:
 
+- `evaluation.evaluate(input)`: evaluate an input object against the ruleset
 - `evaluation.getSnapshot()`: get a snapshot of the current evaluation state
 - `evaluation.getCount()`: get the number of evaluations performed
 - `evaluation.getDataSources()`: get the data sources used in the ruleset
@@ -178,4 +179,6 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.deactivateRule("Check Age", { reason: "Parent approved", updatedBy: "user-1" })`: deactivate a specific rule with a reason
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
+- `evaluation.addMeta("Check Age", { note: "critical" })`: add metadata to a specific rule
+- `evaluation.getMeta("Check Age")`: get metadata for a specific rule
 - `evaluation.toString()`: convert the ruleset to a JSON string

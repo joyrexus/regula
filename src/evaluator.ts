@@ -13,6 +13,8 @@ import {
   EvaluatedRuleset,
 } from "./types";
 
+type RuleWithMetaAsString = Omit<Rule, "meta"> & { meta?: string };
+
 /**
  * The Evaluator class is used for successive evaluations of a ruleset.
  */
@@ -37,13 +39,6 @@ export class Evaluator {
   }
 
   /**
-   * Get the ruleset as a string.
-   */
-  toString(): string {
-    return JSON.stringify(this.ruleset, null, 2);
-  }
-
-  /**
    * Evaluates the ruleset against the input object and returns the result.
    * @param input The input object to evaluate against the ruleset.
    * @returns The evaluation result.
@@ -58,6 +53,19 @@ export class Evaluator {
     this.count++;
     this.ruleset.lastEvaluation = lastEvaluation;
     return lastEvaluation?.result;
+  }
+
+  /**
+   * Get the ruleset as a JSON string.
+   * @param {boolean} [pretty=false] Whether to pretty-print the JSON string.
+   * @returns The ruleset as a string.
+   * @see {@link Evaluator.getSnapshot}
+   */
+  toString(pretty: boolean = false): string {
+    if (pretty) {
+      return JSON.stringify(this.ruleset, null, 2);
+    }
+    return JSON.stringify(this.ruleset);
   }
 
   /**
@@ -170,6 +178,28 @@ export class Evaluator {
       results[rule.name] = rule.lastEvaluation?.result;
     }
     return results;
+  }
+
+  /**
+   * Add metadata to a rule.
+   * @param ruleName The name of the rule to add metadata to.
+   * @param meta The metadata to add.
+   * @throws {EvaluationError} If the rule is not found.
+   */
+  addMeta(ruleName: string, meta: { [key: string]: string }): void {
+    const rule = this.getRule(ruleName);
+    rule.meta = { ...rule.meta, ...meta };
+  }
+
+  /**
+   * Get metadata from a rule.
+   * @param ruleName The name of the rule to get metadata from.
+   * @returns The metadata of the rule.
+   * @throws {EvaluationError} If the rule is not found.
+   */
+  getMeta(ruleName: string): { [key: string]: any } | string {
+    const rule = this.getRule(ruleName);
+    return rule.meta;
   }
 
   /**

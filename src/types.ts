@@ -45,7 +45,7 @@ export type Rule = RuleExpression & {
   result?: string;
   lastEvaluation?: RuleEvaluation;
   meta?: {
-    [key: string]: any;
+    [key: string]: string | number | boolean;
   };
 };
 

@@ -202,4 +202,6 @@ pprint(evaluation.getSnapshot());
 // evaluation.deactivateRule("Check Age", { reason: "Testing", updatedBy: "user-1" });
 // evaluation.activateRule("Check Age"); // activate a specific rule
 // evaluation.activate(); // activate the ruleset (if deactivated)
+// evaluation.addMeta("Check Age", { note: "critical" }); // add metadata to a specific rule
+// evaluation.getMeta("Check Age"); // get metadata for a specific rule
 // evaluation.toString(); // convert the ruleset to a JSON string

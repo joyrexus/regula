@@ -103,7 +103,7 @@ const updatedCreditScore: EvaluationInput = {
       creditScore: 225, // Applicant's credit score has dropped!
     },
   },
-}
+};
 
 // If we try to evaluate the ruleset again, it will throw an error, as the evaluation instance has been deactivated.
 try {
