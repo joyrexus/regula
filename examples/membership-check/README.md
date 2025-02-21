@@ -1,7 +1,5 @@
 # Membership Check
 
-Command to run the example:
-
 ```
 npm run example:membership-check
 ```

@@ -1,7 +1,5 @@
 # Loan Approval
 
-Command to run the example:
-
 ```
 npm run example:loan-application
 ```

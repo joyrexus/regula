@@ -85,9 +85,7 @@ Data test expressions evaluate incoming data from a specified `path` in the inpu
 ## Examples
 
 - [Membership Check](./examples/membership-check/README.md): A simple example demonstrating how to use Regula to evaluate a ruleset that determines whether a user qualifies for a premium membership.
-  - `npm run example:membership-check`
 - [Loan Application](./examples/loan-application/README.md): A more complex example that showcases how to use Regula to evaluate a loan application through a series of successive evaluations.
-  - `npm run example:loan-application`
 
 ## Utility Methods
 
