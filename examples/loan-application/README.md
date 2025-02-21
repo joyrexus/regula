@@ -2,7 +2,7 @@
 
 This example demonstrates how we can check the eligibility of a loan application and approve or reject it based on the applicant's credit score, employment status, income, and other factors.
 
-For the example, we define a ruleset that can produce the following evaluation results:
+For the example ([`index.ts`](./index.ts)), we define a ruleset that can produce the following evaluation results:
 
 - `Approved`: The loan application is approved.
 - `Denied`: The loan application is denied.
