@@ -27,6 +27,11 @@ Regula is particularly useful in cases where you need to ...
 </p>
 </details>
 
+## Examples
+
+- [Membership Check](./examples/membership-check/README.md): A simple example demonstrating how to use Regula to evaluate a ruleset that determines whether a user qualifies for a premium membership.
+- [Loan Application](./examples/loan-application/README.md): A more complex example that showcases how to use Regula to evaluate a loan application through a series of successive evaluations.
+
 ## Key Features
 
 - **JSON-Based Rulesets** – Define rules in a structured JSON format, allowing for clear and flexible rule definitions.
@@ -79,13 +84,6 @@ Data test expressions evaluate incoming data from a specified `path` in the inpu
 | `afterDate`         | Checks if a date is after a specified ISO 8601 timestamp.                     | `"afterDate": "2025-01-01T00:00:00Z"`                              |
 | `beforeDate`        | Checks if a date is before a specified ISO 8601 timestamp.                    | `"beforeDate": "2024-12-31T23:59:59Z"`                             |
 | `betweenDates`      | Checks if a date falls within a specified range.                              | `"betweenDates": ["2024-01-01T00:00:00Z", "2025-01-01T00:00:00Z"]` |
-
----
-
-## Examples
-
-- [Membership Check](./examples/membership-check/README.md): A simple example demonstrating how to use Regula to evaluate a ruleset that determines whether a user qualifies for a premium membership.
-- [Loan Application](./examples/loan-application/README.md): A more complex example that showcases how to use Regula to evaluate a loan application through a series of successive evaluations.
 
 ## Utility Methods
 
