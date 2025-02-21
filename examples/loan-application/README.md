@@ -10,7 +10,8 @@ For the example, we define a ruleset that can produce the following evaluation r
 
 The ruleset is defined in the [`ruleset.json`](./ruleset.json) file.
 
-A snapshot of the final evaluation result (produced with `evaluation.toString()`) can be seen in the [`evaluation.json`](./evaluation.json) file.
+A snapshot of the final evaluation result (produced with `evaluation.toString()`)
+can be seen in the [`snapshot.json`](./snapshot.json) file.
 
 ---
 
