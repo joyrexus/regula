@@ -1,5 +1,10 @@
 # Membership Check
 
+- [`index.ts`](./index.ts): example code
+- [`ruleset.json`](./ruleset.json): ruleset definition
+- [`snapshot.json`](./snapshot.json): snapshot of the final evaluation result
+- `npm run example:membership-check`: command to run the example
+
 This example showcases how to use Regula to define and evaluate a ruleset that determines whether a user qualifies for a premium membership.
 
 The ruleset consists of a **parent rule** (`Eligibility Check`) that contains two **subrules**:
@@ -10,8 +15,6 @@ The ruleset consists of a **parent rule** (`Eligibility Check`) that contains tw
 If both conditions are met, the overall result is **"User is eligible for premium membership"**. Otherwise, the evaluation defaults to **"User is not eligible"**.
 
 The example progresses through three evaluations, illustrating how Regula accumulates evaluation results over time.
-
----
 
 ## Walkthrough
 

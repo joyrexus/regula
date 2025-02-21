@@ -1,42 +1,7 @@
 import { Regula, Ruleset, EvaluationInput } from "../../src";
+import ruleset from "./ruleset.json";
 
 const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
-
-// Define a sample ruleset for a premium membership eligibility check.
-const ruleset: Ruleset = {
-  name: "Premium Membership Eligibility",
-  description:
-    "User qualifies for premium membership if they are older than 18 and have an active subscription.",
-  rules: [
-    {
-      // Parent rule: an AND boolean expression that aggregates two conditions.
-      name: "Eligibility Check",
-      and: [
-        {
-          // Subrule 1: Check that the user has an active subscription.
-          name: "Check Subscription",
-          path: "user.subscription.active",
-          equals: true,
-          result: "Subscription OK",
-          dataSource: { type: "async", name: "SubscriptionService" },
-        },
-        {
-          // Subrule 2: Check that the user's age is greater than 18.
-          name: "Check Age",
-          path: "user.age",
-          greaterThan: 18,
-          result: "Age OK",
-          dataSource: { type: "sync", name: "UserDB" },
-        },
-      ],
-      // Overall result returned if both subrules are satisfied.
-      result: "User is eligible for premium membership",
-      meta: { priority: 1, category: "membership" },
-    },
-  ],
-  // Default result returned if the AND expression is not fully satisfied.
-  default: "User is not eligible",
-};
 
 // Initialize a new Evaluator instance with the ruleset.
 const evaluation = Regula.evaluator(ruleset);
@@ -170,7 +135,7 @@ pprint(evaluation.getResults());
 //   "Eligibility Check": false
 // }
 
-pprint(evaluation.getSnapshot());
+// pprint(evaluation.getSnapshot());
 // {
 //   "name": "Premium Membership Eligibility",
 //   "description": "User qualifies for ...",
