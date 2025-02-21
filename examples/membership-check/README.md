@@ -1,9 +1,16 @@
 # Membership Check
 
+Command to run the example:
+
+```
+npm run example:membership-check
+```
+
 - [`index.ts`](./index.ts): example code
 - [`ruleset.json`](./ruleset.json): ruleset definition
 - [`snapshot.json`](./snapshot.json): snapshot of the final evaluation result
-- `npm run example:membership-check`: command to run the example
+
+---
 
 This example showcases how to use Regula to define and evaluate a ruleset that determines whether a user qualifies for a premium membership.
 

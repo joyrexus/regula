@@ -1,9 +1,16 @@
 # Loan Approval
 
+Command to run the example:
+
+```
+npm run example:loan-application
+```
+
 - [`index.ts`](./index.ts): example code
 - [`ruleset.json`](./ruleset.json): ruleset definition
 - [`snapshot.json`](./snapshot.json): snapshot of the final evaluation result
-- `npm run example:loan-application`: command to run the example
+
+---
 
 This example demonstrates how we can check the eligibility of a loan application and approve or reject it based on the applicant's credit score, employment status, income, and other factors.
 
