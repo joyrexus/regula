@@ -123,3 +123,5 @@ evaluation.evaluate(updatedCreditScore);
 
 pprint(evaluation);
 // Should return "Denied" as the applicant's credit score is now below the qualifying threshold.
+
+console.log(evaluation.toString({ pretty: true }));

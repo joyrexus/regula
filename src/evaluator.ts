@@ -57,11 +57,11 @@ export class Evaluator {
 
   /**
    * Get the ruleset as a JSON string.
-   * @param {boolean} [pretty=false] Whether to pretty-print the JSON string.
+   * @param {object} [options] Options for the stringification.
+   * @param {boolean} [options.pretty=false] Whether to pretty-print the JSON.
    * @returns The ruleset as a string.
-   * @see {@link Evaluator.getSnapshot}
    */
-  toString(pretty: boolean = false): string {
+  toString({ pretty }: { pretty: boolean } = { pretty: false }): string {
     if (pretty) {
       return JSON.stringify(this.ruleset, null, 2);
     }
@@ -69,8 +69,8 @@ export class Evaluator {
   }
 
   /**
-   * Get a snapshot of the current state of the ruleset's evaluation.
-   * @return The evaluated ruleset.
+   * Get a copy of the current state of the ruleset's evaluation.
+   * @return Copy of the evaluated ruleset.
    * @see {@link EvaluatedRuleset}
    */
   getSnapshot(): EvaluatedRuleset {

@@ -3,11 +3,16 @@
 This example demonstrates how we can check the eligibility of a loan application and approve or reject it based on the applicant's credit score, employment status, income, and other factors.
 
 For the example, we define a ruleset that can produce the following evaluation results:
+
 - `Approved`: The loan application is approved.
 - `Denied`: The loan application is denied.
 - `Pending`: The loan application is rejected.
 
-The ruleset is defined in the `ruleset.json` file.
+The ruleset is defined in the [`ruleset.json`](./ruleset.json) file.
+
+A snapshot of the final evaluation result (produced with `evaluation.toString()`) can be seen in the [`evaluation.json`](./evaluation.json) file.
+
+---
 
 We first create an instance of the `Evaluator` class and load the ruleset into it.
 
@@ -35,7 +40,9 @@ Instead, the initial evaluation result is `Pending` since the applicant's employ
 
 // If we try to evaluate the ruleset again, it will throw an error, as the evaluation instance has been deactivated.
 
-// Should return "Approved" since the evaluation instance has been deactivated and the last result was 
+// Should return "Approved" since the evaluation instance has been deactivated and the last
+// result was "Approved".
+
 // Reactivate the evaluation instance.
 
 // Now we can evaluate the ruleset again.
