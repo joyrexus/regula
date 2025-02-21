@@ -82,74 +82,10 @@ Data test expressions evaluate incoming data from a specified `path` in the inpu
 
 ---
 
-## Example Usage
+## Examples
 
-The following example demonstrates how to define a simple ruleset for checking premium membership eligibility based on a user's age and subscription status. The ruleset contains a parent rule with two subrules that evaluate the user's subscription status and age. The overall result is returned based on the satisfaction of both subrules.
-
-```ts
-import { Regula, Ruleset, EvaluationInput } from "../src";
-
-// Define a sample ruleset for a premium membership eligibility check.
-const ruleset: Ruleset = {
-  name: "Premium Membership Eligibility",
-  description:
-    "User qualifies for premium membership if they are older than 18 and have an active subscription.",
-  rules: [
-    {
-      // Parent rule: an AND boolean expression that aggregates two conditions.
-      name: "Eligibility Check",
-      and: [
-        {
-          // Subrule 1: Check that the user has an active subscription.
-          name: "Check Subscription",
-          path: "user.subscription.active",
-          equals: true,
-          result: "Subscription OK",
-          dataSource: { type: "async", name: "SubscriptionService" },
-        },
-        {
-          // Subrule 2: Check that the user's age is greater than 18.
-          name: "Check Age",
-          path: "user.age",
-          greaterThan: 18,
-          result: "Age OK",
-          dataSource: { type: "sync", name: "UserDB" },
-        },
-      ],
-      // Overall result returned if both subrules are satisfied.
-      result: "User is eligible for premium membership",
-    },
-  ],
-  // Default result returned if the AND expression is not fully satisfied.
-  default: "User is not eligible",
-};
-
-// Initialize a new Evaluator instance with the ruleset.
-const evaluation = Regula.evaluator(ruleset);
-
-// Define an input object for the first evaluation.
-const input: EvaluationInput = {
-  context: {
-    dataSource: { type: "sync", name: "UserDB" },
-    timestamp: new Date().toISOString(),
-    entityId: "user-profile-123",
-    userId: "user-1",
-  },
-  data: {
-    user: {
-      age: 20,
-      // No subscription info provided.
-    },
-  },
-};
-
-// Evaluate the input object and get the overall result.
-let result = evaluation.evaluate(input); // User is not eligible
-```
-
-For a quick demonstration of how Regula handles _successive_ ruleset evaluations, see [`./examples/index.ts`](https://github.com/joyrexus/regula/blob/main/examples/index.ts).
-
-> This example can be run with `npm start`.
+- [Membership Check](./examples/membership-check/README.md): A simple example demonstrating how to use Regula to evaluate a ruleset that determines whether a user qualifies for a premium membership. (`npm run example:membership-check`)
+- [Loan Application](./examples/loan-application/README.md): A more complex example that showcases how to use Regula to evaluate a loan application through a series of successive evaluations. (`npm run example:loan-application`)
 
 ## Utility Methods
 

@@ -1,8 +1,4 @@
-Here's a summary and walkthrough of the example code demonstrating how to evaluate premium membership eligibility using Regula.
-
----
-
-## Premium Membership Eligibility Check
+# Membership Check
 
 This example showcases how to use Regula to define and evaluate a ruleset that determines whether a user qualifies for a premium membership.
 
