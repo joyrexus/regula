@@ -1,0 +1,77 @@
+{
+  "name": "Premium Membership Eligibility",
+  "description": "User qualifies for premium membership if they are older than 18 and have an active subscription.",
+  "rules": [
+    {
+      "name": "Eligibility Check",
+      "and": [
+        {
+          "name": "Check Subscription",
+          "path": "user.subscription.active",
+          "equals": true,
+          "result": "Subscription OK",
+          "dataSource": {
+            "type": "async",
+            "name": "SubscriptionService"
+          },
+          "lastEvaluation": {
+            "result": false,
+            "updatedAt": "2025-02-21T04:19:01.357Z",
+            "updatedBy": "user-3"
+          }
+        },
+        {
+          "name": "Check Age",
+          "path": "user.age",
+          "greaterThan": 18,
+          "result": "Age OK",
+          "dataSource": {
+            "type": "sync",
+            "name": "UserDB"
+          },
+          "lastEvaluation": {
+            "result": "Age OK",
+            "updatedAt": "2025-02-21T04:19:01.356Z",
+            "updatedBy": "user-1"
+          }
+        }
+      ],
+      "result": "User is eligible for premium membership",
+      "meta": {
+        "priority": 1,
+        "category": "membership"
+      },
+      "lastEvaluation": {
+        "result": false,
+        "updatedAt": "2025-02-21T04:19:01.357Z",
+        "updatedBy": "user-3"
+      }
+    }
+  ],
+  "default": "User is not eligible",
+  "lastEvaluation": {
+    "input": {
+      "context": {
+        "dataSource": {
+          "type": "async",
+          "name": "SubscriptionService",
+          "description": "Subscription Service"
+        },
+        "entityId": "transaction-123",
+        "timestamp": "2025-02-21T04:19:01.357Z",
+        "userId": "user-3"
+      },
+      "data": {
+        "user": {
+          "subscription": {
+            "active": false
+          }
+        }
+      }
+    },
+    "result": "User is not eligible",
+    "resultFrom": "default",
+    "evaluatedAt": "2025-02-21T04:19:01.357Z",
+    "evaluatedBy": "user-3"
+  }
+}

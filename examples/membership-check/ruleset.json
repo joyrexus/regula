@@ -1,0 +1,37 @@
+{
+  "name": "Premium Membership Eligibility",
+  "description": "User qualifies for premium membership if they are older than 18 and have an active subscription.",
+  "rules": [
+    {
+      "name": "Eligibility Check",
+      "and": [
+        {
+          "name": "Check Subscription",
+          "path": "user.subscription.active",
+          "equals": true,
+          "result": "Subscription OK",
+          "dataSource": {
+            "type": "async",
+            "name": "SubscriptionService"
+          }
+        },
+        {
+          "name": "Check Age",
+          "path": "user.age",
+          "greaterThan": 18,
+          "result": "Age OK",
+          "dataSource": {
+            "type": "sync",
+            "name": "UserDB"
+          }
+        }
+      ],
+      "result": "User is eligible for premium membership",
+      "meta": {
+        "priority": 1,
+        "category": "membership"
+      }
+    }
+  ],
+  "default": "User is not eligible"
+}
