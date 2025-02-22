@@ -1,4 +1,4 @@
-import { Regula, Ruleset, EvaluationInput } from "../../src";
+import { Regula, EvaluationInput } from "../../src";
 import ruleset from "./ruleset.json";
 
 const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
