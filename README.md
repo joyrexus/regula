@@ -104,6 +104,7 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.getRule("Check Age")`: get a rule by name
 - `evaluation.getResult("Check Age")`: get the result of a specific rule
 - `evaluation.getResult()`: get the overall result
+- `evaluation.getResultRule()`: get the rule that determined the overall result
 - `evaluation.getResults()`: get the results of all top-level rules
 - `evaluation.getLastEvaluation()`: get the last top-level evaluation of the ruleset
 - `evaluation.getLastEvaluation("Check Age")`: get the last evaluation of a specific rule

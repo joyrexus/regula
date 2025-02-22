@@ -152,6 +152,22 @@ export class Evaluator {
   }
 
   /**
+   * Get the rule that produced the last evaluation result.
+   * @returns The rule that produced the last evaluation result.
+   * @throws {EvaluationError} If the rule is not found.
+   * @see {@link Evaluator.getLastEvaluation}
+   * @see {@link Evaluator.getResult}
+   */
+  getResultRule(): Rule {
+    const lastEvaluation = this.getLastEvaluation();
+    if (!lastEvaluation) {
+      throw new EvaluationError("No last evaluation found.");
+    }
+    const ruleName = (lastEvaluation as Evaluation).resultFrom;
+    return this.getRule(ruleName);
+  }
+
+  /**
    * Get the result of a specific rule by name.
    *
    * If no rule name is provided, the result of the overall ruleset evaluation is returned.

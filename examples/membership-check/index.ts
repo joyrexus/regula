@@ -156,6 +156,7 @@ pprint(evaluation.getResults());
 // evaluation.getDeactivatedRules(); // get an array of all deactivated rules
 // evaluation.getRuleNames(); // get an array of all rule names in the ruleset
 // evaluation.getRule("Check Age"); // get a rule by name
+// evaluation.getResultRule(); // get the rule that produced the overall result
 // evaluation.getResult("Check Age"); // get the result of a specific rule
 // evaluation.getResult(); // get the overall result
 // evaluation.getResults(); // get the results of all top-level rules
