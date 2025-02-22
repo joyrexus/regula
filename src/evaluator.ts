@@ -190,6 +190,10 @@ export class Evaluator {
    */
   getResults(): RuleResults {
     const results: RuleResults = {};
+    if (this.ruleset.default) {
+      results[this.ruleset.default] =
+        this.ruleset.default === this.ruleset.lastEvaluation?.result;
+    }
     for (const rule of this.ruleset.rules) {
       results[rule.name] = rule.lastEvaluation?.result;
     }
