@@ -29,11 +29,11 @@ Regula is particularly useful in cases where you need to ...
 
 ## Examples
 
-- [**Membership Check**](./examples/membership-check/README.md): shows how to use Regula to evaluate a simple ruleset to determine whether a user qualifies for a premium membership.
-- [**Loan Application**](./examples/loan-application/README.md): shows how to use Regula to evaluate a loan application through a series of successive evaluations.
-- [**Transition Actor**](./examples/transition-actor/README.md): shows how to setup a ruleset evaluator as a transition actor for guarding state transitions in a state machine.
+- [**Membership Check**](./examples/membership-check/README.md): evaluate a simple ruleset to determine whether a user qualifies for a premium membership.
+- [**Loan Application**](./examples/loan-application/README.md): evaluate a loan application through a series of successive evaluations.
+- [**Transition Actor**](./examples/transition-actor/README.md): setup a ruleset evaluator as a transition actor for guarding state transitions in a state machine.
 - Workflows
-  - [**Loan Application**](./examples/workflows/loan-application/README.md): Demonstrates how to use Regula to guard transitions in a loan application workflow.
+  - [**Loan Application**](./examples/workflows/loan-application/README.md): use Regula to guard transitions in a loan application workflow.
 
 ## Key Features
 
