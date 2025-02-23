@@ -6,8 +6,8 @@ interface Event extends EvaluationInput {
   type: string;
 }
 
-// Setup a guard evaluator for the `Submitted` state as a transition actor.
-const submittedEvaluator = fromTransition((evaluation, event: Event) => {
+// Setup a ruleset evaluator as a transition actor.
+const evaluator = fromTransition((evaluation, event: Event) => {
   if (event.type === "xstate.stop") {
     evaluation.deactivate({
       reason: "Loan approval completed",
@@ -19,10 +19,10 @@ const submittedEvaluator = fromTransition((evaluation, event: Event) => {
   return evaluation;
 }, Regula.evaluator(ruleset)); // Initial state
 
-const submittedGuardActor = createActor(submittedEvaluator);
+const evaluationActor = createActor(evaluator);
 
-// Listen for updated evaluation results from our submitted guard actor
-submittedGuardActor.subscribe({
+// Listen for updated evaluation results from our actor.
+evaluationActor.subscribe({
   next(snapshot) {
     console.log("Updated results:", snapshot.context.getResults());
   },
@@ -34,13 +34,13 @@ submittedGuardActor.subscribe({
   },
 });
 
-// Now, let's send some events to our guard evaluator
-// and observe the evaluaton results (via our snapshot subscription).
+// Now, let's send some events to our evaluation actor and observe
+// the evaluaton results (via our snapshot subscription).
 async function main() {
-  submittedGuardActor.start();
+  evaluationActor.start();
   // Initial state: { Pending: false, Approved: undefined, Denied: undefined }
 
-  submittedGuardActor.send({
+  evaluationActor.send({
     type: "applicant.profile",
     context: {
       dataSource: { type: "sync", name: "applicant.profile" },
@@ -58,13 +58,13 @@ async function main() {
   });
   // Results: { Pending: true, Approved: false, Denied: false }
 
-  // wait for 2 seconds
+  // Wait for some time to simulate async data sources.
   await new Promise((resolve) => {
     console.log("Waiting for employment.check and credit.update ...");
     setTimeout(resolve, 2000);
   });
 
-  submittedGuardActor.send({
+  evaluationActor.send({
     type: "employment.check",
     context: {
       dataSource: { type: "async", name: "employment.check" },
@@ -81,7 +81,7 @@ async function main() {
   });
   // Results: { Pending: true, Approved: false, Denied: false }
 
-  submittedGuardActor.send({
+  evaluationActor.send({
     type: "credit.update",
     context: {
       dataSource: { type: "async", name: "credit.update" },
@@ -97,7 +97,7 @@ async function main() {
   });
   // Results: { Pending: false, Approved: true, Denied: false }
 
-  // submittedGuardActor.stop();
+  // evaluationActor.stop();
 }
 
 main();
