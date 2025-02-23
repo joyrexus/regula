@@ -48,24 +48,6 @@ if (resultRule) {
 }
 ```
 
-#### Motivation
-
-Describe our motivation for creating the library.
-
-It gives us the ability to track and show a ruleset's state as its evaluated over time.
-
-We want to provide our users the ability to configure their own unique conditions and constraints over the key parameters and metrics of their business processes (workflows).
-
-We want to help our users automate and streamline the key decisions that need to be made in the course of these workflows.
-
-We want to give our users insight into how both the current and past states of their workflows were reached.
-
-In short, we want to provide our customers with workflows that are ...
-
-- governable
-- observible
-- auditibile
-
 ## Evaluator
 
 Enable `Evaluator` support for ...
@@ -82,20 +64,20 @@ Enable `Evaluator` support for ...
 
 Create unit tests for `Evaluator`:
 
-- [] evaluate
-- [] getCount
-- [] getRule
-- [] getRuleNames
-- [] getDataSources
-- [] getLastEvaluation
-- [] getResult
-- [] getResultRule
-- [] activate
-- [] activateRule
-- [] deactivate
-- [] deactivateRule
-- [] addMeta
-- [] getMeta
+- [ ] evaluate
+- [ ] getCount
+- [ ] getRule
+- [ ] getRuleNames
+- [ ] getDataSources
+- [ ] getLastEvaluation
+- [ ] getResult
+- [ ] getResultRule
+- [ ] activate
+- [ ] activateRule
+- [ ] deactivate
+- [ ] deactivateRule
+- [ ] addMeta
+- [ ] getMeta
 
 ```ts
 import { Evaluator } from "./src/regula/evaluator";
