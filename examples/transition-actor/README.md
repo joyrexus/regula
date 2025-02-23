@@ -1,4 +1,4 @@
-# Evaluator as Transition Actor
+# Transition Actor
 
 ```
 npm install
