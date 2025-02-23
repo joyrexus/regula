@@ -14,4 +14,4 @@ This example demonstrates how to [configure](./evaluator.ts) a Ruleset Evaluator
 
 Such a setup can be useful for [guarding](https://stately.ai/docs/guards) [transitions](https://stately.ai/docs/transitions) from a particular [state](https://stately.ai/docs/states) in a [state machine](https://stately.ai/docs/machines), where the transition is only allowed if an evaluation result matches a certain condition.
 
-In this example, we show how the we can use such an actor to transition a state machine for a loan application workflow based on the evaluation results of the ruleset as new evaluation criteria is received.
+This example demonstrates how we can use such an actor to transition a state machine for a loan application workflow based on updated results from the evaluator as new evaluation criteria are received.
