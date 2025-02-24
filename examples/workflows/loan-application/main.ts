@@ -18,7 +18,7 @@ import { submittedGuardActor } from "./evaluator";
 
 export const workflowActor = createActor(workflow);
 
-// Listen for state changes from our workflow actor
+// Listen for state changes from our workflow actor.
 workflowActor.subscribe({
   next(snapshot) {
     console.log("workflow state changed to", snapshot.value);
