@@ -40,7 +40,7 @@ export const workflow = setup({
   id: "loan-application",
   version: "1.0.0",
   on: {
-    SubmittedGuardUpdated: {
+    "submitted.guard.updated": {
       actions: [
         assign({
           SubmittedGuard: ({ event }) => event.data,
@@ -80,7 +80,7 @@ export const workflow = setup({
     },
     SubmittedWait: {
       on: {
-        SubmittedGuardUpdated: {
+        "submitted.guard.updated": {
           actions: [
             assign({
               SubmittedGuard: ({ event }) => event.data,
@@ -111,7 +111,7 @@ export const workflow = setup({
     },
     Pending: {
       on: {
-        SubmittedGuardUpdated: {
+        "submitted.guard.updated": {
           actions: [
             assign({
               SubmittedGuard: ({ event }) => event.data,

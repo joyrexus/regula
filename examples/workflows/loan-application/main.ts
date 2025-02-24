@@ -37,7 +37,7 @@ workflowActor.start();
 // and send the results to our workflow actor.
 submittedGuardActor.subscribe((snapshot) => {
   return workflowActor.send({
-    type: "SubmittedGuardUpdated",
+    type: "submitted.guard.updated",
     data: snapshot.context.getResults(),
   });
 });
@@ -70,7 +70,7 @@ async function main() {
   //
   // ```
   // workflowActor.send({
-  //   type: "SubmittedGuardUpdated",
+  //   type: "'submitted.guard.updated'",
   //   data: {
   //     Approved: false,
   //     Denied: false,
@@ -116,4 +116,4 @@ async function main() {
   // Results: { Approved: true, Denied: false, Pending: false }
 }
 
-// main();
+main();
