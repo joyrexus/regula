@@ -1,4 +1,4 @@
-import { createActor, fromPromise, setup, assign } from "xstate";
+import { fromPromise, setup, assign } from "xstate";
 
 interface SubmittedGuard {
   Approved: boolean;
@@ -129,14 +129,3 @@ export const workflow = setup({
     },
   },
 });
-
-// export const workflowActor = createActor(workflow, {
-//   input: {
-//     userId: "xxx",
-//     SubmittedGuard: {
-//       Approved: false,
-//       Denied: false,
-//       Pending: false,
-//     },
-//   },
-// });

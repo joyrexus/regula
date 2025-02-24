@@ -79,7 +79,7 @@ async function main() {
   // });
   // ```
 
-  // wait for 2 seconds
+  // Wait for a bit before sending the next event to simulate async behavior.
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   submittedGuardActor.send({
