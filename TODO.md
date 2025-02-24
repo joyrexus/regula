@@ -25,10 +25,13 @@
 - [x] include default state in `evaluation.getResults()`
 - [x] enable a user to add metadata to a rule
 - [x] add an `evaluation.getResultRule()` method to return the rule that produced the last evaluation result
-- [x] add example of a ruleset with multiple top-level rules
+- [x] add example of a ruleset evaluator setup as a transition actor
+- [ ] provide more details about the example in the README
 - [x] add example demonstrating how regula can be be used to guard transitions in an xstate machine
+- [ ] provide more details about the example in the README
+- [x] add example of a ruleset with multiple top-level rules
 - [ ] update README for new example, showing significance of rule ordering
-- [ ] add test for new example above, showing significance of rule ordering
+- [ ] add tests for new above, showing significance of rule ordering
 - [ ] add example demonstrating how to get the metadata of the rule that produced the last
       evaluation result using the `evaluation.getResultRule()` method
 - [ ] repo: README with links to related libraries
