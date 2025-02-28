@@ -19,25 +19,19 @@
 - [x] move types from `src/regula.ts` to `./src/types.ts`
 - [x] move `Evaluator` from `src/regula.ts` to `src/evaluator.ts`
 - [x] create a dedicated repo
-- [x] ensure that `resultFrom` will indicate `default` if no rule produced the result
-      and a default result was specified
+- [x] ensure that `resultFrom` will indicate `default` if no rule produced the result and a default result was specified
 - [x] revise `evaluation.results()` to only return a map of top-level rule names to their results
 - [x] include default state in `evaluation.getResults()`
 - [x] enable a user to add metadata to a rule
 - [x] add an `evaluation.getResultRule()` method to return the rule that produced the last evaluation result
-- [x] add example of a ruleset evaluator setup as a transition actor
-- [ ] provide more details about the example in the README
-- [x] add example demonstrating how regula can be be used to guard transitions in an xstate machine
-- [ ] provide more details about the example in the README
 - [x] add example of a ruleset with multiple top-level rules
 - [ ] update README for new example, showing significance of rule ordering
-- [ ] add tests for new above, showing significance of rule ordering
-- [ ] add example demonstrating how to get the metadata of the rule that produced the last
-      evaluation result using the `evaluation.getResultRule()` method
+- [ ] add tests based on new example above, showing significance of rule ordering
+- [ ] add example demonstrating how to get the metadata of the rule that produced the last evaluation result using the `evaluation.getResultRule()` method
 - [ ] repo: README with links to related libraries
 - [ ] repo: license
-- [ ] repo: npm run scripts
 - [ ] repo: build setup
+- [ ] repo: npm run scripts
 - [ ] repo: npm publish setup
 
 ---
@@ -119,7 +113,17 @@ evaluation.getResult("ruleName");
 evaluation.getCount(); // equivalent to evaluation.count
 ```
 
-## Xstate example
+## Examples
+
+### Current Task
+
+We need to update the Xstate Transition Guards example.
+
+In particular, when entering the `Submitted` state, we need to setup and invoke the `SubmittedEvaluator` transition actor for the `Submitted` state (i.e., a ruleset evaluator for the transition guards in the `Submitted` state) to get the current state of the ruleset and do an assignment to update the workflow context (`context.SubmittedGuard`) with the result of the evaluation.
+
+After the `context.SubmittedGuard` is updated, the workflow should then immediately transition to the new state (if one of the guarded transitions is permitted). Otherwise, it should transition to the `SubmittedWait` state.
+
+### Xstate Transition Guards
 
 Add an example demonstrating how a regula ruleset evaluation can be be used as a guard on a transition to a new state.
 
@@ -136,6 +140,14 @@ For our xstate example, we'll need to have the transitionActors return the resul
 We can use the machine's top-level `on` event handlers to update the relevant `context.{guard}`.
 
 When the `Submitted` state is entered, the machine will evaluate the guards for the transitions to the other states and transition to the relevant state if possible, otherwise it will transition to the `Wait` state.
+
+- [x] add example of a ruleset evaluator setup as a transition actor
+- [x] add example demonstrating how regula can be be used to guard transitions in an xstate machine
+- [x] have the workflow subscribe to its snapshot events (i.e., updates to its state)
+- [x] handle events received by the subscription to update the workflow context, setting the current state of each top-level rule in the ruleset
+- [x] add a wait state as the fall-through default if the current state of the guards do not permit transition to a new target state, viz. to listen for prior-state guard ruleset updated events ... and after receiving such events, do an assign to update the guard context and transition to the prior state
+- [ ] invoke a state's transition actor (i.e., guard ruleset evaluator) when entering the state it's guarding to get current state of the ruleset
+- [ ] provide more details about the example in the README
 
 ## Restate + Xstate
 
