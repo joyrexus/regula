@@ -25,7 +25,7 @@ stateDiagram-v2
     Submitted --> Approved: Approved Guard
     Submitted --> Denied: Denied Guard
     Submitted --> Pending: Pending Guard
-    Submitted --> SubmittedWait: (default)
+    Submitted --> SubmittedWait: DEFAULT
 
     SubmittedWait --> Submitted: submitted.guard.updated
     note right of SubmittedWait
