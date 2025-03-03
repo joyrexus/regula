@@ -86,7 +86,6 @@ describe("Evaluator", () => {
 
   it("should get data sources", () => {
     const dataSources = evaluator.getDataSources();
-    console.log(evaluator);
     expect(dataSources).toEqual([{ type: "sync", name: "UserData" }]);
   });
 
@@ -284,5 +283,157 @@ describe("Evaluator.getLastEvaluation", () => {
   it("should throw error when getting result rule with no evaluation", () => {
     const emptyEvaluator = new Evaluator(ruleset);
     expect(() => emptyEvaluator.getResultRule()).toThrow(EvaluationError);
+  });
+});
+
+/**
+ * Here's a test that demonstrates the significance of ordering in top-level rules for the Evaluator.
+ *
+ * This test demonstrates:
+ *
+ * - The importance of rule ordering by showing that when multiple rules evaluate to true, the first one in order determines the overall result
+ * - That all rules are still evaluated even after finding a true result
+ * - That the order remains important even when the ruleset definition is changed
+ * - How deactivating rules affects which rule determines the result
+ *
+ * The test explicitly shows three scenarios:
+ * - When only the last rule is true
+ * - When multiple rules (but not all) are true
+ * - When all rules are true
+ *
+ * Each scenario verifies that the first truthy rule in order becomes the determining rule for the overall evaluation result.
+ */
+describe("Evaluator rule ordering", () => {
+  it("should respect the order of top-level rules when determining the overall result", () => {
+    // Define a ruleset with three top-level rules in specific order
+    const orderingRuleset: Ruleset = {
+      name: "Rule Ordering Test",
+      rules: [
+        {
+          name: "Rule A",
+          path: "user.age",
+          greaterThan: 30,
+          result: "RESULT_A",
+        },
+        {
+          name: "Rule B",
+          path: "user.active",
+          equals: true,
+          result: "RESULT_B",
+        },
+        {
+          name: "Rule C",
+          path: "user.verified",
+          equals: true,
+          result: "RESULT_C",
+        },
+      ],
+    };
+
+    const evaluator = new Evaluator(orderingRuleset);
+
+    // Scenario 1: Only Rule C evaluates to true
+    const input1: EvaluationInput = {
+      context: {
+        dataSource: { type: "sync", name: "UserData" },
+        timestamp: new Date().toISOString(),
+        userId: "user-123",
+      },
+      data: { user: { age: 25, active: false, verified: true } },
+    };
+
+    let result = evaluator.evaluate(input1);
+    expect(result).toBe("RESULT_C");
+    expect(evaluator.getResultRule().name).toBe("Rule C");
+
+    // Scenario 2: Both Rule B and C evaluate to true
+    // Rule B should determine the result as it comes first in order
+    const input2: EvaluationInput = {
+      context: {
+        dataSource: { type: "sync", name: "UserData" },
+        timestamp: new Date().toISOString(),
+        userId: "user-123",
+      },
+      data: { user: { age: 25, active: true, verified: true } },
+    };
+
+    result = evaluator.evaluate(input2);
+    expect(result).toBe("RESULT_B");
+    expect(evaluator.getResultRule().name).toBe("Rule B");
+    expect(evaluator.getResult("Rule C")).toBe("RESULT_C"); // Rule C also evaluated to a truthy result
+
+    // Scenario 3: All rules evaluate to true
+    // Rule A should determine the result as it comes first in order
+    const input3: EvaluationInput = {
+      context: {
+        dataSource: { type: "sync", name: "UserData" },
+        timestamp: new Date().toISOString(),
+        userId: "user-123",
+      },
+      data: { user: { age: 35, active: true, verified: true } },
+    };
+
+    result = evaluator.evaluate(input3);
+    expect(result).toBe("RESULT_A");
+    expect(evaluator.getResultRule().name).toBe("Rule A");
+    expect(evaluator.getResult("Rule B")).toBe("RESULT_B"); // Rule B also evaluated to true
+    expect(evaluator.getResult("Rule C")).toBe("RESULT_C"); // Rule C also evaluated to true
+
+    // Verify all rules were evaluated (even after finding a truthy result)
+    expect(evaluator.getResults()).toEqual({
+      "Rule A": "RESULT_A",
+      "Rule B": "RESULT_B",
+      "Rule C": "RESULT_C",
+    });
+  });
+
+  it("should maintain rule ordering when ruleset is modified", () => {
+    // Define a ruleset with three top-level rules but in different order
+    const orderingRuleset: Ruleset = {
+      name: "Modified Rule Ordering Test",
+      rules: [
+        {
+          name: "Rule C",
+          path: "user.verified",
+          equals: true,
+          result: "RESULT_C",
+        },
+        {
+          name: "Rule A",
+          path: "user.age",
+          greaterThan: 30,
+          result: "RESULT_A",
+        },
+        {
+          name: "Rule B",
+          path: "user.active",
+          equals: true,
+          result: "RESULT_B",
+        },
+      ],
+    };
+
+    const evaluator = new Evaluator(orderingRuleset);
+
+    // All rules evaluate to true, but Rule C should determine the result
+    // as it comes first in this modified order
+    const input: EvaluationInput = {
+      context: {
+        dataSource: { type: "sync", name: "UserData" },
+        timestamp: new Date().toISOString(),
+        userId: "user-123",
+      },
+      data: { user: { age: 35, active: true, verified: true } },
+    };
+
+    const result = evaluator.evaluate(input);
+    expect(result).toBe("RESULT_C"); // First rule in order
+    expect(evaluator.getResultRule().name).toBe("Rule C");
+
+    // Deactivate the first rule and check if the next rule becomes determinant
+    evaluator.deactivateRule("Rule C");
+    const nextResult = evaluator.evaluate(input);
+    expect(nextResult).toBe("RESULT_A"); // Now second rule determines result
+    expect(evaluator.getResultRule().name).toBe("Rule A");
   });
 });
