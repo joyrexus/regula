@@ -58,6 +58,7 @@ describe("Evaluator", () => {
     const result = evaluator.evaluate(defaultInput);
     expect(result).toBeDefined();
     expect(result).toBe(true);
+    expect(result).toBe(evaluator.getResult());
     expect(evaluator.getResult("Rule1")).toBe(true);
     expect(evaluator.getResult("Rule2")).toBe(false);
     expect(evaluator.getResult("SubRule1")).toBe(true);
@@ -263,7 +264,7 @@ describe("Evaluator.getLastEvaluation", () => {
     });
   });
 
-  it("should get the result rule", () => {
+  it("should get the rule that produced the result", () => {
     const input: EvaluationInput = {
       context: {
         dataSource: { type: "sync", name: "UserData" },
