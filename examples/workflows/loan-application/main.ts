@@ -70,7 +70,7 @@ async function main() {
   //
   // ```
   // workflowActor.send({
-  //   type: "'submitted.guard.updated'",
+  //   type: "submitted.guard.updated",
   //   data: {
   //     Approved: false,
   //     Denied: false,

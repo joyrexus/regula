@@ -86,7 +86,7 @@ export const workflow = setup({
               SubmittedGuard: ({ event }) => event.data,
             }),
             ({ context }) => {
-              console.log("waiting for update");
+              console.log(`context is now ${JSON.stringify(context)}`);
             },
           ],
           target: "Submitted",
@@ -117,7 +117,7 @@ export const workflow = setup({
               SubmittedGuard: ({ event }) => event.data,
             }),
             ({ context }) => {
-              console.log("waiting for update");
+              console.log(`context is now ${JSON.stringify(context)}`);
             },
           ],
           target: "Submitted",
