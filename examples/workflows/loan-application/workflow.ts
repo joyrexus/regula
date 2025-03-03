@@ -22,6 +22,7 @@ export const workflow = setup({
       userUid: string;
       executionUid: string;
       SubmittedGuard: SubmittedGuard;
+      PendingGuard: PendingGuard;
     };
   },
   actors: {
@@ -58,6 +59,10 @@ export const workflow = setup({
         assign({
           SubmittedGuard: ({ event }) => event.data,
         }),
+        ({ context, event }) => {
+          console.log(`event received ${JSON.stringify(event)}`);
+          console.log(`context is now ${JSON.stringify(context)}`);
+        },
       ],
     },
     "pending.guard.updated": {
@@ -65,6 +70,10 @@ export const workflow = setup({
         assign({
           PendingGuard: ({ event }) => event.data,
         }),
+        ({ context, event }) => {
+          console.log(`event received ${JSON.stringify(event)}`);
+          console.log(`context is now ${JSON.stringify(context)}`);
+        },
       ],
     },
   },
@@ -78,7 +87,7 @@ export const workflow = setup({
       Denied: false,
       Pending: false,
     },
-    PendingGuard: {
+    PendingGuard: input?.PendingGuard || {
       Approved: false,
       Denied: false,
     },
@@ -109,8 +118,12 @@ export const workflow = setup({
           actions: [
             assign({
               SubmittedGuard: ({ event }) => event.data,
+              PendingGuard: ({ context }) => ({
+                ...context.PendingGuard,
+              }),
             }),
-            ({ context }) => {
+            ({ context, event }) => {
+              console.log(`event received ${JSON.stringify(event)}`);
               console.log(`context is now ${JSON.stringify(context)}`);
             },
           ],
@@ -155,8 +168,12 @@ export const workflow = setup({
           actions: [
             assign({
               PendingGuard: ({ event }) => event.data,
+              SubmittedGuard: ({ context }) => ({
+                ...context.SubmittedGuard,
+              }),
             }),
-            ({ context }) => {
+            ({ context, event }) => {
+              console.log(`event received ${JSON.stringify(event)}`);
               console.log(`context is now ${JSON.stringify(context)}`);
             },
           ],

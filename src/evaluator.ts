@@ -195,7 +195,7 @@ export class Evaluator {
         this.ruleset.default === this.ruleset.lastEvaluation?.result;
     }
     for (const rule of this.ruleset.rules) {
-      results[rule.name] = rule.lastEvaluation?.result;
+      results[rule.name] = rule.lastEvaluation?.result ?? false;
     }
     return results;
   }

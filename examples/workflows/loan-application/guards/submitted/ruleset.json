@@ -85,7 +85,39 @@
           }
         }
       ]
+    },
+    {
+      "name": "Pending",
+      "description": "Check if the applicant meets minimal qualifications for manual review.",
+      "and": [
+        {
+          "name": "Credit Score Known",
+          "path": "applicant.creditScore",
+          "isPresent": true,
+          "dataSource": {
+            "type": "async",
+            "name": "credit.update"
+          }
+        },
+        {
+          "name": "Income Level Known",
+          "path": "applicant.income",
+          "isPresent": true,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        },
+        {
+          "name": "Application Is Employed",
+          "path": "applicant.isEmployed",
+          "equals": true,
+          "dataSource": {
+            "type": "async",
+            "name": "employment.check"
+          }
+        }
+      ]
     }
-  ],
-  "default": "Pending"
+  ]
 }

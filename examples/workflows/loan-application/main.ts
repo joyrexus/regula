@@ -1,6 +1,7 @@
 import { createActor } from "xstate";
 import { workflow } from "./workflow";
 import { submittedGuardActor } from "./guards/submitted/evaluator";
+import { pendingGuardActor } from "./guards/pending/evaluator";
 
 // We need to revise this so that we can optionally pass in
 // data for the initial evaluation of the submitted guard actor.
@@ -16,7 +17,21 @@ import { submittedGuardActor } from "./guards/submitted/evaluator";
 //   },
 // });
 
-export const workflowActor = createActor(workflow);
+export const workflowActor = createActor(workflow, {
+  input: {
+    userUid: "xxx",
+    executionUid: "xxx",
+    SubmittedGuard: {
+      Approved: false,
+      Denied: false,
+      Pending: false,
+    },
+    PendingGuard: {
+      Approved: false,
+      Denied: false,
+    },
+  },
+});
 
 // Listen for state changes from our workflow actor.
 workflowActor.subscribe({
@@ -31,8 +46,6 @@ workflowActor.subscribe({
   },
 });
 
-workflowActor.start();
-
 // Listen for updates from our submitted guard actor
 // and send the results to our workflow actor.
 submittedGuardActor.subscribe((snapshot) => {
@@ -44,6 +57,19 @@ submittedGuardActor.subscribe((snapshot) => {
 
 submittedGuardActor.start();
 
+// Listen for updates from our pending guard actor
+// and send the results to our workflow actor.
+pendingGuardActor.subscribe((snapshot) => {
+  return workflowActor.send({
+    type: "pending.guard.updated",
+    data: snapshot.context.getResults(),
+  });
+});
+
+pendingGuardActor.start();
+
+workflowActor.start();
+
 // Now, let's send some events to our submitted guard actor
 // and see how our workflow actor responds.
 async function main() {
@@ -51,8 +77,8 @@ async function main() {
     type: "applicant.profile",
     context: {
       dataSource: { type: "sync", name: "applicant.profile" },
-      entityId: "XXXXXX",
       timestamp: new Date().toISOString(),
+      entityId: "XXXXXX",
       userId: "XXX",
     },
     data: {
@@ -86,8 +112,8 @@ async function main() {
     type: "employment.check",
     context: {
       dataSource: { type: "async", name: "employment.check" },
-      entityId: "XXXXXX",
       timestamp: new Date().toISOString(),
+      entityId: "XXXXXX",
       userId: "YYY",
     },
     data: {
@@ -103,17 +129,32 @@ async function main() {
     type: "credit.update",
     context: {
       dataSource: { type: "async", name: "credit.update" },
-      entityId: "XXXXXX",
       timestamp: new Date().toISOString(),
+      entityId: "XXXXXX",
       userId: "ZZZ",
     },
     data: {
       applicant: {
-        creditScore: 525,
+        creditScore: 325,
       },
     },
   });
-  // Results: { Approved: true, Denied: false, Pending: false }
+  // Results: { Approved: false, Denied: false, Pending: true }
+
+  pendingGuardActor.send({
+    type: "approval.update",
+    context: {
+      dataSource: { type: "async", name: "approval.update" },
+      timestamp: new Date().toISOString(),
+      entityId: "XXXXXX",
+      userId: "ZZZ",
+    },
+    data: {
+      application: {
+        isApproved: true,
+      },
+    },
+  });
 }
 
 main();

@@ -1,0 +1,26 @@
+{
+  "name": "Pending",
+  "description": "Await results of manual review.",
+  "rules": [
+    {
+      "name": "Approved",
+      "description": "Check if application was approved.",
+      "path": "application.isApproved",
+      "equals": true,
+      "dataSource": {
+        "type": "async",
+        "name": "approval.update"
+      }
+    },
+    {
+      "name": "Denied",
+      "description": "Check if application was rejected.",
+      "path": "application.isApproved",
+      "equals": false,
+      "dataSource": {
+        "type": "async",
+        "name": "approval.update"
+      }
+    }
+  ]
+}
