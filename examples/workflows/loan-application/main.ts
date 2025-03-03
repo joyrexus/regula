@@ -1,6 +1,6 @@
 import { createActor } from "xstate";
 import { workflow } from "./workflow";
-import { submittedGuardActor } from "./evaluator";
+import { submittedGuardActor } from "./guards/submitted/evaluator";
 
 // We need to revise this so that we can optionally pass in
 // data for the initial evaluation of the submitted guard actor.

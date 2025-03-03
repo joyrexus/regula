@@ -1,5 +1,5 @@
 import { fromTransition, createActor } from "xstate";
-import { Regula, EvaluationInput } from "../../../src";
+import { Regula, EvaluationInput } from "../../../../../src";
 import ruleset from "./ruleset.json";
 
 interface Event extends EvaluationInput {

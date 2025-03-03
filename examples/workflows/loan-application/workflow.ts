@@ -6,14 +6,21 @@ interface SubmittedGuard {
   Pending: boolean;
 }
 
+interface PendingGuard {
+  Approved: boolean;
+  Denied: boolean;
+}
+
 export const workflow = setup({
   types: {} as {
     context: {
-      userId: string;
+      userUid: string;
       SubmittedGuard: SubmittedGuard;
+      PendingGuard: PendingGuard;
     };
     input: {
-      userId: string;
+      userUid: string;
+      executionUid: string;
       SubmittedGuard: SubmittedGuard;
     };
   },
@@ -26,14 +33,20 @@ export const workflow = setup({
     }),
   },
   guards: {
-    Approved: ({ context }) => {
+    SubmittedToApproved: ({ context }) => {
       return context.SubmittedGuard.Approved;
     },
-    Denied: ({ context }) => {
+    SubmittedToDenied: ({ context }) => {
       return context.SubmittedGuard.Denied;
     },
-    Pending: ({ context }) => {
+    SubmittedToPending: ({ context }) => {
       return context.SubmittedGuard.Pending;
+    },
+    PendingToApproved: ({ context }) => {
+      return context.PendingGuard.Approved;
+    },
+    PendingToDenied: ({ context }) => {
+      return context.PendingGuard.Denied;
     },
   },
 }).createMachine({
@@ -47,15 +60,27 @@ export const workflow = setup({
         }),
       ],
     },
+    "pending.guard.updated": {
+      actions: [
+        assign({
+          PendingGuard: ({ event }) => event.data,
+        }),
+      ],
+    },
   },
 
   initial: "Submitted",
   context: ({ input }) => ({
-    userId: input?.userId || "unknown",
+    userUid: input?.userUid || "unknown",
+    executionUid: input?.executionUid,
     SubmittedGuard: input?.SubmittedGuard || {
       Approved: false,
       Denied: false,
       Pending: false,
+    },
+    PendingGuard: {
+      Approved: false,
+      Denied: false,
     },
   }),
   states: {
@@ -63,15 +88,15 @@ export const workflow = setup({
       always: [
         {
           target: "Approved",
-          guard: "Approved",
+          guard: "SubmittedToApproved",
         },
         {
           target: "Denied",
-          guard: "Denied",
+          guard: "SubmittedToDenied",
         },
         {
           target: "Pending",
-          guard: "Pending",
+          guard: "SubmittedToPending",
         },
         {
           target: "SubmittedWait",
@@ -104,23 +129,38 @@ export const workflow = setup({
       invoke: {
         src: "DeniedEmailPromise",
         input: ({ context }) => ({
-          userId: context.userId,
+          userUid: context.userUid,
         }),
         onDone: "End",
       },
     },
     Pending: {
+      always: [
+        {
+          target: "Approved",
+          guard: "PendingToApproved",
+        },
+        {
+          target: "Denied",
+          guard: "PendingToDenied",
+        },
+        {
+          target: "PendingdWait",
+        },
+      ],
+    },
+    PendingdWait: {
       on: {
-        "submitted.guard.updated": {
+        "pending.guard.updated": {
           actions: [
             assign({
-              SubmittedGuard: ({ event }) => event.data,
+              PendingGuard: ({ event }) => event.data,
             }),
             ({ context }) => {
               console.log(`context is now ${JSON.stringify(context)}`);
             },
           ],
-          target: "Submitted",
+          target: "Pending",
         },
       },
     },
