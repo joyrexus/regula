@@ -15,8 +15,8 @@ This example demonstrates how we can check the eligibility of a loan application
 For the example ([`index.ts`](./index.ts)), we define a ruleset that can produce the following evaluation results:
 
 - `Approved`: The loan application is approved.
+- `Pending`: The loan application is pending.
 - `Denied`: The loan application is denied.
-- `Pending`: The loan application is rejected.
 
 The ruleset is defined in the [`ruleset.json`](./ruleset.json) file.
 
