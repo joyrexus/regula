@@ -38,7 +38,7 @@ export class Regula {
 
     function traverse(rules: Rule[]): void {
       rules.forEach((rule) => {
-        if ("path" in rule && rule.dataSource) {
+        if ("field" in rule && rule.dataSource) {
           dataSources.add(rule.dataSource);
         }
         if ("and" in rule) {
@@ -126,7 +126,7 @@ export class Regula {
   /**
    * Recursively validates a rule and its sub-rules.
    *
-   * A valid rule must either have a 'path' property (for data test expressions)
+   * A valid rule must either have a 'field' property (for data test expressions)
    * or at least one of 'and', 'or', or 'not' (for boolean expressions).
    *
    * A rule can also have a 'name' property, which must be unique within the ruleset.
@@ -153,12 +153,12 @@ export class Regula {
         `Invalid rule name at ${path}: 'default' is a reserved name.`
       );
     }
-    if (!("path" in rule || rule.and || rule.or || rule.not)) {
+    if (!("field" in rule || rule.and || rule.or || rule.not)) {
       throw new ValidationError(
-        `Invalid rule at ${path}: A rule must have a path, and/or, or not condition.`
+        `Invalid rule at ${path}: A rule must have a field, and/or, or not condition.`
       );
     }
-    if ("path" in rule) {
+    if ("field" in rule) {
       if (rule.includesAny && !Array.isArray(rule.includesAny)) {
         throw new ValidationError(
           `Invalid type for 'includesAny' in rule at ${path}: ${rule.includesAny}`
@@ -271,7 +271,7 @@ export class Regula {
   /**
    * Recursively update a rule and its sub-rules if they match the input.
    *
-   * For data test expressions, the rule is updated only if its path exists
+   * For data test expressions, the rule is updated only if its field exists
    * in the input data.
    *
    * For boolean expressions, the rule is updated based on the lastEvaluation
@@ -343,11 +343,11 @@ export class Regula {
         updatedAt: now,
         updatedBy: userId,
       };
-    } else if ("path" in rule) {
-      // For a data test expression, check if the specified path exists in input.data.
-      const value = jmespath.search(rule.path, input.data);
+    } else if ("field" in rule) {
+      // For a data test expression, check if the specified field exists in input.data.
+      const value = jmespath.search(rule.field, input.data);
       if (value === undefined || value === null) {
-        // Do not update if the path doesn't exist.
+        // Do not update if the field doesn't exist.
         return;
       }
       let result: RuleResult = null;

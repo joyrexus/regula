@@ -16,7 +16,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check Age",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
           result: "Adult",
           dataSource: { type: "sync", name: "UserDB" },
@@ -54,7 +54,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check Age",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
           result: "Adult",
           dataSource: { type: "sync", name: "UserDB" },
@@ -98,21 +98,21 @@ describe("Regula.evaluate", () => {
           and: [
             {
               name: "Check Subscription",
-              path: "user.subscription.active",
+              field: "user.subscription.active",
               equals: true,
               result: "Subscription OK",
               dataSource: { type: "async", name: "SubscriptionService" },
             },
             {
               name: "Check Age",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
               result: "Age OK",
               dataSource: { type: "sync", name: "UserDB" },
             },
             {
               name: "Check Membership",
-              path: "user.membership",
+              field: "user.membership",
               equalsOneOf: ["gold", "silver"],
               dataSource: { type: "sync", name: "membership.data" },
               result: "Premium member",
@@ -207,13 +207,13 @@ describe("Regula.evaluate", () => {
     );
   });
 
-  it("does not update a rule if its path is not found in the current input, preserving the previous evaluation", () => {
+  it("does not update a rule if its field is not found in the current input, preserving the previous evaluation", () => {
     const ruleset: Ruleset = {
-      name: "Path Existence Test",
+      name: "field Existence Test",
       rules: [
         {
           name: "Check Email",
-          path: "user.email",
+          field: "user.email",
           isPresent: true,
           result: "Email exists",
           dataSource: { type: "sync", name: "UserDB" },
@@ -264,7 +264,7 @@ describe("Regula.evaluate", () => {
     };
 
     evaluated = Regula.evaluate(evaluated, evalInput2);
-    // Since the path "user.email" isn't present in evalInput2, the previous result should persist.
+    // Since the field "user.email" isn't present in evalInput2, the previous result should persist.
     expect(evaluated.rules[0].lastEvaluation?.result).toBe("Email exists");
     expect(evaluated.rules[0].lastEvaluation.updatedBy).toBe("user1");
     expect(evaluated.lastEvaluation?.result).toBe("Email exists");
@@ -277,7 +277,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check total",
-          path: "user.total",
+          field: "user.total",
           between: [0, 100],
           result: "User total in normal range",
         },
@@ -336,7 +336,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check roles",
-          path: "user.roles",
+          field: "user.roles",
           includesAny: ["admin", "moderator"],
           result: "User has admin or moderator role",
         },
@@ -376,7 +376,7 @@ describe("Regula.evaluate", () => {
           name: "Not VIP Check",
           not: {
             name: "VIP Check",
-            path: "user.vip",
+            field: "user.vip",
             equals: true,
             dataSource: { type: "sync", name: "UserDB" },
           },
@@ -415,7 +415,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check Age", // This rule is deactivated.
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
           result: "Adult",
           deactivated: {
@@ -462,14 +462,14 @@ describe("Regula.evaluate", () => {
           and: [
             {
               name: "Check Subscription",
-              path: "user.subscription.active",
+              field: "user.subscription.active",
               equals: true,
               result: "Subscription OK",
               dataSource: { type: "sync", name: "UserDB" },
             },
             {
               name: "Check Age",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
               result: "Age OK",
               dataSource: { type: "sync", name: "UserDB" },
@@ -533,7 +533,7 @@ describe("Regula.evaluate", () => {
       rules: [
         {
           name: "Check Points",
-          path: "user.totalPoints",
+          field: "user.totalPoints",
           greaterThan: 20,
           result: "Eligible for bonus round",
           dataSource: { type: "async", name: "user.scored" },
@@ -613,7 +613,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
           and: [
             {
               name: "Check age",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
               dataSource: { type: "sync", name: "user.data" },
               result: "Age is valid",
@@ -623,14 +623,14 @@ describe("Regula.evaluate with nested boolean expressions", () => {
               or: [
                 {
                   name: "Check gold membership",
-                  path: "user.membership",
+                  field: "user.membership",
                   equals: "gold",
                   dataSource: { type: "sync", name: "membership.data" },
                   result: "Premium member",
                 },
                 {
                   name: "Check silver membership",
-                  path: "user.membership",
+                  field: "user.membership",
                   equals: "silver",
                   dataSource: { type: "sync", name: "membership.data" },
                   result: "Premium member",
@@ -642,7 +642,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
               name: "Check user is not blacklisted",
               not: {
                 name: "Check blacklist status",
-                path: "user.blacklisted",
+                field: "user.blacklisted",
                 equals: true,
                 dataSource: { type: "sync", name: "blacklist.data" },
                 result: "User is blacklisted",
@@ -768,7 +768,7 @@ describe("Regula.validate", () => {
           and: [
             {
               name: "Sub Rule 1",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
             },
             {
@@ -777,12 +777,12 @@ describe("Regula.validate", () => {
               or: [
                 {
                   name: "Sub Sub Rule 1",
-                  path: "user.membership",
+                  field: "user.membership",
                   equals: "premium",
                 },
                 {
                   name: "Sub Sub Rule 2",
-                  path: "user.vip",
+                  field: "user.vip",
                   equals: true,
                 },
               ],
@@ -802,7 +802,7 @@ describe("Regula.validate", () => {
       rules: [
         {
           name: "Invalid Rule",
-          // Missing any of: path, and, or, not.
+          // Missing any of: field, and, or, not.
         } as any,
       ],
       default: "Default Result",
@@ -822,12 +822,12 @@ describe("Regula.validate", () => {
           and: [
             {
               name: "Valid Sub-Rule",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
             },
             {
               name: "Invalid Sub-Rule",
-              // Missing any of: path, and, or, not.
+              // Missing any of: field, and, or, not.
             } as any,
           ],
         },
@@ -849,14 +849,14 @@ describe("Regula.validate", () => {
           or: [
             {
               name: "Valid Sub-Rule",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
             },
             {
               name: "Invalid Sub-Rule",
               not: {
                 name: "Invalid Nested Rule",
-                // Missing any of: path, and, or, not.
+                // Missing any of: field, and, or, not.
               } as any,
             } as any,
           ],
@@ -876,7 +876,7 @@ describe("Regula.validate", () => {
       rules: [
         {
           name: "Rule1",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
         },
         {
@@ -884,12 +884,12 @@ describe("Regula.validate", () => {
           and: [
             {
               name: "SubRule1",
-              path: "user.membership",
+              field: "user.membership",
               equals: "premium",
             },
             {
               name: "SubRule2",
-              path: "user.vip",
+              field: "user.vip",
               equals: true,
             },
           ],
@@ -907,12 +907,12 @@ describe("Regula.validate", () => {
       rules: [
         {
           name: "Rule1",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
         },
         {
           name: "Rule1",
-          path: "user.membership",
+          field: "user.membership",
           equals: "premium",
         },
       ],
@@ -930,12 +930,12 @@ describe("Regula.validate", () => {
           and: [
             {
               name: "SubRule1",
-              path: "user.age",
+              field: "user.age",
               greaterThan: 18,
             },
             {
               name: "SubRule1", // Duplicate name in sub-rules
-              path: "user.membership",
+              field: "user.membership",
               equals: "premium",
             },
           ],
@@ -952,7 +952,7 @@ describe("Regula.validate", () => {
       rules: [
         {
           name: "Rule1",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
         },
         {
@@ -960,7 +960,7 @@ describe("Regula.validate", () => {
           and: [
             {
               name: "Rule1", // Duplicate name with top-level rule
-              path: "user.membership",
+              field: "user.membership",
               equals: "premium",
             },
           ],
@@ -977,7 +977,7 @@ describe("Regula.validate", () => {
       rules: [
         {
           name: "default", // Reserved name
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
           result: "APPROVED",
         },
@@ -998,7 +998,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "User signup date",
-          path: "user.signupDate",
+          field: "user.signupDate",
           afterDate: "02-07-2025", // Invalid format
         },
       ],
@@ -1015,7 +1015,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "Invalid Date Rule",
-          path: "user.membershipExpiration",
+          field: "user.membershipExpiration",
           beforeDate: "07-Feb-2025", // Invalid format
         },
       ],
@@ -1032,7 +1032,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "User active period",
-          path: "user.activePeriod",
+          field: "user.activePeriod",
           betweenDates: ["2025-02-07", "not-a-date"], // Invalid format for second value
         },
       ],
@@ -1049,17 +1049,17 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "User signup date",
-          path: "user.signupDate",
+          field: "user.signupDate",
           afterDate: "2025-02-07T13:25:13.666Z",
         },
         {
           name: "User membership expiration",
-          path: "user.membershipExpiration",
+          field: "user.membershipExpiration",
           beforeDate: "2030-12-31T23:59:59.999Z",
         },
         {
           name: "User was actived in 2024-2025",
-          path: "user.activePeriod",
+          field: "user.activePeriod",
           betweenDates: [
             "2024-01-01T00:00:00.000Z",
             "2025-12-31T23:59:59.999Z",
@@ -1077,7 +1077,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "Timestamp is after date",
-          path: "timestamp",
+          field: "timestamp",
           afterDate: "2025-02-01T00:00:00.000Z",
         },
       ],
@@ -1102,7 +1102,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "Timestamp is before date",
-          path: "timestamp",
+          field: "timestamp",
           beforeDate: "2025-02-10T00:00:00.000Z",
         },
       ],
@@ -1127,7 +1127,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "Timestamp is in date range",
-          path: "timestamp",
+          field: "timestamp",
           betweenDates: [
             "2025-02-01T00:00:00.000Z",
             "2025-02-15T23:59:59.999Z",
@@ -1155,7 +1155,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
       rules: [
         {
           name: "Timestamp is in date range",
-          path: "timestamp",
+          field: "timestamp",
           betweenDates: [
             "2025-02-01T00:00:00.000Z",
             "2025-02-15T23:59:59.999Z",

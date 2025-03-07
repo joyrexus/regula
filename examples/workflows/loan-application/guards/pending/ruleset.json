@@ -5,7 +5,7 @@
     {
       "name": "Approved",
       "description": "Check if application was approved.",
-      "path": "application.isApproved",
+      "field": "application.isApproved",
       "equals": true,
       "dataSource": {
         "type": "async",
@@ -15,7 +15,7 @@
     {
       "name": "Denied",
       "description": "Check if application was rejected.",
-      "path": "application.isApproved",
+      "field": "application.isApproved",
       "equals": false,
       "dataSource": {
         "type": "async",

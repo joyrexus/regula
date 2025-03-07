@@ -7,7 +7,7 @@
       "and": [
         {
           "name": "Check Subscription",
-          "path": "user.subscription.active",
+          "field": "user.subscription.active",
           "equals": true,
           "result": "Subscription OK",
           "dataSource": {
@@ -17,7 +17,7 @@
         },
         {
           "name": "Check Age",
-          "path": "user.age",
+          "field": "user.age",
           "greaterThan": 18,
           "result": "Age OK",
           "dataSource": {

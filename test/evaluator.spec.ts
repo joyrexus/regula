@@ -13,15 +13,15 @@ describe("Evaluator", () => {
       rules: [
         {
           name: "Rule1",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 18,
           dataSource: { type: "sync", name: "UserData" },
         },
         {
           name: "Rule2",
           and: [
-            { name: "SubRule1", path: "user.active", equals: true },
-            { name: "SubRule2", path: "user.verified", equals: true },
+            { name: "SubRule1", field: "user.active", equals: true },
+            { name: "SubRule2", field: "user.verified", equals: true },
           ],
           dataSource: { type: "sync", name: "UserData" },
         },
@@ -100,11 +100,11 @@ describe("Evaluator", () => {
   it("should get rules by name", () => {
     const rule1 = evaluator.getRule("Rule1");
     expect(rule1.name).toBe("Rule1");
-    expect((rule1 as DataTestExpression).path).toBe("user.age");
+    expect((rule1 as DataTestExpression).field).toBe("user.age");
 
     const subRule = evaluator.getRule("SubRule1");
     expect(subRule.name).toBe("SubRule1");
-    expect((subRule as DataTestExpression).path).toBe("user.active");
+    expect((subRule as DataTestExpression).field).toBe("user.active");
 
     expect(() => evaluator.getRule("NonExistentRule")).toThrow(EvaluationError);
   });
@@ -208,8 +208,8 @@ describe("Evaluator.getLastEvaluation", () => {
         {
           name: "Valid User Check",
           and: [
-            { name: "SubRule1", path: "user.active", equals: true },
-            { name: "SubRule2", path: "user.verified", equals: true },
+            { name: "SubRule1", field: "user.active", equals: true },
+            { name: "SubRule2", field: "user.verified", equals: true },
           ],
           result: "APPROVED",
         },
@@ -311,19 +311,19 @@ describe("Evaluator rule ordering", () => {
       rules: [
         {
           name: "Rule A",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 30,
           result: "RESULT_A",
         },
         {
           name: "Rule B",
-          path: "user.active",
+          field: "user.active",
           equals: true,
           result: "RESULT_B",
         },
         {
           name: "Rule C",
-          path: "user.verified",
+          field: "user.verified",
           equals: true,
           result: "RESULT_C",
         },
@@ -394,19 +394,19 @@ describe("Evaluator rule ordering", () => {
       rules: [
         {
           name: "Rule C",
-          path: "user.verified",
+          field: "user.verified",
           equals: true,
           result: "RESULT_C",
         },
         {
           name: "Rule A",
-          path: "user.age",
+          field: "user.age",
           greaterThan: 30,
           result: "RESULT_A",
         },
         {
           name: "Rule B",
-          path: "user.active",
+          field: "user.active",
           equals: true,
           result: "RESULT_B",
         },

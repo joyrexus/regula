@@ -68,7 +68,7 @@ Boolean expressions allow for logical combinations of rules using `and`, `or`, a
 
 ### Data Test Expressions
 
-Data test expressions evaluate incoming data from a specified `path` in the input.
+Data test expressions evaluate incoming data from a specified `field` in the input.
 
 | Expression          | Description                                                                   | Example Usage                                                      |
 | ------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |

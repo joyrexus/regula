@@ -22,7 +22,7 @@ export class Evaluator {
   ruleset: EvaluatedRuleset;
   private count: number;
   private dataSources: DataSource[];
-  private rulePaths: { [ruleName: string]: string };
+  private ruleFields: { [ruleName: string]: string };
 
   /**
    * Creates a new Evaluator instance with the specified ruleset.
@@ -33,7 +33,7 @@ export class Evaluator {
   constructor(ruleset: Ruleset | EvaluatedRuleset) {
     Regula.validate(ruleset);
     this.dataSources = Regula.getDataSources(ruleset);
-    this.rulePaths = Regula.getRulePaths(ruleset);
+    this.ruleFields = Regula.getRulePaths(ruleset);
     this.ruleset = structuredClone(ruleset);
     this.count = 0;
   }
@@ -103,11 +103,11 @@ export class Evaluator {
    * @throws {EvaluationError} If the rule is not found.
    */
   getRule(name: string): Rule {
-    const path = this.rulePaths[name];
-    if (!path) {
+    const field = this.ruleFields[name];
+    if (!field) {
       throw new EvaluationError(`Rule not found: ${name}`);
     }
-    const rule = jmespath.search(path, this.ruleset) as Rule;
+    const rule = jmespath.search(field, this.ruleset) as Rule;
     if (!rule) {
       throw new EvaluationError(`Rule not found: ${name}`);
     }
@@ -118,7 +118,7 @@ export class Evaluator {
    * Get an array of all rule names in the ruleset.
    */
   getRuleNames(): string[] {
-    return Object.keys(this.rulePaths);
+    return Object.keys(this.ruleFields);
   }
 
   /**

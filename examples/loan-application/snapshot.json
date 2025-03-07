@@ -8,7 +8,7 @@
       "and": [
         {
           "name": "Check Credit Score Qualifier",
-          "path": "applicant.creditScore",
+          "field": "applicant.creditScore",
           "greaterThanEquals": 500,
           "dataSource": {
             "type": "async",
@@ -22,7 +22,7 @@
         },
         {
           "name": "Check Income Qualifier",
-          "path": "applicant.income",
+          "field": "applicant.income",
           "greaterThanEquals": 50000,
           "dataSource": {
             "type": "async",
@@ -36,7 +36,7 @@
         },
         {
           "name": "Check Employment Status Qualifier",
-          "path": "applicant.isEmployed",
+          "field": "applicant.isEmployed",
           "equals": true,
           "dataSource": {
             "type": "async",
@@ -50,7 +50,7 @@
         },
         {
           "name": "Loan Amount Qualifier",
-          "path": "applicant.loanAmount",
+          "field": "applicant.loanAmount",
           "lessThanEquals": 100000,
           "dataSource": {
             "type": "sync",
@@ -76,7 +76,7 @@
       "or": [
         {
           "name": "Check Age Disqualifier",
-          "path": "applicant.age",
+          "field": "applicant.age",
           "lessThan": 18,
           "dataSource": {
             "type": "sync",
@@ -90,7 +90,7 @@
         },
         {
           "name": "Check Credit Score Disqualifier",
-          "path": "applicant.creditScore",
+          "field": "applicant.creditScore",
           "lessThan": 250,
           "dataSource": {
             "type": "async",
@@ -104,7 +104,7 @@
         },
         {
           "name": "Check Income Disqualifier",
-          "path": "applicant.income",
+          "field": "applicant.income",
           "lessThan": 25000,
           "dataSource": {
             "type": "async",
@@ -118,7 +118,7 @@
         },
         {
           "name": "Check Employment Status Disqualifier",
-          "path": "applicant.isEmployed",
+          "field": "applicant.isEmployed",
           "equals": false,
           "dataSource": {
             "type": "async",
