@@ -1,39 +1,39 @@
 import { EvaluationInput, Evaluator, Regula } from "../../../src";
 
 // Use the Composer to create a new ruleset.
-const composer = Regula.composer();
+const compose = Regula.composer();
 
-const ruleset = composer
+const ruleset = compose
   .ruleset("Submitted")
   .description(
     "Evaluate loan application based on applicant's credit score, income, and employment status."
   )
   .addRule(
-    composer
+    compose
       .boolean("Qualifying Factors")
       .description(
         "Check if the applicant is approved based on certain criteria."
       )
       .and([
-        composer
+        compose
           .dataTest("Check Credit Score Qualifier")
           .field("applicant.creditScore")
           .greaterThanEquals(500)
           .dataSource({ type: "async", name: "credit.update" })
           .build(),
-        composer
+        compose
           .dataTest("Check Income Qualifier")
           .field("applicant.income")
           .greaterThanEquals(50000)
           .dataSource({ type: "async", name: "employment.check" })
           .build(),
-        composer
+        compose
           .dataTest("Check Employment Status Qualifier")
           .field("applicant.isEmployed")
           .equals(true)
           .dataSource({ type: "async", name: "employment.check" })
           .build(),
-        composer
+        compose
           .dataTest("Loan Amount Qualifier")
           .field("applicant.loanAmount")
           .lessThanEquals(100000)
@@ -44,31 +44,31 @@ const ruleset = composer
       .build()
   )
   .addRule(
-    composer
+    compose
       .boolean("Disqualifing Factors")
       .description(
         "Check if the applicant should be denied based on certain criteria."
       )
       .or([
-        composer
+        compose
           .dataTest("Check Age Disqualifier")
           .field("applicant.age")
           .lessThan(18)
           .dataSource({ type: "sync", name: "applicant.profile" })
           .build(),
-        composer
+        compose
           .dataTest("Check Credit Score Disqualifier")
           .field("applicant.creditScore")
           .lessThan(250)
           .dataSource({ type: "async", name: "credit.update" })
           .build(),
-        composer
+        compose
           .dataTest("Check Income Disqualifier")
           .field("applicant.income")
           .lessThan(25000)
           .dataSource({ type: "async", name: "employment.check" })
           .build(),
-        composer
+        compose
           .dataTest("Check Employment Status Disqualifier")
           .field("applicant.isEmployed")
           .equals(false)

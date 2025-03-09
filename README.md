@@ -50,6 +50,7 @@ Regula is particularly useful in cases where you need to ...
 - **Successive Evaluations** – Support iterative evaluations where new data can update an existing ruleset evaluation instead of starting from scratch.
 - **Introspection** – Easily inspect the current state of a ruleset evaluation, including rule results, evaluation counts, and data sources.
 - **Scalability & Extensibility** – Designed to integrate into distributed, event-driven systems with minimal overhead.
+- **Type-Safe Composer API** – Use a fluent, type-safe API to programmatically build rulesets and rules.
 
 ## Supported Expressions
 
@@ -129,13 +130,6 @@ The `Evaluator` class provides the following utility methods:
 
 Regula's Composer API offers a fluent, declarative way to programmatically build rulesets and rules. This provides several advantages over manually defining JSON objects:
 
-- **Type-safe**: Compiler-checked method calls and auto-completion
-- **Validation**: Built-in validation during construction
-- **Readability**: Clear, chainable method calls for rule construction
-- **Reusability**: Create, combine, and reuse rule components
-
-### Key Capabilities
-
 - **Fluent Interface**: Chainable method calls for building rulesets and rules.
 - **Type Safety**: Ensures correctness through compiler checks.
 - **Built-in Validation**: Validates rules during construction.
@@ -162,27 +156,32 @@ Regula's Composer API offers a fluent, declarative way to programmatically build
 ### Basic Usage
 
 ```typescript
-const composer = Regula.composer();
+const compose = Regula.composer();
 
 // Create a ruleset with data test rules
-const loanRuleset = Composer.ruleset("Loan Application")
+const loanRuleset = compose
+  .ruleset("Loan Application")
   .description("Evaluates loan applications")
   .defaultResult("REJECTED")
   .addRule(
-    Composer.dataTest("Credit Score Check")
+    compose
+      .dataTest("Credit Score Check")
       .field("applicant.creditScore")
       .greaterThan(700)
       .result("APPROVED")
       .build()
   )
   .addRule(
-    Composer.boolean("Financial Status")
+    compose
+      .boolean("Financial Status")
       .and([
-        Composer.dataTest("Income Check")
+        compose
+          .dataTest("Income Check")
           .field("applicant.income")
           .greaterThan(50000)
           .build(),
-        Composer.dataTest("Debt Check")
+        compose
+          .dataTest("Debt Check")
           .field("applicant.debt")
           .lessThan(20000)
           .build(),
