@@ -35,8 +35,8 @@ Regula is particularly useful in cases where you need to ...
   - `npm run example:loan-application`
 - [**Composer**](./examples/composer/loan-application/README.md): use a `Composer` instance to compose a ruleset and its rules for a loan application check.
   - `npm run example:composer:loan-application`
-- [**Transition Actor**](./examples/transition-actor/README.md): setup a ruleset evaluator as a transition actor for guarding state transitions in a state machine.
 - Workflows
+  - [**Transition Actor**](./examples/transition-actor/README.md): setup a ruleset evaluator as a transition actor for guarding state transitions in a state machine.
   - [**Loan Application**](./examples/workflows/loan-application/README.md): use Regula to guard transitions in a loan application workflow.
 
 ## Key Features
