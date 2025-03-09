@@ -99,8 +99,8 @@ const evaluation = Regula.evaluator(ruleset);
 evaluation.evaluate({
   context: {
     dataSource: { type: "sync", name: "applicant.profile" },
-    entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
+    entityId: "XXXXXX",
     userId: "XXX",
   },
   data: {
@@ -118,8 +118,8 @@ pprint(evaluation);
 evaluation.evaluate({
   context: {
     dataSource: { type: "async", name: "employment.check" },
-    entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
+    entityId: "XXXXXX",
     userId: "YYY",
   },
   data: {
@@ -136,8 +136,8 @@ pprint(evaluation);
 evaluation.evaluate({
   context: {
     dataSource: { type: "async", name: "credit.update" },
-    entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
+    entityId: "XXXXXX",
     userId: "ZZZ",
   },
   data: {
@@ -153,8 +153,8 @@ pprint(evaluation);
 evaluation.evaluate({
   context: {
     dataSource: { type: "async", name: "credit.update" },
-    entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
+    entityId: "XXXXXX",
     userId: "ZZZ",
   },
   data: {
@@ -174,8 +174,8 @@ evaluation.deactivate({ reason: "Loan approval completed", user: "admin" });
 const updatedCreditScore: EvaluationInput = {
   context: {
     dataSource: { type: "async", name: "credit.update" },
-    entityId: "XXXXXX",
     timestamp: new Date().toISOString(),
+    entityId: "XXXXXX",
     userId: "ZZZ",
   },
   data: {

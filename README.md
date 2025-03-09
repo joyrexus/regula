@@ -193,4 +193,18 @@ const loanRuleset = compose
 
 // Use the ruleset with an evaluator
 const evaluator = Regula.evaluator(loanRuleset);
+
+const input: EvaluationInput = {
+  context: { ... },
+  data: {
+    applicant: {
+      creditScore: 750,
+      income: 60000,
+      debt: 15000,
+    },
+  },
+};
+
+const result = evaluator.evaluate(input);
+// APPROVED
 ```
