@@ -12,7 +12,6 @@ export interface BooleanExpression {
 
 export interface DataTestExpression {
   field: string; // a JMESPath to a value in the input data
-  dataSource?: DataSource;
   equals?: string | number | boolean;
   equalsOneOf?: (string | number)[];
   greaterThan?: number | string;
@@ -35,6 +34,7 @@ type RuleExpression = BooleanExpression | DataTestExpression;
 export type Rule = RuleExpression & {
   name: string;
   description?: string;
+  dataSource?: DataSource;
   deactivated?:
     | boolean
     | {

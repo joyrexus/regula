@@ -30,7 +30,11 @@ Regula is particularly useful in cases where you need to ...
 ## Examples
 
 - [**Membership Check**](./examples/membership-check/README.md): evaluate a simple ruleset to determine whether a user qualifies for a premium membership.
-- [**Loan Application**](./examples/loan-application/README.md): evaluate a loan application through a series of successive evaluations.
+  - `npm run example:membership-check`
+- [**Loan Application**](./examples/loan-application/README.md): successively evaluate a loan application ruleset with changing data inputs.
+  - `npm run example:loan-application`
+- [**Composer**](./examples/composer/loan-application/README.md): use a `Composer` instance to compose a ruleset and its rules for a loan application check.
+  - `npm run example:composer:loan-application`
 - [**Transition Actor**](./examples/transition-actor/README.md): setup a ruleset evaluator as a transition actor for guarding state transitions in a state machine.
 - Workflows
   - [**Loan Application**](./examples/workflows/loan-application/README.md): use Regula to guard transitions in a loan application workflow.
@@ -61,7 +65,7 @@ Boolean expressions allow for logical combinations of rules using `and`, `or`, a
 | Expression | Description                          | Example Usage           |
 | ---------- | ------------------------------------ | ----------------------- |
 | `and`      | All conditions must be true.         | `"and": [{...}, {...}]` |
-| `or`       | At least one condition must be true. | `"or": [{...}, {...}]`  |
+| `or`       | At least one condition must be true. | `"or": [{...}, {...}]   |
 | `not`      | Negates a condition.                 | `"not": {...}`          |
 
 ---
@@ -120,3 +124,74 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.addMeta("Check Age", { note: "critical" })`: add metadata to a specific rule
 - `evaluation.getMeta("Check Age")`: get metadata for a specific rule
 - `evaluation.toString()`: convert the ruleset to a JSON string
+
+## Composer API
+
+Regula's Composer API offers a fluent, declarative way to programmatically build rulesets and rules. This provides several advantages over manually defining JSON objects:
+
+- **Type-safe**: Compiler-checked method calls and auto-completion
+- **Validation**: Built-in validation during construction
+- **Readability**: Clear, chainable method calls for rule construction
+- **Reusability**: Create, combine, and reuse rule components
+
+### Key Capabilities
+
+- **Fluent Interface**: Chainable method calls for building rulesets and rules.
+- **Type Safety**: Ensures correctness through compiler checks.
+- **Built-in Validation**: Validates rules during construction.
+- **Enhanced Readability**: Clear and concise method chaining.
+- **Reusability**: Easily create and reuse rule components.
+
+### Builder Methods
+
+- `ruleset(name)`: Start building a new ruleset.
+- `description(text)`: Add a description to the ruleset or rule.
+- `defaultResult(result)`: Set the default result for the ruleset.
+- `addRule(rule)`: Add a rule to the ruleset.
+- `dataTest(name)`: Start building a data test rule.
+- `boolean(name)`: Start building a boolean rule.
+- `field(name)`: Specify the field to test in a data test rule.
+- `greaterThan(value)`: Add a greater-than condition to a data test rule.
+- `lessThan(value)`: Add a less-than condition to a data test rule.
+- `and(rules)`: Combine rules with a logical AND.
+- `or(rules)`: Combine rules with a logical OR.
+- `not(rule)`: Negate a rule.
+- `result(value)`: Set the result for a rule.
+- `build()`: Finalize the construction of a ruleset or rule.
+
+### Basic Usage
+
+```typescript
+const composer = Regula.composer();
+
+// Create a ruleset with data test rules
+const loanRuleset = Composer.ruleset("Loan Application")
+  .description("Evaluates loan applications")
+  .defaultResult("REJECTED")
+  .addRule(
+    Composer.dataTest("Credit Score Check")
+      .field("applicant.creditScore")
+      .greaterThan(700)
+      .result("APPROVED")
+      .build()
+  )
+  .addRule(
+    Composer.boolean("Financial Status")
+      .and([
+        Composer.dataTest("Income Check")
+          .field("applicant.income")
+          .greaterThan(50000)
+          .build(),
+        Composer.dataTest("Debt Check")
+          .field("applicant.debt")
+          .lessThan(20000)
+          .build(),
+      ])
+      .result("APPROVED")
+      .build()
+  )
+  .build();
+
+// Use the ruleset with an evaluator
+const evaluator = Regula.evaluator(loanRuleset);
+```

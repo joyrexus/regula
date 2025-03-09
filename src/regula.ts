@@ -1,4 +1,5 @@
 import * as jmespath from "@aws-lambda-powertools/jmespath";
+import { Composer } from "./composer";
 import { Evaluator } from "./evaluator";
 import {
   Ruleset,
@@ -8,7 +9,7 @@ import {
   EvaluationInput,
   EvaluatedRuleset,
 } from "./types";
-import { ValidationError, EvaluationError } from "./errors";
+import { ValidationError } from "./errors";
 
 /**
  * The Regula class provides static methods for evaluating rulesets.
@@ -16,6 +17,15 @@ import { ValidationError, EvaluationError } from "./errors";
 export class Regula {
   private static readonly ISO8601_REGEX =
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+
+  /**
+   * Create and return an instance of Composer.
+   * @returns A new Composer instance.
+   * @see {@link Composer}
+   */
+  static composer(): Composer {
+    return new Composer();
+  }
 
   /**
    * Create and return an instance of Evaluator.

@@ -8,6 +8,7 @@
     "prettier": "prettier --write .",
     "example:membership-check": "tsx ./examples/membership-check/index.ts",
     "example:loan-application": "tsx ./examples/loan-application/index.ts",
+    "example:composer:loan-application": "tsx ./examples/composer/loan-application/index.ts",
     "test": "jest"
   },
   "dependencies": {
