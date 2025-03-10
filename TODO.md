@@ -113,15 +113,69 @@ evaluation.getResult("ruleName");
 evaluation.getCount(); // equivalent to evaluation.count
 ```
 
+## Composer API
+
+Update the composer API to take a configuration object as constructor argument.
+
+It should have a `dataSources` attribute, an array of data sources, each with a `name`, `type` and `params` attributes.
+
+The `params` attribute should be an array of parameters, each with a `name`, `field` and `meta` attributes.
+
+
+```ts
+const config = {
+  "dataSources": [
+    {
+      "name": "draw_event",
+      "type": "async",
+      "params": [
+        {
+          "name": "Total Draw Amount",
+          "field": {
+            "path": "content.total_draw_amount",
+            "type": "number"
+          },
+          "meta": {}
+        }
+      ]
+    }
+  ]
+}
+
+const compose = Regula.composer(config);
+```
+
+Then, when composing a rule, we only need to specify a datasource parameter by name to get the corresponding datasource and field info for the rule.
+
+So, instead of ...
+
+```ts
+compose
+  .dataTest("Low Draw Amount")
+  .field("content.total_draw_amount")
+  .lessThan(100)
+  .dataSource({ type: "async", name: "credit.update" })
+  .build()
+```
+
+... we can do ...
+
+```ts
+compose
+  .dataTest("Low Draw Amount")
+  .parameter("Total Draw Amount")
+  .lessThan(100)
+  .build()
+```
+
+The `.parameter()` method should ...
+- lookup the parameter by name from an internal mapping of parameter names to their respective datasource and field info
+- only accept a known parameter name as argument, throwing an error otherwise.
+- throw an error if the parameter name is not found
+
+The `.build()` method should produce the same result as before, returning the relevant parameter's datasource and field info when building the rule.
+
 ## Examples
-
-### Current Task
-
-We need to update the Xstate Transition Guards example.
-
-In particular, when entering the `Submitted` state, we need to setup and invoke the `SubmittedEvaluator` transition actor for the `Submitted` state (i.e., a ruleset evaluator for the transition guards in the `Submitted` state) to get the current state of the ruleset and do an assignment to update the workflow context (`context.SubmittedGuard`) with the result of the evaluation.
-
-After the `context.SubmittedGuard` is updated, the workflow should then immediately transition to the new state (if one of the guarded transitions is permitted). Otherwise, it should transition to the `SubmittedWait` state.
 
 ### Xstate Transition Guards
 
@@ -146,9 +200,9 @@ When the `Submitted` state is entered, the machine will evaluate the guards for 
 - [x] have the workflow subscribe to its snapshot events (i.e., updates to its state)
 - [x] handle events received by the subscription to update the workflow context, setting the current state of each top-level rule in the ruleset
 - [x] add a wait state as the fall-through default if the current state of the guards do not permit transition to a new target state, viz. to listen for prior-state guard ruleset updated events ... and after receiving such events, do an assign to update the guard context and transition to the prior state
-- [ ] invoke a state's transition actor (i.e., guard ruleset evaluator) when entering the state it's guarding to get current state of the ruleset
-- [ ] provide more details about the example in the README
 
 ## Restate + Xstate
 
 Create an example demonstrating how regula ruleset evaluations can be be used to guard transitions in an xstate machine, where the machine is executed in a lambda and persists its state (both the state of the workflow and its ruleset evaluations) in a dynamodb table. So, the lambda will be executed whenever receiving an initiating event or an event from one its async data sources.
+
+The example should be based on [this blog post](https://restate.dev/blog/persistent-serverless-state-machines-with-xstate-and-restate/) and [code examples](https://github.com/restatedev/xstate/tree/main/examples).
