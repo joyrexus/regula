@@ -1,4 +1,9 @@
-import { Composer, RuleConfig, RulesetConfig } from "../src/composer";
+import {
+  Composer,
+  RuleConfig,
+  RulesetConfig,
+  ComposerConfig,
+} from "../src/composer";
 import { ValidationError } from "../src/errors";
 import { DataTestExpression, BooleanExpression } from "../src/types";
 
@@ -629,5 +634,216 @@ describe("composer", () => {
       expect(loanRuleset.name).toBe("Loan Application Ruleset");
       expect(loanRuleset.rules).toHaveLength(2);
     });
+  });
+});
+
+describe("Composer with parameters", () => {
+  const config: ComposerConfig = {
+    dataSources: [
+      {
+        name: "draw_event",
+        type: "async",
+        parameters: [
+          {
+            name: "Total Draw Amount",
+            field: {
+              path: "content.total_draw_amount",
+              type: "number",
+            },
+            meta: {},
+          },
+          {
+            name: "Draw Currency",
+            field: {
+              path: "content.currency",
+              type: "string",
+            },
+            meta: { description: "Currency code" },
+          },
+        ],
+      },
+      {
+        name: "user_profile",
+        type: "sync",
+        parameters: [
+          {
+            name: "User Age",
+            field: {
+              path: "profile.age",
+              type: "number",
+            },
+            meta: { validation: "required" },
+          },
+        ],
+      },
+    ],
+  };
+
+  it("should create a data test rule using a parameter", () => {
+    const composerWithParams = new Composer(config);
+
+    const rule = composerWithParams
+      .dataTest("Low Draw Amount")
+      .parameter("Total Draw Amount")
+      .lessThan(100)
+      .result("low_draw")
+      .build();
+
+    expect(rule.name).toBe("Low Draw Amount");
+    expect((rule as DataTestExpression).field).toBe(
+      "content.total_draw_amount"
+    );
+    expect((rule as DataTestExpression).lessThan).toBe(100);
+    expect(rule.result).toBe("low_draw");
+    expect(rule.dataSource).toEqual({ name: "draw_event", type: "async" });
+  });
+
+  it("should create multiple data test rules with different parameters", () => {
+    const composerWithParams = new Composer(config);
+
+    const drawRule = composerWithParams
+      .dataTest("USD Currency")
+      .parameter("Draw Currency")
+      .equals("USD")
+      .build();
+
+    const ageRule = composerWithParams
+      .dataTest("Adult User")
+      .parameter("User Age")
+      .greaterThanEquals(18)
+      .build();
+
+    expect(drawRule.name).toBe("USD Currency");
+    expect((drawRule as DataTestExpression).field).toBe("content.currency");
+    expect((drawRule as DataTestExpression).equals).toBe("USD");
+    expect(drawRule.dataSource).toEqual({ name: "draw_event", type: "async" });
+
+    expect(ageRule.name).toBe("Adult User");
+    expect((ageRule as DataTestExpression).field).toBe("profile.age");
+    expect((ageRule as DataTestExpression).greaterThanEquals).toBe(18);
+    expect(ageRule.dataSource).toEqual({ name: "user_profile", type: "sync" });
+  });
+
+  it("should create data test rule using parameter in createDataTestRule", () => {
+    const composerWithParams = new Composer(config);
+
+    const rule = composerWithParams.createDataTestRule(
+      "High Draw Amount",
+      (builder) => {
+        return builder
+          .parameter("Total Draw Amount")
+          .greaterThanEquals(1000)
+          .result("high_draw");
+      }
+    );
+
+    expect(rule.name).toBe("High Draw Amount");
+    expect((rule as DataTestExpression).field).toBe(
+      "content.total_draw_amount"
+    );
+    expect((rule as DataTestExpression).greaterThanEquals).toBe(1000);
+    expect(rule.dataSource).toEqual({ name: "draw_event", type: "async" });
+  });
+
+  it("should create a complex rule using parameters", () => {
+    const composerWithParams = new Composer(config);
+
+    const highDrawRule = composerWithParams
+      .dataTest("High Draw")
+      .parameter("Total Draw Amount")
+      .greaterThan(1000)
+      .build();
+
+    const usdRule = composerWithParams
+      .dataTest("USD Currency")
+      .parameter("Draw Currency")
+      .equals("USD")
+      .build();
+
+    const adultRule = composerWithParams
+      .dataTest("Adult User")
+      .parameter("User Age")
+      .greaterThanEquals(18)
+      .build();
+
+    const compositeRule = composerWithParams
+      .boolean("High USD Draw for Adult")
+      .and([highDrawRule, usdRule, adultRule])
+      .result("flag_for_review")
+      .build();
+
+    expect(compositeRule.name).toBe("High USD Draw for Adult");
+    expect(compositeRule.result).toBe("flag_for_review");
+    expect((compositeRule as BooleanExpression).and).toHaveLength(3);
+  });
+
+  it("should throw error when parameter name not found", () => {
+    const composerWithParams = new Composer(config);
+
+    expect(() => {
+      composerWithParams
+        .dataTest("Invalid Parameter")
+        .parameter("Non-existent Parameter")
+        .equals("test")
+        .build();
+    }).toThrow(ValidationError);
+
+    expect(() => {
+      composerWithParams
+        .dataTest("Invalid Parameter")
+        .parameter("Non-existent Parameter")
+        .equals("test")
+        .build();
+    }).toThrow('Parameter "Non-existent Parameter" not found');
+  });
+
+  it("should throw error when using parameter with no config", () => {
+    const composerNoConfig = new Composer();
+
+    expect(() => {
+      composerNoConfig
+        .dataTest("No Config")
+        .parameter("Any Parameter")
+        .equals("test")
+        .build();
+    }).toThrow(ValidationError);
+
+    expect(() => {
+      composerNoConfig
+        .dataTest("No Config")
+        .parameter("Any Parameter")
+        .equals("test")
+        .build();
+    }).toThrow("No parameters have been configured");
+  });
+
+  it("should allow using field() and dataSource() with parameter() in the same rule", () => {
+    const composerWithParams = new Composer(config);
+
+    // First set via parameter, then override field
+    const rule1 = composerWithParams
+      .dataTest("Override Field")
+      .parameter("Total Draw Amount")
+      .field("custom.field.path")
+      .greaterThan(100)
+      .build();
+
+    expect(rule1.name).toBe("Override Field");
+    expect((rule1 as DataTestExpression).field).toBe("custom.field.path");
+    expect(rule1.dataSource).toEqual({ name: "draw_event", type: "async" });
+
+    // First set via parameter, then override dataSource
+    const rule2 = composerWithParams
+      .dataTest("Override DataSource")
+      .parameter("Total Draw Amount")
+      .dataSource({ name: "custom_source", type: "sync" })
+      .greaterThan(100)
+      .build();
+
+    expect(rule2.name).toBe("Override DataSource");
+    expect((rule2 as DataTestExpression).field).toBe(
+      "content.total_draw_amount"
+    );
+    expect(rule2.dataSource).toEqual({ name: "custom_source", type: "sync" });
   });
 });

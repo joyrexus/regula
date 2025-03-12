@@ -10,6 +10,42 @@ import { Regula } from "./regula";
 import { Evaluator } from "./evaluator";
 
 /**
+ * Parameter configuration
+ */
+export interface ParameterConfig {
+  name: string;
+  field: {
+    path: string;
+    type: string;
+  };
+  meta: Record<string, any>;
+}
+
+/**
+ * Data source configuration
+ */
+export interface DataSourceConfig {
+  name: string;
+  type: string;
+  parameters: ParameterConfig[];
+}
+
+/**
+ * Composer configuration
+ */
+export interface ComposerConfig {
+  dataSources?: DataSourceConfig[];
+}
+
+/**
+ * Parameter information
+ */
+interface ParameterInfo {
+  dataSource: DataSource;
+  field: string;
+}
+
+/**
  * Configuration object for rules
  */
 export interface RuleConfig {
@@ -119,12 +155,43 @@ export class RuleBuilder {
  * Builder for data test expressions
  */
 export class DataTestBuilder extends RuleBuilder {
+  constructor(
+    name: string,
+    config?: RuleConfig,
+    private parameterMap?: Map<string, ParameterInfo>
+  ) {
+    super(name, config);
+  }
+
   /**
    * Sets the field path for the data test
    * @param field The field path (JMESPath expression)
    */
   field(field: string): this {
     (this.rule as DataTestExpression).field = field;
+    return this;
+  }
+
+  /**
+   * Sets the parameter for the data test by name
+   * @param parameterName The name of the parameter defined in the configuration
+   */
+  parameter(parameterName: string): this {
+    if (!this.parameterMap || this.parameterMap.size === 0) {
+      throw new ValidationError("No parameters have been configured");
+    }
+
+    const paramInfo = this.parameterMap.get(parameterName);
+    if (!paramInfo) {
+      throw new ValidationError(`Parameter "${parameterName}" not found`);
+    }
+
+    // Set field path from the parameter config
+    (this.rule as DataTestExpression).field = paramInfo.field;
+
+    // Set data source from the parameter config
+    this.rule.dataSource = paramInfo.dataSource;
+
     return this;
   }
 
@@ -530,13 +597,44 @@ export class RulesetBuilder {
  * Factory methods for creating rules and rulesets
  */
 export class Composer {
+  private parameterMap: Map<string, ParameterInfo> = new Map();
+
+  /**
+   * Creates a new composer instance
+   * @param config Configuration object with data sources and parameters
+   */
+  constructor(config?: ComposerConfig) {
+    if (config?.dataSources) {
+      this.initializeParameters(config.dataSources);
+    }
+  }
+
+  /**
+   * Initialize parameters from configuration
+   */
+  private initializeParameters(dataSources: DataSourceConfig[]): void {
+    dataSources.forEach((ds) => {
+      const dataSource: DataSource = {
+        name: ds.name,
+        type: ds.type as "sync" | "async",
+      };
+
+      ds.parameters.forEach((param) => {
+        this.parameterMap.set(param.name, {
+          dataSource,
+          field: param.field.path,
+        });
+      });
+    });
+  }
+
   /**
    * Creates a new data test rule builder
    * @param name Rule name
    * @param config Optional rule configuration
    */
   dataTest(name: string, config?: RuleConfig): DataTestBuilder {
-    return new DataTestBuilder(name, config);
+    return new DataTestBuilder(name, config, this.parameterMap);
   }
 
   /**
@@ -586,7 +684,7 @@ export class Composer {
     builder: (b: DataTestBuilder) => DataTestBuilder,
     config?: RuleConfig
   ): Rule {
-    const b = new DataTestBuilder(name, config);
+    const b = new DataTestBuilder(name, config, this.parameterMap);
     return builder(b).build();
   }
 

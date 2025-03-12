@@ -115,37 +115,40 @@ evaluation.getCount(); // equivalent to evaluation.count
 
 ## Composer API
 
-Update the composer API to take a configuration object as constructor argument.
+Update the Composer API to accept a configuration object with data sources and parameters. This will make it easier to compose data test rules using predefined parameters.
 
-It should have a `dataSources` attribute, an array of data sources, each with a `name`, `type` and `params` attributes.
+The config object should have a `dataSources` attribute, an array of data sources, each with a `name`, `type` and `parameters` attributes.
 
-The `params` attribute should be an array of parameters, each with a `name`, `field` and `meta` attributes.
-
+The `parameters` attribute should be an array of parameters, each with a `name`, `field` and `meta` attributes.
 
 ```ts
 const config = {
-  "dataSources": [
+  dataSources: [
     {
-      "name": "draw_event",
-      "type": "async",
-      "params": [
+      name: "draw_event",
+      type: "async",
+      parameters: [
         {
-          "name": "Total Draw Amount",
-          "field": {
-            "path": "content.total_draw_amount",
-            "type": "number"
+          name: "Total Draw Amount",
+          field: {
+            path: "content.total_draw_amount",
+            type: "number",
           },
-          "meta": {}
-        }
-      ]
-    }
-  ]
-}
+          meta: {},
+        },
+      ],
+    },
+  ],
+};
 
 const compose = Regula.composer(config);
 ```
 
-Then, when composing a rule, we only need to specify a datasource parameter by name to get the corresponding datasource and field info for the rule.
+The intent of this update is to make it easier for a user to compose a `dataTest` rule.
+
+A user should have the option of specifying their dataSource parameters up front.
+
+If a user specifies their dataSource parameters in advance, they would only need to specify a parameter by name when composing a `dataTest` rule. The Composer `build` method should use the parameter name to get the corresponding `dataSource` and `field` info when composing the rule.
 
 So, instead of ...
 
@@ -155,25 +158,26 @@ compose
   .field("content.total_draw_amount")
   .lessThan(100)
   .dataSource({ type: "async", name: "credit.update" })
-  .build()
+  .build();
 ```
 
-... we can do ...
+... a user composing a `dataTest` rule should be able to do ...
 
 ```ts
 compose
   .dataTest("Low Draw Amount")
   .parameter("Total Draw Amount")
   .lessThan(100)
-  .build()
+  .build();
 ```
 
-The `.parameter()` method should ...
+The new `.parameter()` method should ...
+
 - lookup the parameter by name from an internal mapping of parameter names to their respective datasource and field info
 - only accept a known parameter name as argument, throwing an error otherwise.
 - throw an error if the parameter name is not found
 
-The `.build()` method should produce the same result as before, returning the relevant parameter's datasource and field info when building the rule.
+The existing `.build()` method should produce the same result as before, but produce the relevant parameter's datasource and field info when building the rule.
 
 ## Examples
 
