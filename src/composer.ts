@@ -46,6 +46,7 @@ export interface ComposerConfig {
 interface ParameterInfo {
   dataSource: DataSource;
   field: string;
+  meta?: Record<string, any>;
 }
 
 /**
@@ -194,6 +195,16 @@ export class DataTestBuilder extends RuleBuilder {
 
     // Set data source from the parameter config
     this.rule.dataSource = paramInfo.dataSource;
+
+    // Set metadata from the parameter config if available
+    if (paramInfo.meta && Object.keys(paramInfo.meta).length > 0) {
+      if (!this.rule.meta) {
+        this.rule.meta = {};
+      }
+
+      // Merge parameter metadata with existing rule metadata
+      Object.assign(this.rule.meta, paramInfo.meta);
+    }
 
     return this;
   }
@@ -655,6 +666,7 @@ export class Composer {
         this.parameterMap.set(param.name, {
           dataSource,
           field: param.field.path,
+          meta: param.meta || {},
         });
       });
     });

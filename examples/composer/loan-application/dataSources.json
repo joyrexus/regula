@@ -10,6 +10,9 @@
         "field": {
           "path": "applicant.loanAmount",
           "type": "number"
+        },
+        "meta": {
+          "unit": "USD"
         }
       },
       {
