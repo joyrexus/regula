@@ -7,7 +7,7 @@ import {
 import { ValidationError } from "../src/errors";
 import { DataTestExpression, BooleanExpression } from "../src/types";
 
-const composer = new Composer();
+const composer = new Composer({ prefixRuleNames: true });
 
 describe("composer", () => {
   describe("DataTestBuilder", () => {

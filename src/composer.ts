@@ -10,9 +10,9 @@ import { Regula } from "./regula";
 import { Evaluator } from "./evaluator";
 
 /**
- * Parameter configuration
+ * Data source parameter
  */
-export interface ParameterConfig {
+export interface Parameter {
   name: string;
   description?: string;
   field: {
@@ -26,10 +26,10 @@ export interface ParameterConfig {
  * Data source configuration
  */
 export interface DataSourceConfig {
-  name: string;
   type: string;
+  name: string;
   description?: string;
-  parameters: ParameterConfig[];
+  parameters: Parameter[];
 }
 
 /**
@@ -37,6 +37,7 @@ export interface DataSourceConfig {
  */
 export interface ComposerConfig {
   dataSources?: DataSourceConfig[];
+  prefixRuleNames?: boolean; // whether to prefix rule names with their parent rule name
 }
 
 /**
@@ -379,30 +380,46 @@ export class BooleanBuilder extends RuleBuilder {
   private rules: Rule[] = [];
 
   /**
-   * Creates a deep clone of a rule with a prefixed name
+   * Creates a new boolean rule builder
+   * @param name Rule name
+   * @param config Optional rule configuration
+   * @param prefixRuleNames Whether to prefix subrule names with parent rule name
+   */
+  constructor(
+    name: string,
+    config?: RuleConfig,
+    private prefixRuleNames: boolean = true
+  ) {
+    super(name, config);
+  }
+
+  /**
+   * Creates a deep clone of a rule with an optionally prefixed name
    * @param rule Rule to clone and rename
-   * @returns A new rule with prefixed name
+   * @returns A new rule with optionally prefixed name
    */
   private cloneAndPrefixRule(rule: Rule): Rule {
     // Create a deep clone of the rule
-    const clonedRule = JSON.parse(JSON.stringify(rule));
+    const clonedRule = structuredClone(rule);
 
-    // Prefix the rule name with the parent rule name
-    clonedRule.name = `${this.rule.name} | ${rule.name}`;
+    // Prefix the rule name with the parent rule name if configured to do so
+    if (this.prefixRuleNames) {
+      clonedRule.name = `${this.rule.name} | ${rule.name}`;
 
-    // If this is a boolean expression, recursively rename its subrules too
-    if ("and" in clonedRule && Array.isArray(clonedRule.and)) {
-      clonedRule.and = clonedRule.and.map((r: Rule) =>
-        this.cloneAndPrefixRule(r)
-      );
-    }
-    if ("or" in clonedRule && Array.isArray(clonedRule.or)) {
-      clonedRule.or = clonedRule.or.map((r: Rule) =>
-        this.cloneAndPrefixRule(r)
-      );
-    }
-    if ("not" in clonedRule) {
-      clonedRule.not = this.cloneAndPrefixRule(clonedRule.not);
+      // If this is a boolean expression, recursively rename its subrules too
+      if ("and" in clonedRule && Array.isArray(clonedRule.and)) {
+        clonedRule.and = clonedRule.and.map((r: Rule) =>
+          this.cloneAndPrefixRule(r)
+        );
+      }
+      if ("or" in clonedRule && Array.isArray(clonedRule.or)) {
+        clonedRule.or = clonedRule.or.map((r: Rule) =>
+          this.cloneAndPrefixRule(r)
+        );
+      }
+      if ("not" in clonedRule) {
+        clonedRule.not = this.cloneAndPrefixRule(clonedRule.not);
+      }
     }
 
     return clonedRule;
@@ -600,6 +617,7 @@ export class RulesetBuilder {
  */
 export class Composer {
   private parameterMap: Map<string, ParameterInfo> = new Map();
+  private prefixRuleNames: boolean = false; // Default to false
 
   /**
    * Creates a new composer instance
@@ -618,6 +636,9 @@ export class Composer {
     if (config?.dataSources) {
       this.initializeParameters(config.dataSources);
     }
+
+    // Set prefixRuleNames from config or default to false
+    this.prefixRuleNames = config?.prefixRuleNames ?? false;
   }
 
   /**
@@ -654,7 +675,7 @@ export class Composer {
    * @param config Optional rule configuration
    */
   boolean(name: string, config?: RuleConfig): BooleanBuilder {
-    return new BooleanBuilder(name, config);
+    return new BooleanBuilder(name, config, this.prefixRuleNames);
   }
 
   /**
@@ -710,7 +731,7 @@ export class Composer {
     builder: (b: BooleanBuilder) => BooleanBuilder,
     config?: RuleConfig
   ): Rule {
-    const b = new BooleanBuilder(name, config);
+    const b = new BooleanBuilder(name, config, this.prefixRuleNames);
     return builder(b).build();
   }
 
@@ -730,13 +751,13 @@ export class Composer {
     const determineType = (builderFn: Function) => {
       const fnString = builderFn.toString();
       if (fnString.includes(".field(")) {
-        return new DataTestBuilder(name, config);
+        return new DataTestBuilder(name, config, this.parameterMap);
       } else if (
         fnString.includes(".and(") ||
         fnString.includes(".or(") ||
         fnString.includes(".not(")
       ) {
-        return new BooleanBuilder(name, config);
+        return new BooleanBuilder(name, config, this.prefixRuleNames);
       }
       throw new ValidationError(
         "Unable to determine rule type from builder function"
