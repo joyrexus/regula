@@ -1,7 +1,8 @@
 import { EvaluationInput, Evaluator, Regula } from "../../../src";
+import dataSources from "./dataSources.json";
 
 // Use the Composer to create a new ruleset.
-const compose = Regula.composer();
+const compose = Regula.composer({ dataSources });
 
 const ruleset = compose
   .ruleset("Submitted")
@@ -17,27 +18,23 @@ const ruleset = compose
       .and([
         compose
           .dataTest("Check Credit Score Qualifier")
-          .field("applicant.creditScore")
+          .parameter("creditScore")
           .greaterThanEquals(500)
-          .dataSource({ type: "async", name: "credit.update" })
           .build(),
         compose
           .dataTest("Check Income Qualifier")
-          .field("applicant.income")
+          .parameter("income")
           .greaterThanEquals(50000)
-          .dataSource({ type: "async", name: "employment.check" })
           .build(),
         compose
           .dataTest("Check Employment Status Qualifier")
-          .field("applicant.isEmployed")
+          .parameter("applicantIsEmployed")
           .equals(true)
-          .dataSource({ type: "async", name: "employment.check" })
           .build(),
         compose
           .dataTest("Loan Amount Qualifier")
-          .field("applicant.loanAmount")
+          .parameter("loanAmount")
           .lessThanEquals(100000)
-          .dataSource({ type: "sync", name: "applicant.profile" })
           .build(),
       ])
       .result("Approved")
@@ -52,27 +49,23 @@ const ruleset = compose
       .or([
         compose
           .dataTest("Check Age Disqualifier")
-          .field("applicant.age")
+          .parameter("applicantAge")
           .lessThan(18)
-          .dataSource({ type: "sync", name: "applicant.profile" })
           .build(),
         compose
           .dataTest("Check Credit Score Disqualifier")
-          .field("applicant.creditScore")
+          .parameter("creditScore")
           .lessThan(250)
-          .dataSource({ type: "async", name: "credit.update" })
           .build(),
         compose
           .dataTest("Check Income Disqualifier")
-          .field("applicant.income")
+          .parameter("income")
           .lessThan(25000)
-          .dataSource({ type: "async", name: "employment.check" })
           .build(),
         compose
           .dataTest("Check Employment Status Disqualifier")
-          .field("applicant.isEmployed")
+          .parameter("applicantIsEmployed")
           .equals(false)
-          .dataSource({ type: "async", name: "employment.check" })
           .build(),
       ])
       .result("Denied")

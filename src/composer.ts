@@ -14,11 +14,12 @@ import { Evaluator } from "./evaluator";
  */
 export interface ParameterConfig {
   name: string;
+  description?: string;
   field: {
     path: string;
     type: string;
   };
-  meta: Record<string, any>;
+  meta?: Record<string, any>;
 }
 
 /**
@@ -27,6 +28,7 @@ export interface ParameterConfig {
 export interface DataSourceConfig {
   name: string;
   type: string;
+  description?: string;
   parameters: ParameterConfig[];
 }
 
@@ -602,6 +604,15 @@ export class Composer {
   /**
    * Creates a new composer instance
    * @param config Configuration object with data sources and parameters
+   * @example
+   * const compose = Regula.composer({
+   *   dataSources: [
+   *     { type: "sync", name: "applicant.profile", parameters: [...] },
+   *   ]
+   * });
+   * @see {@link ComposerConfig} for more details on the configuration structure
+   * @see {@link DataSourceConfig} for details on data source configuration
+   * @see {@link ParameterConfig} for details on parameter configuration
    */
   constructor(config?: ComposerConfig) {
     if (config?.dataSources) {

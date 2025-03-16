@@ -1,15 +1,22 @@
 # Loan Approval
 
+This example demonstrates how we can compose a ruleset for evaluating loan applications.
+
+In particular, it illustrates how a ruleset's data sources can be specified prior to composing a ruleset, simplifying the composition process: ([`dataSources.json`](./dataSources.json)).
+
+> Instead of specifying each rule's data source when composing a ruleset, we configure the ruleset composer with a list of available data sources and their parameters. This allows us to focus on the logic of the ruleset without getting bogged down in the details of data sources.
+
 ```
 npm run example:composer:loan-application
 ```
 
 - [`index.ts`](./index.ts): example code
+- [`dataSources.json`](./dataSources.json): configuration file for the ruleset composer, specifying available data sources and their parameters
 - [`snapshot.json`](./snapshot.json): snapshot of the final evaluation result
 
 ---
 
-This example demonstrates how we can check the eligibility of a loan application and approve or reject it based on the applicant's credit score, employment status, income, and other factors.
+## Overview
 
 For the example ([`index.ts`](./index.ts)), we compose a ruleset that can produce the following evaluation results:
 
@@ -74,9 +81,4 @@ This example demonstrates how to use Regula to evaluate a loan application throu
 
 ## Key Takeaways
 
-- **Successive Evaluations**: The ruleset maintains state across multiple evaluations.
-- **Asynchronous Data Handling**: Different data sources (e.g., `credit.update`, `employment.check`) contribute data over time.
-- **Mutable Evaluation State**: The evaluation result evolves as more data becomes available.
-- **Deactivation and Reactivation**: Evaluations can be frozen and resumed, ensuring stability in decision-making processes.
-
-This example illustrates how Regula can be used to track compliance and business logic over time within an event-driven workflow.
+- The `Composer` class simplifies the process of creating rulesets by allowing us to specify data sources and parameters in advance.

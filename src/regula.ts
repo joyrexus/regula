@@ -1,5 +1,5 @@
 import * as jmespath from "@aws-lambda-powertools/jmespath";
-import { Composer } from "./composer";
+import { Composer, ComposerConfig } from "./composer";
 import { Evaluator } from "./evaluator";
 import {
   Ruleset,
@@ -20,11 +20,13 @@ export class Regula {
 
   /**
    * Create and return an instance of Composer.
+   * @param config Optional configuration for the Composer.
    * @returns A new Composer instance.
    * @see {@link Composer}
+   * @see {@link ComposerConfig}
    */
-  static composer(): Composer {
-    return new Composer();
+  static composer(config?: ComposerConfig): Composer {
+    return new Composer(config);
   }
 
   /**

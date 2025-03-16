@@ -1,0 +1,63 @@
+[
+  {
+    "type": "sync",
+    "name": "applicant.profile",
+    "description": "Applicant's profile data",
+    "parameters": [
+      {
+        "name": "loanAmount",
+        "description": "The amount of the loan",
+        "field": {
+          "path": "applicant.loanAmount",
+          "type": "number"
+        }
+      },
+      {
+        "name": "applicantAge",
+        "description": "The age of the applicant",
+        "field": {
+          "path": "applicant.age",
+          "type": "number"
+        }
+      }
+    ]
+  },
+  {
+    "type": "async",
+    "name": "employment.check",
+    "description": "Employment verification report data",
+    "parameters": [
+      {
+        "name": "applicantIsEmployed",
+        "description": "Is the applicant currently employed?",
+        "field": {
+          "path": "applicant.isEmployed",
+          "type": "boolean"
+        }
+      },
+      {
+        "name": "income",
+        "description": "The income of the applicant",
+        "field": {
+          "path": "applicant.income",
+          "type": "number"
+        }
+      }
+    ]
+  },
+  {
+    "type": "async",
+    "name": "credit.update",
+    "description": "Credit score data",
+    "parameters": [
+      {
+        "name": "creditScore",
+        "description": "The credit score of the applicant",
+        "field": {
+          "path": "applicant.creditScore",
+          "type": "number"
+        }
+      }
+    ]
+  }
+]
