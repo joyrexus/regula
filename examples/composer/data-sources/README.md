@@ -2,16 +2,15 @@
 
 This example demonstrates how we can compose a ruleset for evaluating loan applications.
 
-In particular, it illustrates how a ruleset's data sources can be specified prior to composing a ruleset, simplifying the composition process: ([`dataSources.json`](./dataSources.json)).
+In particular, it illustrates how a ruleset's data sources can be composed prior to composing a ruleset, simplifying the composition process.
 
-> Instead of specifying each rule's data source when composing a ruleset, we configure the ruleset composer with a list of available data sources and their parameters. This allows us to focus on the logic of the ruleset without getting bogged down in the details of data sources.
-
-```
-npm run example:composer:loan-application
-```
+> Instead of specifying each rule's data source when composing a ruleset, we first compose the data sources, each of which contains a list of parameters.
+>
+> Then we can configure the ruleset composer with the data sources, enabling us to use the rule parameters specified in the data sources when composing the ruleset.
+>
+> This allows us to focus on the logic of the ruleset without getting bogged down in the details of data sources.
 
 - [`index.ts`](./index.ts): example code
-- [`dataSources.json`](./dataSources.json): configuration file for the ruleset composer, specifying available data sources and their parameters
 - [`snapshot.json`](./snapshot.json): snapshot of the final evaluation result
 
 ---
@@ -30,6 +29,11 @@ can be seen in the [`snapshot.json`](./snapshot.json) file.
 ## Walkthrough
 
 This example demonstrates how to use Regula to evaluate a loan application through a series of successive evaluations. It highlights how Regula maintains the state of evaluations over time and adapts to new input from different data sources.
+
+- **Compose the Data Sources**
+
+  - The `DataSourceBuilder` class is used to create an array of data sources, each of which contains a list of parameters.
+  - Each data source is composed of a name, type, and parameters.
 
 - **Compose the Ruleset**
 

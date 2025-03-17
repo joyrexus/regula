@@ -5,7 +5,6 @@
     "description": "Applicant's profile data",
     "parameters": [
       {
-        "id": "applicant.profile.001",
         "name": "loanAmount",
         "description": "The amount of the loan",
         "field": "applicant.loanAmount",
@@ -15,7 +14,6 @@
         }
       },
       {
-        "id": "applicant.profile.002",
         "name": "applicantAge",
         "description": "The age of the applicant",
         "field": "applicant.age",
@@ -29,14 +27,12 @@
     "description": "Employment verification report data",
     "parameters": [
       {
-        "id": "employment.check.001",
         "name": "applicantIsEmployed",
         "description": "Is the applicant currently employed?",
         "field": "applicant.isEmployed",
         "type": "boolean"
       },
       {
-        "id": "employment.check.002",
         "name": "income",
         "description": "The income of the applicant",
         "field": "applicant.income",
@@ -50,7 +46,6 @@
     "description": "Credit score data",
     "parameters": [
       {
-        "id": "credit.update.001",
         "name": "creditScore",
         "description": "The credit score of the applicant",
         "field": "applicant.creditScore",
