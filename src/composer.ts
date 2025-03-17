@@ -28,6 +28,7 @@ export interface DataSourceConfig {
   name: string;
   description?: string;
   parameters: Parameter[];
+  meta?: Record<string, any>;
 }
 
 /**
@@ -508,7 +509,159 @@ export class BooleanBuilder extends RuleBuilder {
       booleanRule.not = this.rules[0];
     }
 
+    // Inherit dataSource from child rules if not explicitly set
+    if (!this.rule.dataSource && this.rules.length > 0) {
+      // Find the first child rule with a dataSource
+      for (const rule of this.rules) {
+        if (rule.dataSource) {
+          this.rule.dataSource = rule.dataSource;
+          break;
+        }
+      }
+    }
+
     return super.build();
+  }
+}
+
+/**
+ * Builder for data source parameters
+ */
+export class ParameterBuilder {
+  private parameter: Partial<Parameter> = {};
+
+  /**
+   * Creates a new parameter builder
+   * @param name The name of the parameter
+   */
+  constructor(name: string) {
+    if (!name || name.trim() === "") {
+      throw new ValidationError("Parameter name cannot be empty");
+    }
+    this.parameter.name = name;
+  }
+
+  /**
+   * Sets the description for the parameter
+   * @param description The description
+   */
+  description(description: string): this {
+    this.parameter.description = description;
+    return this;
+  }
+
+  /**
+   * Sets the field path for the parameter
+   * @param field The field path (JMESPath expression)
+   */
+  field(field: string): this {
+    this.parameter.field = field;
+    return this;
+  }
+
+  /**
+   * Sets the type for the parameter
+   * @param type The parameter type
+   */
+  type(type: string): this {
+    this.parameter.type = type;
+    return this;
+  }
+
+  /**
+   * Sets meta for the parameter
+   * @param key Metadata key
+   * @param value Metadata value
+   */
+  meta(key: string, value: any): this {
+    if (!this.parameter.meta) {
+      this.parameter.meta = {};
+    }
+    this.parameter.meta[key] = value;
+    return this;
+  }
+
+  /**
+   * Builds and returns the parameter
+   */
+  build(): Parameter {
+    if (!this.parameter.field) {
+      throw new ValidationError("Parameter must have a field");
+    }
+    if (!this.parameter.type) {
+      throw new ValidationError("Parameter must have a type");
+    }
+    return this.parameter as Parameter;
+  }
+}
+
+/**
+ * Builder for data sources
+ */
+export class DataSourceBuilder {
+  private dataSource: Partial<DataSourceConfig> = {
+    parameters: [],
+  };
+
+  /**
+   * Creates a new data source builder
+   * @param name The name of the data source
+   */
+  constructor(name: string) {
+    if (!name || name.trim() === "") {
+      throw new ValidationError("Data source name cannot be empty");
+    }
+    this.dataSource.name = name;
+  }
+
+  /**
+   * Sets the type for the data source
+   * @param type The data source type ("sync" or "async")
+   */
+  type(type: "sync" | "async"): this {
+    this.dataSource.type = type;
+    return this;
+  }
+
+  /**
+   * Sets the description for the data source
+   * @param description The description
+   */
+  description(description: string): this {
+    this.dataSource.description = description;
+    return this;
+  }
+
+  /**
+   * Adds parameters to the data source
+   * @param parameters Array of parameters to add
+   */
+  parameters(parameters: Parameter[]): this {
+    this.dataSource.parameters = parameters;
+    return this;
+  }
+
+  /**
+   * Sets meta for the data source
+   * @param key Metadata key
+   * @param value Metadata value
+   */
+  meta(key: string, value: any): this {
+    if (!this.dataSource.meta) {
+      this.dataSource.meta = {};
+    }
+    this.dataSource.meta[key] = value;
+    return this;
+  }
+
+  /**
+   * Builds and returns the data source configuration
+   */
+  build(): DataSourceConfig {
+    if (!this.dataSource.type) {
+      throw new ValidationError("Data source must have a type");
+    }
+    return this.dataSource as DataSourceConfig;
   }
 }
 
@@ -517,17 +670,20 @@ export class BooleanBuilder extends RuleBuilder {
  */
 export class RulesetBuilder {
   private ruleset: Ruleset;
+  private composer: Composer;
 
   /**
    * Creates a new ruleset builder
+   * @param composer The composer instance
    * @param name The ruleset name
    * @param config Optional configuration for the ruleset
    */
-  constructor(name: string, config?: RulesetConfig) {
+  constructor(composer: Composer, name: string, config?: RulesetConfig) {
     if (!name || name.trim() === "") {
       throw new ValidationError("Ruleset name cannot be empty");
     }
 
+    this.composer = composer;
     this.ruleset = {
       name,
       rules: [],
@@ -575,6 +731,18 @@ export class RulesetBuilder {
       this.ruleset.meta = {};
     }
     this.ruleset.meta[key] = value;
+    return this;
+  }
+
+  /**
+   * Sets up the ruleset with data sources
+   * @param config Configuration object with data sources
+   */
+  setup(config: { dataSources: DataSourceConfig[] }): this {
+    if (config.dataSources) {
+      this.ruleset.dataSources = config.dataSources;
+      this.composer.initializeFromDataSources(config.dataSources);
+    }
     return this;
   }
 
@@ -641,7 +809,7 @@ export class Composer {
    */
   constructor(config?: ComposerConfig) {
     if (config?.dataSources) {
-      this.initializeParameters(config.dataSources);
+      this.initializeFromDataSources(config.dataSources);
     }
 
     // Set prefixRuleNames from config or default to false
@@ -651,7 +819,7 @@ export class Composer {
   /**
    * Initialize parameters from configuration
    */
-  private initializeParameters(dataSources: DataSourceConfig[]): void {
+  public initializeFromDataSources(dataSources: DataSourceConfig[]): void {
     dataSources.forEach((ds) => {
       const dataSource: DataSource = {
         name: ds.name,
@@ -699,7 +867,7 @@ export class Composer {
    * @param config Optional ruleset configuration
    */
   ruleset(name: string, config?: RulesetConfig): RulesetBuilder {
-    return new RulesetBuilder(name, config);
+    return new RulesetBuilder(this, name, config);
   }
 
   /**
@@ -713,7 +881,7 @@ export class Composer {
     rulesets: Ruleset[],
     config?: RulesetConfig
   ): Ruleset {
-    const builder = new RulesetBuilder(name, config);
+    const builder = new RulesetBuilder(this, name, config);
     rulesets.forEach((ruleset) => {
       builder.appendRuleset(ruleset);
     });
@@ -781,5 +949,21 @@ export class Composer {
 
     const b = determineType(builder);
     return builder(b).build();
+  }
+
+  /**
+   * Creates a new parameter builder
+   * @param name The name of the parameter
+   */
+  parameter(name: string): ParameterBuilder {
+    return new ParameterBuilder(name);
+  }
+
+  /**
+   * Creates a new data source builder
+   * @param name The name of the data source
+   */
+  dataSource(name: string): DataSourceBuilder {
+    return new DataSourceBuilder(name);
   }
 }

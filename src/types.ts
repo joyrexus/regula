@@ -1,3 +1,5 @@
+import { DataSourceConfig } from "./composer";
+
 export interface DataSource {
   type: string; // "sync" | "async";
   name: string;
@@ -55,16 +57,15 @@ export interface RuleEvaluation {
   updatedBy?: string;
 }
 
-export type Ruleset = {
+export interface Ruleset {
   name: string;
-  description?: string;
   rules: Rule[];
+  description?: string;
   default?: string;
   version?: string;
-  meta?: {
-    [key: string]: any;
-  };
-};
+  meta?: Record<string, any>;
+  dataSources?: DataSourceConfig[];
+}
 
 export type RuleResult = string | boolean;
 
@@ -106,13 +107,13 @@ export interface EvaluatedRuleset extends Ruleset {
 
 // This is how we'd persist the evaluation in a database.
 export interface EvaluationRecord extends EvaluatedRuleset {
-  id: string; // UUID
-  dataSources?: DataSource[]; // data sources relevant to evaluation
-  updateTopic: string; // topic to send evaluation updates
-  schedule?: string; // to schedule recurring evaluations
-  done?: boolean; // avoid evaluating if true
-  deleted?: boolean; // avoid displaying if true
-  createdAt: string; // ISO 8601 Date Time stamp
+  id: string;
+  tenantId: string;
+  createdAt: string;
   updatedAt?: string; // ISO 8601 Date Time stamp
   updatedBy?: string; // user ID
+  dataSources: DataSourceConfig[];
+  evaluations: Evaluation[];
+  done?: boolean; // avoid evaluating if true
+  deleted?: boolean; // avoid displaying if true
 }

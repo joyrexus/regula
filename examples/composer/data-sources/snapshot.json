@@ -1,0 +1,169 @@
+{
+  "name": "Submitted",
+  "rules": [
+    {
+      "name": "Qualifying Factors",
+      "description": "Check if the applicant is approved based on certain criteria.",
+      "result": "Approved",
+      "and": [
+        {
+          "name": "Check Credit Score Qualifier",
+          "field": "applicant.creditScore",
+          "dataSource": {
+            "name": "credit.update",
+            "type": "async"
+          },
+          "greaterThanEquals": 500,
+          "lastEvaluation": {
+            "result": false,
+            "updatedAt": "2025-03-16T18:48:51.690Z",
+            "updatedBy": "ZZZ"
+          }
+        },
+        {
+          "name": "Check Income Qualifier",
+          "field": "applicant.income",
+          "dataSource": {
+            "name": "employment.check",
+            "type": "async"
+          },
+          "greaterThanEquals": 50000,
+          "lastEvaluation": {
+            "result": true,
+            "updatedAt": "2025-03-16T18:48:51.689Z",
+            "updatedBy": "YYY"
+          }
+        },
+        {
+          "name": "Check Employment Status Qualifier",
+          "field": "applicant.isEmployed",
+          "dataSource": {
+            "name": "employment.check",
+            "type": "async"
+          },
+          "equals": true,
+          "lastEvaluation": {
+            "result": true,
+            "updatedAt": "2025-03-16T18:48:51.689Z",
+            "updatedBy": "YYY"
+          }
+        },
+        {
+          "name": "Loan Amount Qualifier",
+          "field": "applicant.loanAmount",
+          "dataSource": {
+            "name": "applicant.profile",
+            "type": "sync"
+          },
+          "meta": {
+            "unit": "USD"
+          },
+          "lessThanEquals": 100000,
+          "lastEvaluation": {
+            "result": true,
+            "updatedAt": "2025-03-16T18:48:51.688Z",
+            "updatedBy": "XXX"
+          }
+        }
+      ],
+      "lastEvaluation": {
+        "result": false,
+        "updatedAt": "2025-03-16T18:48:51.690Z",
+        "updatedBy": "ZZZ"
+      }
+    },
+    {
+      "name": "Disqualifing Factors",
+      "description": "Check if the applicant should be denied based on certain criteria.",
+      "result": "Denied",
+      "or": [
+        {
+          "name": "Check Age Disqualifier",
+          "field": "applicant.age",
+          "dataSource": {
+            "name": "applicant.profile",
+            "type": "sync"
+          },
+          "lessThan": 18,
+          "lastEvaluation": {
+            "result": false,
+            "updatedAt": "2025-03-16T18:48:51.688Z",
+            "updatedBy": "XXX"
+          }
+        },
+        {
+          "name": "Check Credit Score Disqualifier",
+          "field": "applicant.creditScore",
+          "dataSource": {
+            "name": "credit.update",
+            "type": "async"
+          },
+          "lessThan": 250,
+          "lastEvaluation": {
+            "result": true,
+            "updatedAt": "2025-03-16T18:48:51.690Z",
+            "updatedBy": "ZZZ"
+          }
+        },
+        {
+          "name": "Check Income Disqualifier",
+          "field": "applicant.income",
+          "dataSource": {
+            "name": "employment.check",
+            "type": "async"
+          },
+          "lessThan": 25000,
+          "lastEvaluation": {
+            "result": false,
+            "updatedAt": "2025-03-16T18:48:51.689Z",
+            "updatedBy": "YYY"
+          }
+        },
+        {
+          "name": "Check Employment Status Disqualifier",
+          "field": "applicant.isEmployed",
+          "dataSource": {
+            "name": "employment.check",
+            "type": "async"
+          },
+          "equals": false,
+          "lastEvaluation": {
+            "result": false,
+            "updatedAt": "2025-03-16T18:48:51.689Z",
+            "updatedBy": "YYY"
+          }
+        }
+      ],
+      "lastEvaluation": {
+        "result": "Denied",
+        "updatedAt": "2025-03-16T18:48:51.690Z",
+        "updatedBy": "ZZZ"
+      }
+    }
+  ],
+  "description": "Evaluate loan application based on applicant's credit score, income, and employment status.",
+  "default": "Pending",
+  "lastEvaluation": {
+    "input": {
+      "context": {
+        "dataSource": {
+          "type": "async",
+          "name": "credit.update"
+        },
+        "timestamp": "2025-03-16T18:48:51.690Z",
+        "entityId": "XXXXXX",
+        "userId": "ZZZ"
+      },
+      "data": {
+        "applicant": {
+          "creditScore": 225
+        }
+      }
+    },
+    "result": "Denied",
+    "resultFrom": "Disqualifing Factors",
+    "evaluatedAt": "2025-03-16T18:48:51.690Z",
+    "evaluatedBy": "ZZZ"
+  },
+  "deactivated": false
+}

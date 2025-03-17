@@ -841,3 +841,343 @@ describe("Composer with parameters", () => {
     expect(rule2.dataSource).toEqual({ name: "custom_source", type: "sync" });
   });
 });
+
+describe("Data Source and Parameter Builders", () => {
+  it("should create a data source with parameters", () => {
+    const composer = new Composer();
+
+    const dataSource = composer
+      .dataSource("applicant.profile")
+      .type("sync")
+      .description("Applicant's profile data")
+      .parameters([
+        composer
+          .parameter("loanAmount")
+          .description("The amount of the loan")
+          .field("applicant.loanAmount")
+          .type("number")
+          .meta("unit", "USD")
+          .build(),
+        composer
+          .parameter("applicantAge")
+          .description("The age of the applicant")
+          .field("applicant.age")
+          .type("number")
+          .build(),
+      ])
+      .build();
+
+    expect(dataSource.name).toBe("applicant.profile");
+    expect(dataSource.type).toBe("sync");
+    expect(dataSource.description).toBe("Applicant's profile data");
+    expect(dataSource.parameters).toHaveLength(2);
+    expect(dataSource.parameters[0].name).toBe("loanAmount");
+    expect(dataSource.parameters[0].field).toBe("applicant.loanAmount");
+    expect(dataSource.parameters[0].type).toBe("number");
+    expect(dataSource.parameters[0].meta).toEqual({ unit: "USD" });
+    expect(dataSource.parameters[1].name).toBe("applicantAge");
+    expect(dataSource.parameters[1].field).toBe("applicant.age");
+    expect(dataSource.parameters[1].type).toBe("number");
+  });
+
+  it("should throw error when building parameter without required fields", () => {
+    const composer = new Composer();
+
+    expect(() => {
+      composer.parameter("test").build();
+    }).toThrow(new ValidationError("Parameter must have a field"));
+
+    expect(() => {
+      composer.parameter("test").field("test.field").build();
+    }).toThrow(new ValidationError("Parameter must have a type"));
+
+    expect(() => {
+      composer.parameter("test").type("string").build();
+    }).toThrow(new ValidationError("Parameter must have a field"));
+  });
+
+  it("should throw error when building data source without required fields", () => {
+    const composer = new Composer();
+
+    expect(() => {
+      composer.dataSource("test").build();
+    }).toThrow(new ValidationError("Data source must have a type"));
+
+    expect(() => {
+      composer.dataSource("test").type("sync").build();
+    }).not.toThrow();
+  });
+
+  it("should create a ruleset with data sources", () => {
+    const composer = new Composer();
+
+    const dataSources = [
+      composer
+        .dataSource("applicant")
+        .type("sync")
+        .description("Applicant information")
+        .parameters([
+          composer
+            .parameter("loanAmount")
+            .description("The loan amount requested")
+            .field("applicant.loanAmount")
+            .type("number")
+            .meta("unit", "USD")
+            .build(),
+          composer
+            .parameter("applicantAge")
+            .description("The age of the applicant")
+            .field("applicant.age")
+            .type("number")
+            .build(),
+        ])
+        .build(),
+    ];
+
+    const ruleset = composer
+      .ruleset("Loan Application")
+      .setup({ dataSources })
+      .description("Evaluate loan application");
+
+    const loanAmountRule = composer
+      .dataTest("Loan Amount Check")
+      .parameter("loanAmount")
+      .greaterThan(1000)
+      .build();
+
+    const ageRule = composer
+      .dataTest("Age Check")
+      .parameter("applicantAge")
+      .greaterThanEquals(18)
+      .build();
+
+    const builtRuleset = ruleset
+      .addRule(
+        composer
+          .boolean("Loan Requirements")
+          .and([loanAmountRule, ageRule])
+          .build()
+      )
+      .build();
+
+    expect(builtRuleset.name).toBe("Loan Application");
+    expect(builtRuleset.dataSources).toEqual(dataSources);
+    expect(builtRuleset.rules).toHaveLength(1);
+    expect(builtRuleset.rules[0].name).toBe("Loan Requirements");
+    expect(builtRuleset.rules[0].dataSource).toEqual({
+      name: "applicant",
+      type: "sync",
+    });
+  });
+
+  it("should throw error when creating parameter with empty name", () => {
+    const composer = new Composer();
+
+    expect(() => {
+      composer.parameter("").build();
+    }).toThrow(new ValidationError("Parameter name cannot be empty"));
+
+    expect(() => {
+      composer.parameter("   ").build();
+    }).toThrow(new ValidationError("Parameter name cannot be empty"));
+  });
+
+  it("should throw error when creating data source with empty name", () => {
+    const composer = new Composer();
+
+    expect(() => {
+      composer.dataSource("").build();
+    }).toThrow(new ValidationError("Data source name cannot be empty"));
+
+    expect(() => {
+      composer.dataSource("   ").build();
+    }).toThrow(new ValidationError("Data source name cannot be empty"));
+  });
+
+  it("should support adding multiple meta fields to parameter", () => {
+    const composer = new Composer();
+
+    const parameter = composer
+      .parameter("test")
+      .field("test.field")
+      .type("string")
+      .meta("unit", "USD")
+      .meta("required", true)
+      .meta("maxLength", 100)
+      .build();
+
+    expect(parameter.meta).toEqual({
+      unit: "USD",
+      required: true,
+      maxLength: 100,
+    });
+  });
+
+  it("should support adding multiple meta fields to data source", () => {
+    const composer = new Composer();
+
+    const dataSource = composer
+      .dataSource("test")
+      .type("sync")
+      .meta("version", "1.0")
+      .meta("deprecated", false)
+      .meta("owner", "team-a")
+      .build();
+
+    expect(dataSource.meta).toEqual({
+      version: "1.0",
+      deprecated: false,
+      owner: "team-a",
+    });
+  });
+
+  it("should support creating a complex ruleset with multiple data sources", () => {
+    const composer = new Composer();
+
+    const dataSources = [
+      composer
+        .dataSource("applicant.profile")
+        .type("sync")
+        .description("Applicant's profile data")
+        .parameters([
+          composer
+            .parameter("loanAmount")
+            .description("The amount of the loan")
+            .field("applicant.loanAmount")
+            .type("number")
+            .meta("unit", "USD")
+            .build(),
+          composer
+            .parameter("applicantAge")
+            .description("The age of the applicant")
+            .field("applicant.age")
+            .type("number")
+            .build(),
+        ])
+        .build(),
+      composer
+        .dataSource("credit.check")
+        .type("async")
+        .description("Credit score verification")
+        .parameters([
+          composer
+            .parameter("creditScore")
+            .description("Applicant's credit score")
+            .field("credit.score")
+            .type("number")
+            .meta("min", 300)
+            .meta("max", 850)
+            .build(),
+        ])
+        .build(),
+    ];
+
+    const ruleset = composer
+      .ruleset("Loan Application")
+      .setup({ dataSources })
+      .description("Evaluate loan application")
+      .version("1.0")
+      .meta("department", "finance")
+      .addRule(
+        composer
+          .dataTest("Loan Amount Check")
+          .parameter("loanAmount")
+          .greaterThan(1000)
+          .result("high_value")
+          .build()
+      )
+      .addRule(
+        composer
+          .dataTest("Credit Score Check")
+          .parameter("creditScore")
+          .greaterThan(700)
+          .result("good_credit")
+          .build()
+      )
+      .build();
+
+    expect(ruleset.name).toBe("Loan Application");
+    expect(ruleset.description).toBe("Evaluate loan application");
+    expect(ruleset.version).toBe("1.0");
+    expect(ruleset.meta).toEqual({ department: "finance" });
+    expect(ruleset.dataSources).toEqual(dataSources);
+    expect(ruleset.rules).toHaveLength(2);
+    expect((ruleset.rules[0] as DataTestExpression).field).toBe(
+      "applicant.loanAmount"
+    );
+    expect((ruleset.rules[1] as DataTestExpression).field).toBe(
+      "credit.score"
+    );
+  });
+
+  it("should support creating a ruleset with data sources and boolean rules", () => {
+    const composer = new Composer();
+
+    const dataSources = [
+      composer
+        .dataSource("applicant.profile")
+        .type("sync")
+        .description("Applicant's profile data")
+        .parameters([
+          composer
+            .parameter("loanAmount")
+            .description("The amount of the loan")
+            .field("applicant.loanAmount")
+            .type("number")
+            .meta("unit", "USD")
+            .build(),
+          composer
+            .parameter("applicantAge")
+            .description("The age of the applicant")
+            .field("applicant.age")
+            .type("number")
+            .build(),
+        ])
+        .build(),
+    ];
+
+    // First initialize the ruleset with data sources to set up parameters
+    const rulesetBuilder = composer
+      .ruleset("Loan Application")
+      .setup({ dataSources })
+      .description("Evaluate loan application");
+
+    // Now create rules that use parameters
+    const loanAmountRule = composer
+      .dataTest("Loan Amount Check")
+      .parameter("loanAmount")
+      .greaterThan(1000)
+      .build();
+
+    const ageRule = composer
+      .dataTest("Age Check")
+      .parameter("applicantAge")
+      .greaterThanEquals(18)
+      .build();
+
+    // Complete the ruleset
+    const ruleset = rulesetBuilder
+      .addRule(
+        composer
+          .boolean("Financial Requirements")
+          .and([loanAmountRule, ageRule])
+          .result("qualified")
+          .build()
+      )
+      .build();
+
+    expect(ruleset.name).toBe("Loan Application");
+    expect(ruleset.description).toBe("Evaluate loan application");
+    expect(ruleset.dataSources).toEqual(dataSources);
+    expect(ruleset.rules).toHaveLength(1);
+    expect((ruleset.rules[0] as BooleanExpression).and).toHaveLength(2);
+    expect((ruleset.rules[0] as BooleanExpression).and?.[0].dataSource).toEqual({
+      name: "applicant.profile",
+      type: "sync",
+    });
+    expect((ruleset.rules[0] as BooleanExpression).and?.[1].dataSource).toEqual({
+      name: "applicant.profile",
+      type: "sync",
+    });
+  });
+});
