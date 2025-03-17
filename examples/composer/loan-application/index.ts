@@ -1,9 +1,11 @@
 import { EvaluationInput, Evaluator, Regula } from "../../../src";
 import dataSources from "./dataSources.json";
 
-// Use the Composer to create a new ruleset.
+// Initialize the Regula composer with the provided data sources.
 const compose = Regula.composer({ dataSources });
 
+// Compose a ruleset using the rule parameters from
+// the data sources specified in `dataSources.json`.
 const ruleset = compose
   .ruleset("Submitted")
   .description(

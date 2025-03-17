@@ -646,18 +646,14 @@ describe("Composer with parameters", () => {
         parameters: [
           {
             name: "Total Draw Amount",
-            field: {
-              path: "content.total_draw_amount",
-              type: "number",
-            },
+            field: "content.total_draw_amount",
+            type: "number",
             meta: {},
           },
           {
             name: "Draw Currency",
-            field: {
-              path: "content.currency",
-              type: "string",
-            },
+            field: "content.currency",
+            type: "string",
             meta: { description: "Currency code" },
           },
         ],
@@ -668,10 +664,8 @@ describe("Composer with parameters", () => {
         parameters: [
           {
             name: "User Age",
-            field: {
-              path: "profile.age",
-              type: "number",
-            },
+            field: "profile.age",
+            type: "number",
             meta: { validation: "required" },
           },
         ],

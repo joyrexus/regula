@@ -15,10 +15,8 @@ import { Evaluator } from "./evaluator";
 export interface Parameter {
   name: string;
   description?: string;
-  field: {
-    path: string;
-    type: string;
-  };
+  field: string;
+  type: string;
   meta?: Record<string, any>;
 }
 
@@ -196,15 +194,15 @@ export class DataTestBuilder extends RuleBuilder {
     // Set data source from the parameter config
     this.rule.dataSource = paramInfo.dataSource;
 
-    // Set metadata from the parameter config if available
-    if (paramInfo.meta && Object.keys(paramInfo.meta).length > 0) {
-      if (!this.rule.meta) {
-        this.rule.meta = {};
-      }
+    paramInfo.meta = paramInfo.meta || {}; // Ensure meta is defined
+    paramInfo.meta.parameterName = parameterName; // Include parameter name in meta
 
-      // Merge parameter metadata with existing rule metadata
-      Object.assign(this.rule.meta, paramInfo.meta);
+    if (!this.rule.meta) {
+      this.rule.meta = {};
     }
+
+    // Merge parameter metadata with existing rule metadata
+    Object.assign(this.rule.meta, paramInfo.meta);
 
     return this;
   }
@@ -634,14 +632,12 @@ export class Composer {
    * Creates a new composer instance
    * @param config Configuration object with data sources and parameters
    * @example
-   * const compose = Regula.composer({
+   * const compose = new Composer({
    *   dataSources: [
    *     { type: "sync", name: "applicant.profile", parameters: [...] },
    *   ]
    * });
    * @see {@link ComposerConfig} for more details on the configuration structure
-   * @see {@link DataSourceConfig} for details on data source configuration
-   * @see {@link ParameterConfig} for details on parameter configuration
    */
   constructor(config?: ComposerConfig) {
     if (config?.dataSources) {
@@ -665,11 +661,18 @@ export class Composer {
       ds.parameters.forEach((param) => {
         this.parameterMap.set(param.name, {
           dataSource,
-          field: param.field.path,
+          field: param.field,
           meta: param.meta || {},
         });
       });
     });
+  }
+
+  /**
+   * Gets the parameter map for the configured data sources
+   */
+  getParameters(): Map<string, ParameterInfo> {
+    return this.parameterMap;
   }
 
   /**

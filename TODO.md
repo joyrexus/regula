@@ -179,6 +179,41 @@ The new `.parameter()` method should ...
 
 The existing `.build()` method should produce the same result as before, but produce the relevant parameter's datasource and field info when building the rule.
 
+### Data Source and Parameter Builders
+
+Consider adding a `dataSource` and `parameter` builder to the Composer API to simplify how data sources and their paramters are defined.
+
+The aim here is to simplify the setup of ruleset configurations by allowing users to define data sources and their parameters in a more structured way.
+
+```ts
+const compose = new Composer();
+const dataSources = [
+    compose
+      .dataSource("applicant.profile")
+      .type("sync")
+      .description("Applicant's profile data")
+      .parameters([
+        compose
+          .parameter("loanAmount")
+          .description("The amount of loan requested by the applicant")
+          .field("applicant.loanAmount")
+          .type("number")
+          .meta({ unit: "USD" })
+          .build(),
+      ])
+      .build(),
+]
+
+compose
+  .ruleset("Submitted")
+  .setup( { dataSources } )
+  .description(
+    "Evaluate loan application based on applicant's credit score, income, and employment status."
+  )
+  .addRule( ... )
+  .build();
+```
+
 ## Examples
 
 ### Xstate Transition Guards
