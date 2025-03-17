@@ -13,8 +13,6 @@ import {
   EvaluatedRuleset,
 } from "./types";
 
-type RuleWithMetaAsString = Omit<Rule, "meta"> & { meta?: string };
-
 /**
  * The Evaluator class is used for successive evaluations of a ruleset.
  */

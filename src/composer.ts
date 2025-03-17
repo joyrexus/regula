@@ -509,17 +509,6 @@ export class BooleanBuilder extends RuleBuilder {
       booleanRule.not = this.rules[0];
     }
 
-    // Inherit dataSource from child rules if not explicitly set
-    if (!this.rule.dataSource && this.rules.length > 0) {
-      // Find the first child rule with a dataSource
-      for (const rule of this.rules) {
-        if (rule.dataSource) {
-          this.rule.dataSource = rule.dataSource;
-          break;
-        }
-      }
-    }
-
     return super.build();
   }
 }
@@ -740,7 +729,6 @@ export class RulesetBuilder {
    */
   setup(config: { dataSources: DataSourceConfig[] }): this {
     if (config.dataSources) {
-      this.ruleset.dataSources = config.dataSources;
       this.composer.initializeFromDataSources(config.dataSources);
     }
     return this;

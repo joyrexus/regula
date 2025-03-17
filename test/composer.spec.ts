@@ -961,13 +961,8 @@ describe("Data Source and Parameter Builders", () => {
       .build();
 
     expect(builtRuleset.name).toBe("Loan Application");
-    expect(builtRuleset.dataSources).toEqual(dataSources);
     expect(builtRuleset.rules).toHaveLength(1);
     expect(builtRuleset.rules[0].name).toBe("Loan Requirements");
-    expect(builtRuleset.rules[0].dataSource).toEqual({
-      name: "applicant",
-      type: "sync",
-    });
   });
 
   it("should throw error when creating parameter with empty name", () => {
@@ -1100,7 +1095,6 @@ describe("Data Source and Parameter Builders", () => {
     expect(ruleset.description).toBe("Evaluate loan application");
     expect(ruleset.version).toBe("1.0");
     expect(ruleset.meta).toEqual({ department: "finance" });
-    expect(ruleset.dataSources).toEqual(dataSources);
     expect(ruleset.rules).toHaveLength(2);
     expect((ruleset.rules[0] as DataTestExpression).field).toBe(
       "applicant.loanAmount"
@@ -1168,7 +1162,6 @@ describe("Data Source and Parameter Builders", () => {
 
     expect(ruleset.name).toBe("Loan Application");
     expect(ruleset.description).toBe("Evaluate loan application");
-    expect(ruleset.dataSources).toEqual(dataSources);
     expect(ruleset.rules).toHaveLength(1);
     expect((ruleset.rules[0] as BooleanExpression).and).toHaveLength(2);
     expect((ruleset.rules[0] as BooleanExpression).and?.[0].dataSource).toEqual({

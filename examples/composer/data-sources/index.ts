@@ -3,7 +3,7 @@ import { EvaluationInput, Evaluator, Regula } from "../../../src";
 // Initialize a single composer instance
 const compose = Regula.composer();
 
-// Create data sources using the composer
+// Specify the data sources and rule parameters to be used in the ruleset
 const dataSources = [
   compose
     .dataSource("applicant.profile")
@@ -60,7 +60,7 @@ const dataSources = [
 ];
 
 // Compose a ruleset using the rule parameters from
-// the data sources specified above.
+// the data sources specified above
 const ruleset = compose
   .ruleset("Submitted")
   .setup({ dataSources })
@@ -138,7 +138,7 @@ const VERBOSE = false;
 const pprint = (evaluation: Evaluator): void => {
   if (VERBOSE) {
     // console.log(evaluation.getSnapshot());
-    console.log(evaluation.toString());
+    console.log(evaluation.toString({ pretty: true }));
     return;
   }
   console.log(evaluation.getResult());

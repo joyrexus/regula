@@ -1,5 +1,3 @@
-import { DataSourceConfig } from "./composer";
-
 export interface DataSource {
   type: string; // "sync" | "async";
   name: string;
@@ -64,7 +62,6 @@ export interface Ruleset {
   default?: string;
   version?: string;
   meta?: Record<string, any>;
-  dataSources?: DataSourceConfig[];
 }
 
 export type RuleResult = string | boolean;
@@ -112,7 +109,6 @@ export interface EvaluationRecord extends EvaluatedRuleset {
   createdAt: string;
   updatedAt?: string; // ISO 8601 Date Time stamp
   updatedBy?: string; // user ID
-  dataSources: DataSourceConfig[];
   evaluations: Evaluation[];
   done?: boolean; // avoid evaluating if true
   deleted?: boolean; // avoid displaying if true
