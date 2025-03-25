@@ -1,5 +1,5 @@
 export interface DataSource {
-  type: string; // "sync" | "async";
+  type: "sync" | "async";
   name: string;
   description?: string;
 }
