@@ -13,8 +13,6 @@ import {
   EvaluatedRuleset,
 } from "./types";
 
-type RuleWithMetaAsString = Omit<Rule, "meta"> & { meta?: string };
-
 /**
  * The Evaluator class is used for successive evaluations of a ruleset.
  */
@@ -125,7 +123,7 @@ export class Evaluator {
    * Get an array of all deactivated rules in the ruleset.
    */
   getDeactivatedRules(): Rule[] {
-    let deactivatedRules: Rule[] = [];
+    const deactivatedRules: Rule[] = [];
     for (const ruleName of this.getRuleNames()) {
       const rule = this.getRule(ruleName);
       if (rule.deactivated) {
@@ -267,7 +265,7 @@ export class Evaluator {
    */
   deactivateRule(
     name: string,
-    details?: { reason?: string; user?: string }
+    details?: { reason?: string; user?: string },
   ): void {
     const rule = this.getRule(name);
     rule.deactivated = details

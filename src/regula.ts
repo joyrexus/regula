@@ -126,7 +126,7 @@ export class Regula {
   static validate(ruleset: Ruleset): void {
     if (!ruleset || !ruleset.rules || !Array.isArray(ruleset.rules)) {
       throw new ValidationError(
-        "Invalid ruleset: Ruleset must contain an array of rules."
+        "Invalid ruleset: Ruleset must contain an array of rules.",
       );
     }
     const names = new Set<string>();
@@ -152,38 +152,38 @@ export class Regula {
   private static validateRule(
     rule: Rule,
     path: string = "root",
-    names: Set<string> = new Set()
+    names: Set<string> = new Set(),
   ): void {
     if (names.has(rule.name)) {
       throw new ValidationError(
-        `Duplicate rule name found at ${path}: '${rule.name}' already exists.`
+        `Duplicate rule name found at ${path}: '${rule.name}' already exists.`,
       );
     }
     names.add(rule.name);
     if (rule.name == "default") {
       throw new ValidationError(
-        `Invalid rule name at ${path}: 'default' is a reserved name.`
+        `Invalid rule name at ${path}: 'default' is a reserved name.`,
       );
     }
     if (!("field" in rule || rule.and || rule.or || rule.not)) {
       throw new ValidationError(
-        `Invalid rule at ${path}: A rule must have a field, and/or, or not condition.`
+        `Invalid rule at ${path}: A rule must have a field, and/or, or not condition.`,
       );
     }
     if ("field" in rule) {
       if (rule.includesAny && !Array.isArray(rule.includesAny)) {
         throw new ValidationError(
-          `Invalid type for 'includesAny' in rule at ${path}: ${rule.includesAny}`
+          `Invalid type for 'includesAny' in rule at ${path}: ${rule.includesAny}`,
         );
       }
       if (rule.afterDate && !Regula.isISO8601(rule.afterDate)) {
         throw new ValidationError(
-          `Invalid date format for 'afterDate' in rule at ${path}: ${rule.afterDate}`
+          `Invalid date format for 'afterDate' in rule at ${path}: ${rule.afterDate}`,
         );
       }
       if (rule.beforeDate && !Regula.isISO8601(rule.beforeDate)) {
         throw new ValidationError(
-          `Invalid date format for 'beforeDate' in rule at ${path}: ${rule.beforeDate}`
+          `Invalid date format for 'beforeDate' in rule at ${path}: ${rule.beforeDate}`,
         );
       }
       if (rule.betweenDates) {
@@ -191,8 +191,8 @@ export class Regula {
         if (!Regula.isISO8601(start) || !Regula.isISO8601(end)) {
           throw new ValidationError(
             `Invalid date format for 'betweenDates' in rule at ${path}: ${rule.betweenDates.join(
-              ", "
-            )}`
+              ", ",
+            )}`,
           );
         }
       }
@@ -220,7 +220,7 @@ export class Regula {
    */
   static evaluate(
     ruleset: Ruleset | EvaluatedRuleset,
-    input: EvaluationInput
+    input: EvaluationInput,
   ): EvaluatedRuleset {
     const now = new Date().toISOString();
     const { dataSource, userId } = input.context;
@@ -271,7 +271,7 @@ export class Regula {
    */
   private static isMatchingDataSource(
     rule: Rule,
-    dataSource: DataSource
+    dataSource: DataSource,
   ): boolean {
     return (
       "dataSource" in rule &&
@@ -297,7 +297,7 @@ export class Regula {
   private static recursivelyUpdateRule(
     rule: Rule,
     input: EvaluationInput,
-    now: string
+    now: string,
   ): void {
     if (rule.deactivated) return;
 
@@ -320,12 +320,12 @@ export class Regula {
     if (["and", "or", "not"].some((key) => key in rule)) {
       if ("and" in rule) {
         rule.and.forEach((subRule) =>
-          Regula.recursivelyUpdateRule(subRule, input, now)
+          Regula.recursivelyUpdateRule(subRule, input, now),
         );
       }
       if ("or" in rule) {
         rule.or.forEach((subRule) =>
-          Regula.recursivelyUpdateRule(subRule, input, now)
+          Regula.recursivelyUpdateRule(subRule, input, now),
         );
       }
       if ("not" in rule) {
@@ -336,7 +336,7 @@ export class Regula {
       let boolResult: RuleResult = null;
       if ("and" in rule) {
         boolResult = rule.and.every(
-          (subRule) => subRule.lastEvaluation?.result || subRule.deactivated
+          (subRule) => subRule.lastEvaluation?.result || subRule.deactivated,
         )
           ? true
           : false;

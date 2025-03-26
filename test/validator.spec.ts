@@ -35,7 +35,7 @@ describe("Validator", () => {
       };
 
       expect(() => Validator.dataSource(invalidDataSource)).toThrow(
-        ValidationError
+        ValidationError,
       );
     });
 
@@ -53,7 +53,7 @@ describe("Validator", () => {
       };
 
       expect(() => Validator.dataSource(invalidDataSource)).toThrow(
-        ValidationError
+        ValidationError,
       );
     });
 
@@ -65,7 +65,7 @@ describe("Validator", () => {
       };
 
       expect(() => Validator.dataSource(invalidDataSource)).toThrow(
-        ValidationError
+        ValidationError,
       );
     });
   });
@@ -128,7 +128,7 @@ describe("Validator", () => {
       ];
 
       expect(() => Validator.dataSources(invalidDataSources)).toThrow(
-        ValidationError
+        ValidationError,
       );
     });
   });
@@ -219,7 +219,7 @@ describe("Validator", () => {
       };
 
       expect(() =>
-        Validator.dataTestExpression(invalidDataTestExpression)
+        Validator.dataTestExpression(invalidDataTestExpression),
       ).toThrow(ValidationError);
     });
   });
@@ -360,7 +360,7 @@ describe("Validator", () => {
       };
 
       expect(() => Validator.evaluatedRuleset(invalidEvaluatedRuleset)).toThrow(
-        ValidationError
+        ValidationError,
       );
     });
   });

@@ -60,7 +60,7 @@ const ruleEvaluationSchema = z.object({
     .string()
     .regex(
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/,
-      "Invalid ISO 8601 date format"
+      "Invalid ISO 8601 date format",
     ),
   updatedBy: z.string().optional(),
 });
@@ -82,7 +82,7 @@ const baseRuleSchema = z.object({
           .string()
           .regex(
             /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/,
-            "Invalid ISO 8601 date format"
+            "Invalid ISO 8601 date format",
           ),
       }),
     ])
@@ -125,7 +125,7 @@ const dataTestExpressionSchema = baseRuleSchema.extend({
 /**
  * Initialize the recursive rule schema
  */
-const initRuleSchema = () => {
+const initRuleSchema = (): void => {
   // Boolean expression schema with recursive references to rules
   const booleanExpressionSchema = baseRuleSchema
     .extend({
@@ -136,7 +136,7 @@ const initRuleSchema = () => {
     .refine(
       (obj) =>
         obj.and !== undefined || obj.or !== undefined || obj.not !== undefined,
-      "Boolean expression must include one of: 'and', 'or', 'not'"
+      "Boolean expression must include one of: 'and', 'or', 'not'",
     );
 
   // Combined rule schema as union of data test and boolean expressions
@@ -157,7 +157,7 @@ const evaluationSchema = z.object({
         .string()
         .regex(
           /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/,
-          "Invalid ISO 8601 date format"
+          "Invalid ISO 8601 date format",
         ),
       entityId: z.string().optional(),
       userId: z.string().optional(),
@@ -170,7 +170,7 @@ const evaluationSchema = z.object({
     .string()
     .regex(
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/,
-      "Invalid ISO 8601 date format"
+      "Invalid ISO 8601 date format",
     ),
   evaluatedBy: z.string().optional(),
 });
@@ -201,7 +201,7 @@ const evaluatedRulesetSchema = rulesetSchema.extend({
           .string()
           .regex(
             /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/,
-            "Invalid ISO 8601 date format"
+            "Invalid ISO 8601 date format",
           ),
       }),
     ])
@@ -229,7 +229,7 @@ export class Validator {
     return this.validateWithSchema(
       dataSourceSchema,
       dataSource,
-      "data source"
+      "data source",
     ) as DataSource;
   }
 
@@ -242,7 +242,7 @@ export class Validator {
     return this.validateWithSchema(
       dataSourcesSchema,
       dataSources,
-      "data sources"
+      "data sources",
     ) as DataSource[];
   }
 
@@ -255,7 +255,7 @@ export class Validator {
     return this.validateWithSchema(
       dataTestExpressionSchema,
       dataTestExpression,
-      "data test expression"
+      "data test expression",
     ) as DataTestExpression;
   }
 
@@ -268,7 +268,7 @@ export class Validator {
     return this.validateWithSchema(
       ruleSchema,
       booleanExpression,
-      "boolean expression"
+      "boolean expression",
     );
   }
 
@@ -290,7 +290,7 @@ export class Validator {
     return this.validateWithSchema(
       rulesetSchema,
       ruleset,
-      "ruleset"
+      "ruleset",
     ) as Ruleset;
   }
 
@@ -303,7 +303,7 @@ export class Validator {
     return this.validateWithSchema(
       evaluatedRulesetSchema,
       evaluatedRuleset,
-      "evaluated ruleset"
+      "evaluated ruleset",
     ) as EvaluatedRuleset;
   }
 
@@ -331,7 +331,7 @@ export class Validator {
   private static validateWithSchema<T>(
     schema: z.ZodType<T>,
     data: unknown,
-    entityType: string
+    entityType: string,
   ): T {
     try {
       return schema.parse(data) as T;

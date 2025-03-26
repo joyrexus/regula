@@ -66,7 +66,7 @@ describe("Evaluator", () => {
   });
 
   it("should correctly update rule evaluations", () => {
-    let input = { ...defaultInput };
+    const input = { ...defaultInput };
     input.data.user.verified = true;
 
     evaluator.evaluate(input);
@@ -165,7 +165,7 @@ describe("Evaluator", () => {
 
   it("should throw error when getting result for non-existent rule", () => {
     expect(() => evaluator.getResult("NonExistentRule")).toThrow(
-      EvaluationError
+      EvaluationError,
     );
   });
 

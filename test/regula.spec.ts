@@ -203,7 +203,7 @@ describe("Regula.evaluate", () => {
     // - "Check Membership" is updated in this evaluation (membership is "gold").
     // So the overall result should be "User is eligible for premium membership".
     expect(evaluated.lastEvaluation?.result).toBe(
-      "User is eligible for premium membership"
+      "User is eligible for premium membership",
     );
   });
 
@@ -326,7 +326,7 @@ describe("Regula.evaluate", () => {
 
     evaluated = Regula.evaluate(ruleset, eval2Input);
     expect(evaluated.lastEvaluation?.result).toBe(
-      "User total out of normal range"
+      "User total out of normal range",
     );
   });
 
@@ -362,9 +362,9 @@ describe("Regula.evaluate", () => {
       },
     };
 
-    let evaluated = Regula.evaluate(ruleset, eval1Input);
+    const evaluated = Regula.evaluate(ruleset, eval1Input);
     expect(evaluated.lastEvaluation?.result).toBe(
-      "User has admin or moderator role"
+      "User has admin or moderator role",
     );
   });
 
@@ -509,15 +509,15 @@ describe("Regula.evaluate", () => {
 
     // The "Check Age" sub-rule is deactivated, so it should not be evaluated.
     expect(
-      (evaluated.rules[0] as BooleanExpression).and[1].lastEvaluation
+      (evaluated.rules[0] as BooleanExpression).and[1].lastEvaluation,
     ).toBeUndefined();
     // The "Check Subscription" sub-rule should be evaluated.
     expect(
-      (evaluated.rules[0] as BooleanExpression).and[0].lastEvaluation?.result
+      (evaluated.rules[0] as BooleanExpression).and[0].lastEvaluation?.result,
     ).toBe("Subscription OK");
     // Since the "Check Age" sub-rule is deactivated, the overall result should be "User is eligible".
     expect(evaluated.lastEvaluation?.result).toBe(
-      "User is eligible for premium membership"
+      "User is eligible for premium membership",
     );
   });
 
@@ -525,7 +525,7 @@ describe("Regula.evaluate", () => {
     const event1timestamp = new Date().toISOString();
     const event2timestamp = new Date(new Date().getTime() + 1000).toISOString();
     const event2EvalTimestamp = new Date(
-      new Date().getTime() + 2000
+      new Date().getTime() + 2000,
     ).toISOString();
 
     const ruleset: EvaluatedRuleset = {
@@ -593,7 +593,7 @@ describe("Regula.evaluate", () => {
     // Since the rule was last evaluated after the timestamp of the input event,
     // the rule should not be updated and the previous result should persist.
     expect(evaluated.rules[0].lastEvaluation?.result).toBe(
-      "Eligible for bonus round"
+      "Eligible for bonus round",
     );
     expect(evaluated.lastEvaluation?.result).toBe("Eligible for bonus round");
   });
@@ -601,10 +601,8 @@ describe("Regula.evaluate", () => {
 
 describe("Regula.evaluate with nested boolean expressions", () => {
   it("should update sub-rules and evaluate overall result correctly over successive evaluations", () => {
-    let ruleset: Ruleset;
-
     // Ruleset to check user eligibility based on age, membership, and blacklist status.
-    ruleset = {
+    const ruleset: Ruleset = {
       name: "Check user eligibility",
       default: "User is not eligible",
       rules: [
@@ -674,7 +672,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
     // The "User is blacklisted" sub-rule should NOT be satisfied,
     expect(
       ((evaluated.rules[0] as BooleanExpression).and[2] as BooleanExpression)
-        .not.lastEvaluation?.result
+        .not.lastEvaluation?.result,
     ).not.toBe("User is blacklisted");
 
     // Since the user's age and membership info are missing,
@@ -697,7 +695,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
 
     evaluated = Regula.evaluate(ruleset, input2);
     expect(
-      (evaluated.rules[0] as BooleanExpression).and[0].lastEvaluation?.result
+      (evaluated.rules[0] as BooleanExpression).and[0].lastEvaluation?.result,
     ).toBe("Age is valid");
 
     // Since the user's membership and blacklist info is missing,
@@ -723,7 +721,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
     // since the user's membership is "gold".
     expect(
       ((evaluated.rules[0] as BooleanExpression).and[1] as BooleanExpression)
-        .or[0].lastEvaluation?.result
+        .or[0].lastEvaluation?.result,
     ).toBe("Premium member");
 
     // Since the user is a premium member, the overall result should now be "User is eligible",
@@ -732,7 +730,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
 
     // Finally, let's now blacklist the user and re-evaluate the ruleset
     // to confirm that the user is no longer eligible.
-    let input4: EvaluationInput = {
+    const input4: EvaluationInput = {
       context: {
         dataSource: { type: "sync", name: "blacklist.data" },
         entityId: "entity-123",
@@ -749,7 +747,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
     // The user should now be blacklisted, so the "User is blacklisted" sub-rule should be satisfied.
     expect(
       ((evaluated.rules[0] as BooleanExpression).and[2] as BooleanExpression)
-        .not.lastEvaluation?.result
+        .not.lastEvaluation?.result,
     ).toBe("User is blacklisted");
 
     // Since the user is blacklisted, the overall result should now be "User is not eligible".
@@ -809,7 +807,7 @@ describe("Regula.validate", () => {
     };
 
     expect(() => Regula.validate(invalidRuleset)).toThrow(
-      /Invalid rule at rules\[0\]:/
+      /Invalid rule at rules\[0\]:/,
     );
   });
 
@@ -836,7 +834,7 @@ describe("Regula.validate", () => {
     };
 
     expect(() => Regula.validate(invalidRuleset)).toThrow(
-      /Invalid rule at rules\[0\].and\[1\]:/
+      /Invalid rule at rules\[0\].and\[1\]:/,
     );
   });
 
@@ -866,7 +864,7 @@ describe("Regula.validate", () => {
     };
 
     expect(() => Regula.validate(invalidRuleset)).toThrow(
-      /Invalid rule at rules\[0\].or\[1\].not:/
+      /Invalid rule at rules\[0\].or\[1\].not:/,
     );
   });
 
@@ -986,7 +984,7 @@ describe("Regula.validate", () => {
     };
 
     expect(() => Regula.validate(ruleset)).toThrow(
-      /'default' is a reserved name/
+      /'default' is a reserved name/,
     );
   });
 });
@@ -1005,7 +1003,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
     };
 
     expect(() => Regula.validate(ruleset)).toThrow(
-      "Invalid date format for 'afterDate'"
+      "Invalid date format for 'afterDate'",
     );
   });
 
@@ -1022,7 +1020,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
     };
 
     expect(() => Regula.validate(ruleset)).toThrow(
-      "Invalid date format for 'beforeDate'"
+      "Invalid date format for 'beforeDate'",
     );
   });
 
@@ -1039,7 +1037,7 @@ describe("Regula.validate/evaluate with date-based data test expressions", () =>
     };
 
     expect(() => Regula.validate(ruleset)).toThrow(
-      "Invalid date format for 'betweenDates'"
+      "Invalid date format for 'betweenDates'",
     );
   });
 

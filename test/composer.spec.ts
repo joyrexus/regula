@@ -151,10 +151,10 @@ describe("composer", () => {
       expect(andRule.name).toBe("Adult and Verified");
       expect((andRule as BooleanExpression).and).toHaveLength(2);
       expect((andRule as BooleanExpression).and?.[0].name).toBe(
-        "Adult and Verified | Age Rule"
+        "Adult and Verified | Age Rule",
       );
       expect((andRule as BooleanExpression).and?.[1].name).toBe(
-        "Adult and Verified | Verified Rule"
+        "Adult and Verified | Verified Rule",
       );
       expect(andRule.result).toBe("qualified");
     });
@@ -199,7 +199,7 @@ describe("composer", () => {
       expect(notRule.name).toBe("Not Blacklisted");
       expect((notRule as BooleanExpression).not).toBeDefined();
       expect((notRule as BooleanExpression).not?.name).toBe(
-        "Not Blacklisted | Blacklisted"
+        "Not Blacklisted | Blacklisted",
       );
       expect(notRule.result).toBe("allowed");
     });
@@ -370,7 +370,7 @@ describe("composer", () => {
         {
           description: "A combined ruleset",
           defaultResult: "default",
-        }
+        },
       );
 
       expect(combinedRuleset.name).toBe("Combined Ruleset");
@@ -428,7 +428,7 @@ describe("composer", () => {
         (builder) => {
           return builder.field("person.age").greaterThan(18);
         },
-        config
+        config,
       );
 
       expect(rule.name).toBe("Age Check");
@@ -468,7 +468,7 @@ describe("composer", () => {
         (builder) => {
           return builder.field("person.age").greaterThan(18).result("adult");
         },
-        config
+        config,
       );
 
       expect(rule.name).toBe("Age Check");
@@ -520,7 +520,7 @@ describe("composer", () => {
           return builder
             .or([goldRule, platinumRule])
             .result("premium_benefits");
-        }
+        },
       );
 
       expect(rule.name).toBe("Premium Membership");
@@ -554,7 +554,7 @@ describe("composer", () => {
             .or([goldRule, platinumRule])
             .result("premium_benefits");
         },
-        config
+        config,
       );
 
       expect(rule.name).toBe("Premium Membership");
@@ -685,7 +685,7 @@ describe("Composer with parameters", () => {
 
     expect(rule.name).toBe("Low Draw Amount");
     expect((rule as DataTestExpression).field).toBe(
-      "content.total_draw_amount"
+      "content.total_draw_amount",
     );
     expect((rule as DataTestExpression).lessThan).toBe(100);
     expect(rule.result).toBe("low_draw");
@@ -728,12 +728,12 @@ describe("Composer with parameters", () => {
           .parameter("Total Draw Amount")
           .greaterThanEquals(1000)
           .result("high_draw");
-      }
+      },
     );
 
     expect(rule.name).toBe("High Draw Amount");
     expect((rule as DataTestExpression).field).toBe(
-      "content.total_draw_amount"
+      "content.total_draw_amount",
     );
     expect((rule as DataTestExpression).greaterThanEquals).toBe(1000);
     expect(rule.dataSource).toEqual({ name: "draw_event", type: "async" });
@@ -836,7 +836,7 @@ describe("Composer with parameters", () => {
 
     expect(rule2.name).toBe("Override DataSource");
     expect((rule2 as DataTestExpression).field).toBe(
-      "content.total_draw_amount"
+      "content.total_draw_amount",
     );
     expect(rule2.dataSource).toEqual({ name: "custom_source", type: "sync" });
   });
