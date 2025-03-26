@@ -1,5 +1,5 @@
 import { fromTransition, createActor } from "xstate";
-import { Regula, EvaluationInput } from "../../src";
+import { Regula, EvaluationInput, Ruleset } from "../../src";
 import ruleset from "./ruleset.json";
 
 interface Event extends EvaluationInput {
@@ -17,7 +17,7 @@ const evaluator = fromTransition((evaluation, event: Event) => {
   }
   evaluation.evaluate(event);
   return evaluation;
-}, Regula.evaluator(ruleset)); // Initial state
+}, Regula.evaluator(ruleset as Ruleset)); // Initial state
 
 const evaluationActor = createActor(evaluator);
 
