@@ -7,6 +7,7 @@ import {
   Rule,
   Ruleset,
 } from "./types";
+import { ValidationError } from "./errors";
 
 /**
  * Parameter schema
@@ -133,8 +134,9 @@ const initRuleSchema = () => {
       not: z.lazy(() => ruleSchema).optional(),
     })
     .refine(
-      (obj) => Object.keys(obj).length > 0,
-      "At least one attribute is required"
+      (obj) =>
+        obj.and !== undefined || obj.or !== undefined || obj.not !== undefined,
+      "Boolean expression must include one of: 'and', 'or', 'not'"
     );
 
   // Combined rule schema as union of data test and boolean expressions
@@ -224,7 +226,11 @@ export class Validator {
    * @returns Validated data source or throws ZodError
    */
   static dataSource(dataSource: unknown): DataSource {
-    return dataSourceSchema.parse(dataSource) as DataSource;
+    return this.validateWithSchema(
+      dataSourceSchema,
+      dataSource,
+      "data source"
+    ) as DataSource;
   }
 
   /**
@@ -233,7 +239,11 @@ export class Validator {
    * @returns Validated data sources or throws ZodError
    */
   static dataSources(dataSources: unknown): DataSource[] {
-    return dataSourcesSchema.parse(dataSources) as DataSource[];
+    return this.validateWithSchema(
+      dataSourcesSchema,
+      dataSources,
+      "data sources"
+    ) as DataSource[];
   }
 
   /**
@@ -242,8 +252,10 @@ export class Validator {
    * @returns Validated data test expression or throws ZodError
    */
   static dataTestExpression(dataTestExpression: unknown): DataTestExpression {
-    return dataTestExpressionSchema.parse(
-      dataTestExpression
+    return this.validateWithSchema(
+      dataTestExpressionSchema,
+      dataTestExpression,
+      "data test expression"
     ) as DataTestExpression;
   }
 
@@ -253,7 +265,11 @@ export class Validator {
    * @returns Validated boolean expression or throws ZodError
    */
   static booleanExpression(booleanExpression: unknown): BooleanExpression {
-    return ruleSchema.parse(booleanExpression) as BooleanExpression;
+    return this.validateWithSchema(
+      ruleSchema,
+      booleanExpression,
+      "boolean expression"
+    );
   }
 
   /**
@@ -262,7 +278,7 @@ export class Validator {
    * @returns Validated rule or throws ZodError
    */
   static rule(rule: unknown): Rule {
-    return ruleSchema.parse(rule) as Rule;
+    return this.validateWithSchema(ruleSchema, rule, "rule");
   }
 
   /**
@@ -271,7 +287,11 @@ export class Validator {
    * @returns Validated ruleset or throws ZodError
    */
   static ruleset(ruleset: unknown): Ruleset {
-    return rulesetSchema.parse(ruleset) as Ruleset;
+    return this.validateWithSchema(
+      rulesetSchema,
+      ruleset,
+      "ruleset"
+    ) as Ruleset;
   }
 
   /**
@@ -280,21 +300,46 @@ export class Validator {
    * @returns Validated evaluated ruleset or throws ZodError
    */
   static evaluatedRuleset(evaluatedRuleset: unknown): EvaluatedRuleset {
-    return evaluatedRulesetSchema.parse(evaluatedRuleset) as EvaluatedRuleset;
+    return this.validateWithSchema(
+      evaluatedRulesetSchema,
+      evaluatedRuleset,
+      "evaluated ruleset"
+    ) as EvaluatedRuleset;
   }
 
   /**
-   * Formats validation errors into a readable string
+   * Formats zod validation errors into a readable string
    * @param error The ZodError to format
    * @returns A formatted error message
    */
-  static formatErrors(error: z.ZodError): string {
-    // check if this is a ZodError
+  static formatError(error: z.ZodError): string {
     if (!(error instanceof z.ZodError)) {
       return (error as Error).toString();
     }
     return error.errors
       .map((err) => `- Error at '${err.path.join(".")}': ${err.message}`)
       .join("\n");
+  }
+
+  /**
+   * Validates data with a Zod schema
+   * @param schema Zod schema to validate with
+   * @param data Data to validate
+   * @param entityType Type of entity being validated
+   * @returns Validated data
+   */
+  private static validateWithSchema<T>(
+    schema: z.ZodType<T>,
+    data: unknown,
+    entityType: string
+  ): T {
+    try {
+      return schema.parse(data) as T;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw ValidationError.fromZodError(`Invalid ${entityType}`, error);
+      }
+      throw error;
+    }
   }
 }

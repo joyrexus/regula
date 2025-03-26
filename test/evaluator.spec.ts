@@ -73,7 +73,7 @@ describe("Evaluator", () => {
     expect(evaluator.getResult("Rule2")).toBe(true);
 
     input.data.user.active = false;
-    evaluator.evaluate(input);
+    evaluator.evaluate(structuredClone(input));
     expect(evaluator.getResult("Rule2")).toBe(false);
   });
 
