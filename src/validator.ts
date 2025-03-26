@@ -1,5 +1,12 @@
 import { z } from "zod";
-import { DataSource, EvaluatedRuleset, Rule, Ruleset } from "./types";
+import {
+  BooleanExpression,
+  DataSource,
+  DataTestExpression,
+  EvaluatedRuleset,
+  Rule,
+  Ruleset,
+} from "./types";
 
 /**
  * Parameter schema
@@ -119,11 +126,16 @@ const dataTestExpressionSchema = baseRuleSchema.extend({
  */
 const initRuleSchema = () => {
   // Boolean expression schema with recursive references to rules
-  const booleanExpressionSchema = baseRuleSchema.extend({
-    and: z.array(z.lazy(() => ruleSchema)).optional(),
-    or: z.array(z.lazy(() => ruleSchema)).optional(),
-    not: z.lazy(() => ruleSchema).optional(),
-  });
+  const booleanExpressionSchema = baseRuleSchema
+    .extend({
+      and: z.array(z.lazy(() => ruleSchema)).optional(),
+      or: z.array(z.lazy(() => ruleSchema)).optional(),
+      not: z.lazy(() => ruleSchema).optional(),
+    })
+    .refine(
+      (obj) => Object.keys(obj).length > 0,
+      "At least one attribute is required"
+    );
 
   // Combined rule schema as union of data test and boolean expressions
   ruleSchema = z.union([dataTestExpressionSchema, booleanExpressionSchema]);
@@ -222,6 +234,26 @@ export class Validator {
    */
   static dataSources(dataSources: unknown): DataSource[] {
     return dataSourcesSchema.parse(dataSources) as DataSource[];
+  }
+
+  /**
+   * Validates a data test expression
+   * @param dataTestExpression
+   * @returns Validated data test expression or throws ZodError
+   */
+  static dataTestExpression(dataTestExpression: unknown): DataTestExpression {
+    return dataTestExpressionSchema.parse(
+      dataTestExpression
+    ) as DataTestExpression;
+  }
+
+  /**
+   * Validates a boolean expression
+   * @param booleanExpression Boolean expression to validate
+   * @returns Validated boolean expression or throws ZodError
+   */
+  static booleanExpression(booleanExpression: unknown): BooleanExpression {
+    return ruleSchema.parse(booleanExpression) as BooleanExpression;
   }
 
   /**
