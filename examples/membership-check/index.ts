@@ -1,10 +1,10 @@
-import { Regula, EvaluationInput } from "../../src";
+import { Regula, EvaluationInput, Ruleset } from "../../src";
 import ruleset from "./ruleset.json";
 
 const pprint = (obj: any): void => console.log(JSON.stringify(obj, null, 2));
 
 // Initialize a new Evaluator instance with the ruleset.
-const evaluation = Regula.evaluator(ruleset);
+const evaluation = Regula.evaluator(ruleset as Ruleset);
 
 // ...... EVALUATION 1 ......
 

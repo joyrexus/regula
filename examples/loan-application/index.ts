@@ -14,7 +14,7 @@ const pprint = (evaluation: Evaluator): void => {
 };
 
 // Initialize a new Evaluator instance with the ruleset.
-const evaluation = Regula.evaluator(ruleset);
+const evaluation = Regula.evaluator(ruleset as Ruleset);
 
 evaluation.evaluate({
   context: {
