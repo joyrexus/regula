@@ -5,9 +5,9 @@ export interface DataSource {
 }
 
 export interface BooleanExpression {
-  and?: Rule[];
-  or?: Rule[];
-  not?: Rule;
+  and?: SubRule[];
+  or?: SubRule[];
+  not?: SubRule;
 }
 
 export interface DataTestExpression {
@@ -31,7 +31,7 @@ export interface DataTestExpression {
 
 type RuleExpression = BooleanExpression | DataTestExpression;
 
-export type Rule = RuleExpression & {
+export type SubRule = RuleExpression & {
   name: string;
   description?: string;
   dataSource?: DataSource;
@@ -42,11 +42,15 @@ export type Rule = RuleExpression & {
         updatedBy?: string;
         updatedAt: string;
       };
-  result?: string;
+  // result?: string;
   lastEvaluation?: RuleEvaluation;
   meta?: {
     [key: string]: string | number | boolean;
   };
+};
+
+export type Rule = SubRule & {
+  result?: string;
 };
 
 export interface RuleEvaluation {
@@ -104,12 +108,24 @@ export interface EvaluatedRuleset extends Ruleset {
   lastEvaluation?: Evaluation;
 }
 
-// This is how we'd persist the evaluation in a database.
-export interface EvaluationRecord extends EvaluatedRuleset {
+interface ResultDelta {
+  from: RuleResult | null;
+  to: RuleResult | null;
+}
+
+export interface EvaluationDelta {
+  rules: {
+    [ruleName: string]: ResultDelta;
+  };
+  ruleset?: ResultDelta;
+}
+
+// This is how we'll persist the evaluation
+export interface EvaluationRecord {
   id: string; // UUID
+  evaluation: EvaluatedRuleset;
   dataSources?: DataSource[]; // data sources relevant to evaluation
-  updateTopic: string; // topic to send evaluation updates
-  schedule?: string; // to schedule recurring evaluations
+  schedule?: string[]; // to schedule recurring evaluations
   done?: boolean; // avoid evaluating if true
   deleted?: boolean; // avoid displaying if true
   createdAt: string; // ISO 8601 Date Time stamp

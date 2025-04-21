@@ -19,6 +19,7 @@
 - [x] move types from `src/regula.ts` to `./src/types.ts`
 - [x] move `Evaluator` from `src/regula.ts` to `src/evaluator.ts`
 - [x] create a dedicated repo
+- [x] repo: add initial npm run scripts
 - [x] ensure that `resultFrom` will indicate `default` if no rule produced the result and a default result was specified
 - [x] revise `evaluation.results()` to only return a map of top-level rule names to their results
 - [x] include default state in `evaluation.getResults()`
@@ -28,11 +29,16 @@
 - [ ] update README for new example, showing significance of rule ordering
 - [ ] add tests based on new example above, showing significance of rule ordering
 - [ ] add example demonstrating how to get the metadata of the rule that produced the last evaluation result using the `evaluation.getResultRule()` method
-- [ ] repo: README with links to related libraries
-- [ ] repo: license
-- [ ] repo: build setup
-- [ ] repo: npm run scripts
-- [ ] repo: npm publish setup
+- [ ] add `delta` property to `lastEvaluation` to indicate the difference between the last evaluation and the previous one
+
+Repo setup:
+
+- [ ] add links to related libraries in README
+- [ ] add license
+- [ ] add types
+- [ ] build setup
+- [ ] npm run scripts
+- [ ] npm publish setup
 
 ---
 
@@ -240,8 +246,16 @@ When the `Submitted` state is entered, the machine will evaluate the guards for 
 - [x] handle events received by the subscription to update the workflow context, setting the current state of each top-level rule in the ruleset
 - [x] add a wait state as the fall-through default if the current state of the guards do not permit transition to a new target state, viz. to listen for prior-state guard ruleset updated events ... and after receiving such events, do an assign to update the guard context and transition to the prior state
 
-## Restate + Xstate
+### Restate + Xstate
 
 Create an example demonstrating how regula ruleset evaluations can be be used to guard transitions in an xstate machine, where the machine is executed in a lambda and persists its state (both the state of the workflow and its ruleset evaluations) in a dynamodb table. So, the lambda will be executed whenever receiving an initiating event or an event from one its async data sources.
 
 The example should be based on [this blog post](https://restate.dev/blog/persistent-serverless-state-machines-with-xstate-and-restate/) and [code examples](https://github.com/restatedev/xstate/tree/main/examples).
+
+### XState Store
+
+Create an example demonstrating how to update rule parameters in an xstate store.
+
+In this example, we'd have two event data sources, each with one or more parameters. The idea is to update the statechart's execution context with the latest values of these parameters as new event data is received.
+
+Instead of updating the state of the rule evaluations corresponding to particular transition guards, we'll update the guard evaluation criteria (the statechart's rule parameters) as evaluation criteria is received from relevant event sources.
