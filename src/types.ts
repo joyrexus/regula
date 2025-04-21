@@ -56,8 +56,10 @@ export interface RuleEvaluation {
   updatedBy?: string;
 }
 
+type BaseValue = string | number | boolean;
+
 interface Meta {
-  [key: string]: string | number | boolean | Array<string | number | boolean> | Meta;
+  [key: string]: BaseValue | Array<BaseValue> | Record<string, BaseValue>;
 }
 
 export type Ruleset = {
