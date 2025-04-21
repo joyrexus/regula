@@ -42,11 +42,8 @@ export type SubRule = RuleExpression & {
         updatedBy?: string;
         updatedAt: string;
       };
-  // result?: string;
   lastEvaluation?: RuleEvaluation;
-  meta?: {
-    [key: string]: string | number | boolean;
-  };
+  meta?: Meta;
 };
 
 export type Rule = SubRule & {
@@ -59,15 +56,17 @@ export interface RuleEvaluation {
   updatedBy?: string;
 }
 
+interface Meta {
+  [key: string]: string | number | boolean | Array<string | number | boolean> | Meta;
+}
+
 export type Ruleset = {
   name: string;
   description?: string;
   rules: Rule[];
   default?: string;
   version?: string;
-  meta?: {
-    [key: string]: any;
-  };
+  meta?: Meta;
 };
 
 export type RuleResult = string | boolean;
