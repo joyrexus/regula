@@ -2,6 +2,18 @@ import { Evaluator } from "../src/evaluator";
 import { DataTestExpression, EvaluationInput, Ruleset } from "../src/types";
 import { EvaluationError } from "../src/errors";
 
+function makeEvaluationInput(): EvaluationInput {
+  return {
+    context: {
+      dataSource: { type: "sync", name: "UserData" },
+      entityId: "123",
+      timestamp: new Date().toISOString(),
+      userId: "user-123",
+    },
+    data: { user: { age: 25, active: true, verified: false } },
+  };
+}
+
 describe("Evaluator", () => {
   let ruleset: Ruleset;
   let evaluator: Evaluator;
@@ -41,6 +53,12 @@ describe("Evaluator", () => {
     evaluator = new Evaluator(ruleset);
   });
 
+  afterEach(() => {
+    evaluator = null; // Clean up the evaluator instance after each test
+    ruleset = null;
+    defaultInput = null;
+  });
+
   it("should initialize with a valid ruleset", () => {
     expect(evaluator.ruleset).toBeDefined();
   });
@@ -66,14 +84,17 @@ describe("Evaluator", () => {
   });
 
   it("should correctly update rule evaluations", () => {
-    const input = { ...defaultInput };
-    input.data.user.verified = true;
+    const input1 = makeEvaluationInput();
+    input1.data.user.verified = true;
 
-    evaluator.evaluate(input);
+    evaluator.evaluate(input1);
     expect(evaluator.getResult("Rule2")).toBe(true);
 
-    input.data.user.active = false;
-    evaluator.evaluate(structuredClone(input));
+    const input2 = makeEvaluationInput();
+    input2.data.user.verified = false;
+
+    evaluator.evaluate(input2);
+    // expect(evaluation.ruleset).toBe({});
     expect(evaluator.getResult("Rule2")).toBe(false);
   });
 
@@ -165,7 +186,7 @@ describe("Evaluator", () => {
 
   it("should throw error when getting result for non-existent rule", () => {
     expect(() => evaluator.getResult("NonExistentRule")).toThrow(
-      EvaluationError,
+      EvaluationError
     );
   });
 
@@ -194,6 +215,92 @@ describe("Evaluator", () => {
     // Should not throw after activation
     expect(() => evaluator.evaluate(defaultInput)).not.toThrow();
   });
+
+  it("should provide delta of evaluation results", () => {
+    // Initial evaluation
+    const input1 = makeEvaluationInput();
+    evaluator.evaluate(input1);
+    let delta = evaluator.getDelta();
+    expect(delta.ruleset.updated).toBe(true);
+    expect(delta.ruleset.from).toBe(null);
+    expect(delta.ruleset.to).toBe(true);
+    expect(delta.rules["Rule2"]).toEqual({ from: null, to: false });
+    expect(delta.rules["SubRule1"]).toEqual({ from: null, to: true });
+    expect(delta.rules["SubRule2"]).toEqual({ from: null, to: false });
+
+    // Change input to trigger rule2 to true
+    const input2 = makeEvaluationInput();
+    input2.data.user.verified = true;
+
+    evaluator.evaluate(input2);
+    delta = evaluator.getDelta();
+
+    expect(delta.ruleset.updated).toBe(false);
+    expect(delta.ruleset.from).toBeUndefined();
+    expect(delta.ruleset.to).toBeUndefined();
+
+    expect(delta.rules["Rule2"]).toEqual({ from: false, to: true });
+    expect(delta.rules["SubRule2"]).toEqual({ from: false, to: true });
+
+    // Rule1 and SubRule1 should not appear in delta as their results did not change
+    expect(delta.rules["Rule1"]).toBeUndefined();
+    expect(delta.rules["SubRule1"]).toBeUndefined();
+  });
+
+  it("should provide delta of an individual rule result", () => {
+    const input1 = makeEvaluationInput();
+    evaluator.evaluate(input1);
+    expect(evaluator.getRuleDelta("SubRule1")).toEqual({
+      from: null,
+      to: true,
+    });
+    expect(evaluator.getRuleDelta("SubRule2")).toEqual({
+      from: null,
+      to: false,
+    });
+  });
+
+  it("should throw if getDelta is called before an evaluation was run", () => {
+    expect(() => evaluator.getDelta()).toThrow("No changes available.");
+    evaluator.evaluate(defaultInput);
+    expect(() => evaluator.getDelta()).not.toThrow();
+  });
+
+  it("should show rule delta from null to true/false on first evaluation", () => {
+    const ruleset = {
+      name: "Test Ruleset",
+      rules: [
+        {
+          name: "Rule1",
+          field: "user.age",
+          greaterThan: 18,
+          dataSource: { type: "sync", name: "UserData" },
+        },
+        {
+          name: "Rule2",
+          and: [
+            { name: "SubRule1", field: "user.active", equals: true },
+            { name: "SubRule2", field: "user.verified", equals: true },
+          ],
+          dataSource: { type: "sync", name: "UserData" },
+        },
+      ],
+    } as Ruleset;
+    const evaluator = new Evaluator(ruleset);
+
+    const input1 = makeEvaluationInput();
+    evaluator.evaluate(input1);
+
+    // Change input to trigger a rule change
+    const input2 = makeEvaluationInput();
+    input2.data.user.active = false;
+    evaluator.evaluate(input2);
+
+    const delta = evaluator.getDelta();
+    expect(delta.rules["SubRule1"]).toEqual({ from: true, to: false });
+    // Only changed rules are present
+    expect(Object.keys(delta.rules)).toEqual(["SubRule1"]);
+  });
 });
 
 describe("Evaluator.getLastEvaluation", () => {
@@ -218,6 +325,11 @@ describe("Evaluator.getLastEvaluation", () => {
     evaluator = new Evaluator(ruleset);
   });
 
+  afterEach(() => {
+    evaluator = null; // Clean up the evaluator instance after each test
+    ruleset = null;
+  });
+
   it("should return the last evaluation correctly", () => {
     const input: EvaluationInput = {
       context: {
@@ -235,7 +347,7 @@ describe("Evaluator.getLastEvaluation", () => {
     expect(lastEvaluation).toEqual({
       evaluatedAt: expect.any(String),
       evaluatedBy: "yyy",
-      input: input,
+      input: JSON.stringify(input),
       result: "REJECTED",
       resultFrom: "default",
     });

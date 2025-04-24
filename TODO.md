@@ -8,6 +8,7 @@
       (i.e., for handling event ordering)
 - [x] enable support for `beforeDate` and `afterDate` data test expressions
 - [x] extend validation to check that the `beforeDate` value is an iso timestamp
+- [ ] enable support for a `includesAll` data test expression
 - [x] enable support for `new Evaluator(ruleset)`
 - [x] extend validation to check that all rules have unique names
 - [x] extend the `Evaluator` constructor to create a mapping of rule names
@@ -29,7 +30,8 @@
 - [ ] update README for new example, showing significance of rule ordering
 - [ ] add tests based on new example above, showing significance of rule ordering
 - [ ] add example demonstrating how to get the metadata of the rule that produced the last evaluation result using the `evaluation.getResultRule()` method
-- [ ] add `delta` property to `lastEvaluation` to indicate the difference between the last evaluation and the previous one
+
+---
 
 Repo setup:
 
@@ -64,6 +66,8 @@ Enable `Evaluator` support for ...
 - [x] add an optional `version` attribute `Ruleset`
 - [x] add an optional `meta` attribute on `Rule` and `Ruleset`
 - [x] `dataSources` array setup by the constructor on initialization
+- [x] add a `getDelta()` method to return the last delta of the ruleset
+- [x] add a `getRuleDelta()` method to return the last delta of a particular rule
 
 Create unit tests for `Evaluator`:
 
@@ -75,6 +79,8 @@ Create unit tests for `Evaluator`:
 - [ ] getLastEvaluation
 - [ ] getResult
 - [ ] getResultRule
+- [ ] getDelta
+- [ ] getRuleDelta
 - [ ] activate
 - [ ] activateRule
 - [ ] deactivate
@@ -85,37 +91,40 @@ Create unit tests for `Evaluator`:
 ```ts
 import { Evaluator } from "./src/regula/evaluator";
 
-// Initialize evaluation of a ruleset.
+// initialize evaluation of a ruleset
 const evaluation = new Evaluator(ruleset);
 
-// it should deactivate one of the rules in the EvaluatedRuleset by name
+// deactivate one of the rules in the EvaluatedRuleset by name
 evaluation.deactivate("ruleName");
 
-// it should deactivate the EvaluatedRuleset
+// deactivate the EvaluatedRuleset
 evaluation.deactivate();
 
-// it should activate one of the rules in the EvaluatedRuleset by name
+// activate one of the rules in the EvaluatedRuleset by name
 evaluation.activate("ruleName");
 
-// it should activate the EvaluatedRuleset
+// activate the EvaluatedRuleset
 evaluation.activate();
 
-// it should re-evaluate the ruleset with provided input.
+// re-evaluate with provided input
 evaluation.evaluate(input);
 
-// it should get the last evaluation of the ruleset.
+// get the last evaluation
 evaluation.getLastEvaluation(); // equivalent to evaluation.ruleset.lastEvaluation
 
-// it should get the last evaluation of a rule.
+// get the last evaluation of a rule
 evaluation.getLastEvaluation("ruleName");
 
-// it should get the result of the last evaluation.
+// get the changes resulting from the last evaluation
+evaluation.getDelta();
+
+// get the result of the last evaluation
 evaluation.getResult(); // equivalent to evaluation.result
 
-// Get the result of the last evaluation of a particular rule.
+// get the result of the last evaluation of a particular rule
 evaluation.getResult("ruleName");
 
-// it should get the count of evaluations.
+// get the evaluation count
 evaluation.getCount(); // equivalent to evaluation.count
 ```
 

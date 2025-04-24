@@ -88,6 +88,7 @@ Data test expressions evaluate incoming data from a specified `field` in the inp
 | `between`           | Checks if the value is within an inclusive numeric range.                     | `"between": [10, 50]`                                              |
 | `includes`          | Checks if a list contains a specified value.                                  | `"includes": "admin"`                                              |
 | `includesAny`       | Checks if a list contains any of the specified values.                        | `"includesAny": ["admin", "owner"]`                                |
+| `includesAll`       | Checks if a list contains all of the specified values.                        | `"includesAll": ["admin", "owner"]`                                |
 | `matches`           | Validates a string against a regular expression.                              | `"matches": "^[A-Z]{3}-\\d{4}$"`                                   |
 | `isNull`            | Checks if the value is `null`.                                                | `"isNull": true`                                                   |
 | `isPresent`         | Checks if the value is present (not `null` or `undefined`).                   | `"isPresent": true`                                                |
@@ -116,6 +117,8 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.getResult()`: get the overall result
 - `evaluation.getResultRule()`: get the rule that determined the overall result
 - `evaluation.getResults()`: get the results of all top-level rules
+- `evaluation.getDelta()`: get the changes resulting from the last evaluation
+- `evaluation.getRuleDelta("Check Age")`: get the change resulting from the last evaluation of a specific rule
 - `evaluation.getLastEvaluation()`: get the last top-level evaluation of the ruleset
 - `evaluation.getLastEvaluation("Check Age")`: get the last evaluation of a specific rule
 - `evaluation.deactivate()`: deactivate the ruleset

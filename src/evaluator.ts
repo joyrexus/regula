@@ -13,6 +13,32 @@ import {
   EvaluatedRuleset,
 } from "./types";
 
+// Add delta types
+export interface RuleDelta {
+  from: boolean | null;
+  to: boolean;
+}
+
+interface ResultDelta {
+  updated: boolean;
+  from?: RuleResult | null;
+  to?: RuleResult;
+}
+
+export interface EvaluationDelta {
+  ruleset: ResultDelta;
+  rules: {
+    [ruleName: string]: RuleDelta;
+  };
+}
+
+export interface EvaluationResults {
+  ruleset: RuleResult | null;
+  rules: {
+    [ruleName: string]: boolean | null;
+  };
+}
+
 /**
  * The Evaluator class is used for successive evaluations of a ruleset.
  */
@@ -21,6 +47,8 @@ export class Evaluator {
   private count: number;
   private dataSources: DataSource[];
   private ruleFields: { [ruleName: string]: string };
+  private lastEvaluationResults: EvaluationResults | null = null;
+  private evaluationDelta: EvaluationDelta | null = null;
 
   /**
    * Creates a new Evaluator instance with the specified ruleset.
@@ -29,10 +57,10 @@ export class Evaluator {
    * @see {@link Regula.validate}
    */
   constructor(ruleset: Ruleset | EvaluatedRuleset) {
-    Regula.validate(ruleset);
-    this.dataSources = Regula.getDataSources(ruleset);
-    this.ruleFields = Regula.getRulePaths(ruleset);
     this.ruleset = structuredClone(ruleset);
+    Regula.validate(this.ruleset);
+    this.dataSources = Regula.getDataSources(this.ruleset);
+    this.ruleFields = Regula.getRulePaths(this.ruleset);
     this.count = 0;
   }
 
@@ -47,10 +75,98 @@ export class Evaluator {
     if (this.ruleset.deactivated) {
       throw new EvaluationError("Ruleset is deactivated.");
     }
-    const { lastEvaluation } = Regula.evaluate(this.ruleset, input);
+    // Store previous evaluation results before evaluating
+    this.lastEvaluationResults = this.getEvaluationResults();
+    this.ruleset = Regula.evaluate(this.ruleset, input);
     this.count++;
-    this.ruleset.lastEvaluation = lastEvaluation;
-    return lastEvaluation?.result;
+    this.evaluationDelta = this.calculateDelta(
+      this.lastEvaluationResults,
+      this.getEvaluationResults()
+    );
+    return this.ruleset.lastEvaluation?.result;
+  }
+
+  /**
+   * Get changes resulting from the last evaluation.
+   * @returns {EvaluationDelta} The changes resulting from the last evaluation.
+   */
+  getDelta(): EvaluationDelta {
+    if (!this.evaluationDelta) {
+      throw new Error("No changes available.");
+    }
+    return this.evaluationDelta;
+  }
+
+  /**
+   * Get the delta for a specific rule.
+   * @param ruleName The name of the rule to get the delta for.
+   * @returns {RuleDelta | null} The delta for the specified rule, or null if not found.
+   */
+  getRuleDelta(ruleName: string): RuleDelta | null {
+    const delta = this.getDelta();
+    const ruleDelta = delta.rules[ruleName];
+    if (!ruleDelta) {
+      return null;
+    }
+    return ruleDelta;
+  }
+
+  /**
+   * Get the current evaluation state.
+   * @returns {EvaluationResults}
+   */
+  private getEvaluationResults(): EvaluationResults {
+    const rulesetResult = this.ruleset.lastEvaluation?.result ?? null;
+    const rules: { [ruleName: string]: boolean | null } = {};
+    for (const ruleName of this.getRuleNames()) {
+      const rule = this.getRule(ruleName);
+      if (rule.lastEvaluation && "result" in rule.lastEvaluation) {
+        // For rule results, treat truthy as true, falsy as false
+        rules[ruleName] = !!rule.lastEvaluation.result;
+      } else {
+        rules[ruleName] = null;
+      }
+    }
+    return { ruleset: rulesetResult, rules };
+  }
+
+  /**
+   * Calculate the delta between two evaluation states.
+   * @param previous The previous evaluation results.
+   * @param current The current evaluation results.
+   * @returns {EvaluationDelta}
+   */
+  private calculateDelta(
+    previous: EvaluationResults,
+    current: EvaluationResults
+  ): EvaluationDelta {
+    // Ruleset delta
+    const updated = previous.ruleset !== current.ruleset;
+    const rulesetDelta: ResultDelta = {
+      updated,
+    };
+    if (updated) {
+      rulesetDelta.from = previous.ruleset;
+      rulesetDelta.to = current.ruleset;
+    }
+
+    // Rules delta
+    const rules: { [ruleName: string]: RuleDelta } = {};
+    for (const ruleName of Object.keys(current.rules)) {
+      const prev = previous.rules[ruleName];
+      const curr = current.rules[ruleName];
+      if (prev !== curr) {
+        rules[ruleName] = {
+          from: prev,
+          to: curr,
+        };
+      }
+    }
+
+    return {
+      ruleset: rulesetDelta,
+      rules,
+    };
   }
 
   /**
@@ -265,7 +381,7 @@ export class Evaluator {
    */
   deactivateRule(
     name: string,
-    details?: { reason?: string; user?: string },
+    details?: { reason?: string; user?: string }
   ): void {
     const rule = this.getRule(name);
     rule.deactivated = details
