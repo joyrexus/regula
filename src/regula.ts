@@ -176,6 +176,11 @@ export class Regula {
           `Invalid type for 'includesAny' in rule at ${path}: ${rule.includesAny}`
         );
       }
+      if (rule.includesAll && !Array.isArray(rule.includesAll)) {
+        throw new ValidationError(
+          `Invalid type for 'includesAll' in rule at ${path}: ${rule.includesAll}`
+        );
+      }
       if (rule.afterDate && !Regula.isISO8601(rule.afterDate)) {
         throw new ValidationError(
           `Invalid date format for 'afterDate' in rule at ${path}: ${rule.afterDate}`
@@ -223,6 +228,8 @@ export class Regula {
     input: EvaluationInput
   ): EvaluatedRuleset {
     const now = new Date().toISOString();
+    ruleset = structuredClone(ruleset);
+    input = structuredClone(input);
     const { dataSource, userId } = input.context;
 
     // Pass 1: Recursively update all sub-rules that match the input.
@@ -254,7 +261,7 @@ export class Regula {
     return {
       ...ruleset,
       lastEvaluation: {
-        input,
+        input: JSON.stringify(input),
         result: result ?? false,
         resultFrom,
         evaluatedAt: now,
@@ -397,6 +404,11 @@ export class Regula {
           Array.isArray(value) &&
           Array.isArray(rule.includesAny) &&
           rule.includesAny.some((x) => value.includes(x));
+      } else if (rule.includesAll !== undefined) {
+        result =
+          Array.isArray(value) &&
+          Array.isArray(rule.includesAll) &&
+          rule.includesAll.every((x) => value.includes(x));
       } else if (rule.matches !== undefined) {
         result =
           typeof value === "string" && new RegExp(rule.matches).test(value);

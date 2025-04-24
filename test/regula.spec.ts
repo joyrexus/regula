@@ -365,6 +365,44 @@ describe("Regula.evaluate", () => {
     );
   });
 
+  it("evaluates a data test expression with an includesAll condition correctly", () => {
+    const ruleset: Ruleset = {
+      name: "IncludesAll Expression Test",
+      rules: [
+        {
+          name: "Check roles",
+          field: "user.roles",
+          includesAll: ["admin", "moderator"],
+          result: "User has admin and moderator roles",
+        },
+      ],
+      default: "User does not have required roles",
+    };
+
+    const eval1Input: EvaluationInput = {
+      context: {
+        dataSource: {
+          type: "sync",
+          name: "UserDB",
+          description: "User Database",
+        },
+        entityId: "XXXXXXXXXX",
+        timestamp: now,
+        userId: "XXXXXXX",
+      },
+      data: {
+        user: {
+          roles: ["admin", "moderator", "user"],
+        },
+      },
+    };
+
+    const evaluated = Regula.evaluate(ruleset, eval1Input);
+    expect(evaluated.lastEvaluation?.result).toBe(
+      "User has admin and moderator roles"
+    );
+  });
+
   it("evaluates a NOT boolean expression correctly", () => {
     const ruleset: Ruleset = {
       name: "NOT Expression Test",
@@ -541,7 +579,7 @@ describe("Regula.evaluate", () => {
       ],
       default: "Not eligible for bonus round",
       lastEvaluation: {
-        input: {
+        input: JSON.stringify({
           context: {
             dataSource: {
               type: "async",
@@ -557,7 +595,7 @@ describe("Regula.evaluate", () => {
               totalPoints: 25,
             },
           },
-        },
+        }),
         result: "Eligible for bonus round",
         evaluatedAt: event2EvalTimestamp,
         evaluatedBy: "user123",
@@ -683,7 +721,7 @@ describe("Regula.evaluate with nested boolean expressions", () => {
       },
     };
 
-    evaluated = Regula.evaluate(ruleset, input2);
+    evaluated = Regula.evaluate(evaluated, input2);
     expect(
       (evaluated.rules[0] as BooleanExpression).and[0].lastEvaluation?.result
     ).toBe(true);

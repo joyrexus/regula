@@ -160,7 +160,7 @@ export class DataTestBuilder extends RuleBuilder {
   constructor(
     name: string,
     config?: RuleConfig,
-    private parameterMap?: Map<string, ParameterInfo>,
+    private parameterMap?: Map<string, ParameterInfo>
   ) {
     super(name, config);
   }
@@ -290,6 +290,15 @@ export class DataTestBuilder extends RuleBuilder {
   }
 
   /**
+   * Creates an includesAll operator
+   * @param values Array of values to check for
+   */
+  includesAll(values: (string | number)[]): this {
+    (this.rule as DataTestExpression).includesAll = values;
+    return this;
+  }
+
+  /**
    * Creates a matches operator
    * @param pattern Regular expression pattern
    */
@@ -363,6 +372,7 @@ export class DataTestBuilder extends RuleBuilder {
       "between",
       "includes",
       "includesAny",
+      "includesAll",
       "matches",
       "isNull",
       "isPresent",
@@ -372,11 +382,11 @@ export class DataTestBuilder extends RuleBuilder {
     ];
 
     const hasOperator = operators.some(
-      (op) => op in (this.rule as DataTestExpression),
+      (op) => op in (this.rule as DataTestExpression)
     );
     if (!hasOperator) {
       throw new ValidationError(
-        "DataTestExpression must have at least one operator",
+        "DataTestExpression must have at least one operator"
       );
     }
 
@@ -397,7 +407,7 @@ export class BooleanBuilder extends RuleBuilder {
   constructor(
     name: string,
     config?: RuleConfig,
-    private prefixRuleNames: boolean = true,
+    private prefixRuleNames: boolean = true
   ) {
     super(name, config);
   }
@@ -418,12 +428,12 @@ export class BooleanBuilder extends RuleBuilder {
       // If this is a boolean expression, recursively rename its subrules too
       if ("and" in clonedRule && Array.isArray(clonedRule.and)) {
         clonedRule.and = clonedRule.and.map((r: Rule) =>
-          this.cloneAndPrefixRule(r),
+          this.cloneAndPrefixRule(r)
         );
       }
       if ("or" in clonedRule && Array.isArray(clonedRule.or)) {
         clonedRule.or = clonedRule.or.map((r: Rule) =>
-          this.cloneAndPrefixRule(r),
+          this.cloneAndPrefixRule(r)
         );
       }
       if ("not" in clonedRule) {
@@ -484,13 +494,13 @@ export class BooleanBuilder extends RuleBuilder {
   build(): Rule {
     if (!this.booleanType) {
       throw new ValidationError(
-        "Boolean expression must have a type (and, or, not)",
+        "Boolean expression must have a type (and, or, not)"
       );
     }
 
     if (this.rules.length === 0) {
       throw new ValidationError(
-        `${this.booleanType.toUpperCase()} expression must have at least one rule`,
+        `${this.booleanType.toUpperCase()} expression must have at least one rule`
       );
     }
 
@@ -711,7 +721,7 @@ export class Composer {
   combineRulesets(
     name: string,
     rulesets: Ruleset[],
-    config?: RulesetConfig,
+    config?: RulesetConfig
   ): Ruleset {
     const builder = new RulesetBuilder(name, config);
     rulesets.forEach((ruleset) => {
@@ -729,7 +739,7 @@ export class Composer {
   createDataTestRule(
     name: string,
     builder: (b: DataTestBuilder) => DataTestBuilder,
-    config?: RuleConfig,
+    config?: RuleConfig
   ): Rule {
     const b = new DataTestBuilder(name, config, this.parameterMap);
     return builder(b).build();
@@ -744,7 +754,7 @@ export class Composer {
   createBooleanRule(
     name: string,
     builder: (b: BooleanBuilder) => BooleanBuilder,
-    config?: RuleConfig,
+    config?: RuleConfig
   ): Rule {
     const b = new BooleanBuilder(name, config, this.prefixRuleNames);
     return builder(b).build();
@@ -760,12 +770,12 @@ export class Composer {
   createRule(
     name: string,
     builder: (b: any) => any,
-    config?: RuleConfig,
+    config?: RuleConfig
   ): Rule {
     // Create the appropriate builder based on the first called method
     const determineType = (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-      builderFn: Function,
+      builderFn: Function
     ): DataTestBuilder | BooleanBuilder => {
       const fnString = builderFn.toString();
       if (fnString.includes(".field(")) {
@@ -778,7 +788,7 @@ export class Composer {
         return new BooleanBuilder(name, config, this.prefixRuleNames);
       }
       throw new ValidationError(
-        "Unable to determine rule type from builder function",
+        "Unable to determine rule type from builder function"
       );
     };
 
