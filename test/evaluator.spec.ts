@@ -261,7 +261,7 @@ describe("Evaluator", () => {
   });
 
   it("should throw if getDelta is called before an evaluation was run", () => {
-    expect(() => evaluator.getDelta()).toThrow("No changes available.");
+    expect(() => evaluator.getDelta()).toThrow("No evaluations have been performed yet. Please evaluate first.");
     evaluator.evaluate(defaultInput);
     expect(() => evaluator.getDelta()).not.toThrow();
   });
@@ -300,6 +300,19 @@ describe("Evaluator", () => {
     expect(delta.rules["SubRule1"]).toEqual({ from: true, to: false });
     // Only changed rules are present
     expect(Object.keys(delta.rules)).toEqual(["SubRule1"]);
+  });
+
+  it("should return null from getDelta when no rules change between evaluations", () => {
+    // Initial evaluation
+    const input = makeEvaluationInput();
+    evaluator.evaluate(input);
+
+    // Second evaluation with the same data (no changes)
+    evaluator.evaluate({...input});
+
+    // Delta should be null when no rule results change
+    const delta = evaluator.getDelta();
+    expect(delta).toBeNull();
   });
 });
 

@@ -13,7 +13,6 @@ import {
   EvaluatedRuleset,
 } from "./types";
 
-// Add delta types
 export interface RuleDelta {
   from: boolean | null;
   to: boolean;
@@ -32,7 +31,7 @@ export interface EvaluationDelta {
   };
 }
 
-export interface EvaluationResults {
+interface EvaluationState {
   ruleset: RuleResult | null;
   rules: {
     [ruleName: string]: boolean | null;
@@ -47,8 +46,7 @@ export class Evaluator {
   private count: number;
   private dataSources: DataSource[];
   private ruleFields: { [ruleName: string]: string };
-  private lastEvaluationResults: EvaluationResults | null = null;
-  private evaluationDelta: EvaluationDelta | null = null;
+  private lastEvaluationState: EvaluationState | null = null;
 
   /**
    * Creates a new Evaluator instance with the specified ruleset.
@@ -76,13 +74,9 @@ export class Evaluator {
       throw new EvaluationError("Ruleset is deactivated.");
     }
     // Store previous evaluation results before evaluating
-    this.lastEvaluationResults = this.getEvaluationResults();
+    this.lastEvaluationState = this.getEvaluationState();
     this.ruleset = Regula.evaluate(this.ruleset, input);
     this.count++;
-    this.evaluationDelta = this.calculateDelta(
-      this.lastEvaluationResults,
-      this.getEvaluationResults()
-    );
     return this.ruleset.lastEvaluation?.result;
   }
 
@@ -90,11 +84,19 @@ export class Evaluator {
    * Get changes resulting from the last evaluation.
    * @returns {EvaluationDelta} The changes resulting from the last evaluation.
    */
-  getDelta(): EvaluationDelta {
-    if (!this.evaluationDelta) {
-      throw new Error("No changes available.");
+  getDelta(): EvaluationDelta | null {
+    if (this.count === 0) {
+      throw new Error("No evaluations have been performed yet. Please evaluate first.");
     }
-    return this.evaluationDelta;
+    const delta = this.calculateDelta(
+      this.lastEvaluationState,
+      this.getEvaluationState()
+    );
+    if (Object.keys(delta.rules).length === 0) {
+      // No changes detected
+      return null;
+    }
+    return delta;
   }
 
   /**
@@ -113,9 +115,9 @@ export class Evaluator {
 
   /**
    * Get the current evaluation state.
-   * @returns {EvaluationResults}
+   * @returns {EvaluationState}
    */
-  private getEvaluationResults(): EvaluationResults {
+  private getEvaluationState(): EvaluationState {
     const rulesetResult = this.ruleset.lastEvaluation?.result ?? null;
     const rules: { [ruleName: string]: boolean | null } = {};
     for (const ruleName of this.getRuleNames()) {
@@ -132,13 +134,13 @@ export class Evaluator {
 
   /**
    * Calculate the delta between two evaluation states.
-   * @param previous The previous evaluation results.
-   * @param current The current evaluation results.
+   * @param previous The previous evaluation state.
+   * @param current The current evaluation state.
    * @returns {EvaluationDelta}
    */
   private calculateDelta(
-    previous: EvaluationResults,
-    current: EvaluationResults
+    previous: EvaluationState,
+    current: EvaluationState
   ): EvaluationDelta {
     // Ruleset delta
     const updated = previous.ruleset !== current.ruleset;
