@@ -93,7 +93,9 @@ export class Evaluator {
       this.lastEvaluationState,
       this.getEvaluationState()
     );
-    if (Object.keys(delta.rules).length === 0) {
+    // If the ruleset evaluation result was not updated and no rules were updated,
+    // return null to indicate no changes. 
+    if (!delta.ruleset.updated && Object.keys(delta.rules).length === 0) {
       // No changes detected
       return null;
     }
