@@ -127,7 +127,9 @@ The `Evaluator` class provides the following utility methods:
 - `evaluation.deactivateRule("Check Age", { reason: "Parent approved", updatedBy: "user-1" })`: deactivate a specific rule with a reason
 - `evaluation.activateRule("Check Age")`: activate a specific rule
 - `evaluation.activate()`: activate the ruleset (if deactivated)
-- `evaluation.addMeta("Check Age", { note: "critical" })`: add metadata to a specific rule
+- `evaluation.addMeta({ note: "critical" })`: add metadata to the ruleset
+- `evaluation.addMeta({ note: "critical" }, "Check Age")`: add metadata to a specific rule
+- `evaluation.getMeta()`: get metadata for the ruleset
 - `evaluation.getMeta("Check Age")`: get metadata for a specific rule
 - `evaluation.toString()`: convert the ruleset to a JSON string
 

@@ -11,6 +11,7 @@ import {
   Evaluation,
   EvaluationInput,
   EvaluatedRuleset,
+  Meta,
 } from "./types";
 
 export interface RuleDelta {
@@ -317,23 +318,31 @@ export class Evaluator {
   }
 
   /**
-   * Add metadata to a rule.
-   * @param ruleName The name of the rule to add metadata to.
-   * @param meta The metadata to add.
+   * Add metadata to the ruleset or a specific rule.
+   * @param {string} [ruleName] The name of the rule to add metadata to.
+   * If not provided, metadata will be added to the ruleset.
+   * @param {Meta} meta The metadata to add.
    * @throws {EvaluationError} If the rule is not found.
    */
-  addMeta(ruleName: string, meta: { [key: string]: string }): void {
+  addMeta(meta: Meta, ruleName?: string): void {
+    if (!ruleName) {
+      this.ruleset.meta = { ...this.ruleset.meta, ...meta };
+      return;
+    }
     const rule = this.getRule(ruleName);
     rule.meta = { ...rule.meta, ...meta };
   }
 
   /**
-   * Get metadata from a rule.
-   * @param ruleName The name of the rule to get metadata from.
-   * @returns The metadata of the rule.
+   * Get metadata from the ruleset or a rule.
+   * @param {string} [ruleName] The name of the rule to get metadata from.
+   * @returns The metadata of the ruleset or rule.
    * @throws {EvaluationError} If the rule is not found.
    */
-  getMeta(ruleName: string): { [key: string]: any } | string {
+  getMeta(ruleName?: string): Meta {
+    if (!ruleName) {
+      return this.ruleset.meta;
+    }
     const rule = this.getRule(ruleName);
     return rule.meta;
   }

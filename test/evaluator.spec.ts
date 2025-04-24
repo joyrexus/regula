@@ -174,10 +174,10 @@ describe("Evaluator", () => {
   });
 
   it("should set and get rule metadata", () => {
-    evaluator.addMeta("Rule1", { priority: "high" });
+    evaluator.addMeta({ priority: "high" }, "Rule1");
     expect(evaluator.getMeta("Rule1")).toEqual({ priority: "high" });
 
-    evaluator.addMeta("Rule1", { category: "critical" });
+    evaluator.addMeta({ category: "critical" }, "Rule1");
     expect(evaluator.getMeta("Rule1")).toEqual({
       priority: "high",
       category: "critical",

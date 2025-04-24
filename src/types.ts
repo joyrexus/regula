@@ -59,7 +59,7 @@ export interface RuleEvaluation {
 
 type BaseValue = string | number | boolean;
 
-interface Meta {
+export interface Meta {
   [key: string]: BaseValue | Array<BaseValue> | Record<string, BaseValue>;
 }
 
