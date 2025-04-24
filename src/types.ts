@@ -21,6 +21,7 @@ export interface DataTestExpression {
   between?: [number, number];
   includes?: string | number; // Check if specified value is included in a list (if input `field` references an array)
   includesAny?: (string | number)[]; // Check if any of the specifed values are included in a list (if input `field` references an array)
+  includesAll?: (string | number)[]; // Check if all of the specifed values are included in a list (if input `field` references an array)
   matches?: string; // Regular expression
   isNull?: boolean;
   isPresent?: boolean;
@@ -82,8 +83,7 @@ export interface EvaluationInput {
   context: {
     dataSource: DataSource;
     timestamp: string; // ISO 8601 Date Time stamp
-    entityId?: string;
-    userId?: string;
+    [key: string]: any; // additional context fields
   };
   data: {
     [key: string]: any;
@@ -91,7 +91,7 @@ export interface EvaluationInput {
 }
 
 export interface Evaluation {
-  input: EvaluationInput;
+  input: string; // JSON serialized EvaluationInput;
   result: RuleResult;
   resultFrom?: string;
   evaluatedAt: string;
@@ -107,18 +107,6 @@ export interface EvaluatedRuleset extends Ruleset {
         updatedAt: string;
       };
   lastEvaluation?: Evaluation;
-}
-
-interface ResultDelta {
-  from: RuleResult | null;
-  to: RuleResult | null;
-}
-
-export interface EvaluationDelta {
-  rules: {
-    [ruleName: string]: ResultDelta;
-  };
-  ruleset?: ResultDelta;
 }
 
 // This is how we'll persist the evaluation
